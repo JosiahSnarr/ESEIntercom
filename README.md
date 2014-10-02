@@ -3,8 +3,14 @@ ESE Intercom
 ============
 Intercom and Paging System  
 
+
 Objective
 ---------
+
+The goal of this project is to design and build a in house intercom and paging system that can 
+communicate over house hold wiring. The Intercom will be able to send text messages to other station
+ as well as audio messages.
+
 
 Prerequisites
 -------------
