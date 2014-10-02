@@ -21,7 +21,7 @@ Required Qt libraries must be placed in the executable directory or findable on 
 To generate a Qt Creator project file navigate to the cloned directory and run the following command
 
 ```bash
-	qmake -project "QT += core gui widgets" "CONFIG += qt"
+	qmake -project "QT += core gui widgets" "CONFIG += qt" "LIBS += -lWinmm"
 ```
 
 Open the project and your in business.
