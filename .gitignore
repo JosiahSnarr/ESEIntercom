@@ -10,5 +10,10 @@ log/*
 *.pro
 *.user
 
+# terminal 
+*.bat
+*.sh
+
 build/*
+
 
