@@ -50,8 +50,6 @@ int main(int argc, char *argv[])
     long size = ((BITS_TO_BYTES(nBitsPerSample) * nSamplesPerSec) * TIMEMS_TO_SEC(timeout) * nChannels) / 2;
     short * audioBuffer = (short *)malloc(size * sizeof(short));
 
-    qDebug() << size << "\n";
-
     // record audio
     if (InitializeRecording())
     {

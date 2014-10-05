@@ -15,6 +15,7 @@
 
 
 #include "playback.h"
+#include "globals.h"
 
 #define	DEFAULT_NSAMPLES	4000	// 8000 is one second
 #define MIN_BUFSIZE			1000
@@ -52,12 +53,6 @@ static  WAVEHDR WaveHeaderIn;
 
 static int WaitOnHeader(WAVEHDR *wh, char cDit);
 
-/*Global config settings*/
-extern WORD nChannels;
-extern DWORD nSamplesPerSec;
-extern WORD nBitsPerSample;
-extern WORD cbSize;
-extern long timeout;
 #define Errorp printf
 
 /* SetupFormat() initializes a WAVEFORMATEX strucutre to the required
