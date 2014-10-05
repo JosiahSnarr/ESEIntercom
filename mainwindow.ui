@@ -28,7 +28,7 @@
       <widget class="QPlainTextEdit" name="etSend"/>
      </item>
      <item>
-      <widget class="QPushButton" name="bnEnter">
+      <widget class="QPushButton" name="bnSendText">
        <property name="enabled">
         <bool>true</bool>
        </property>

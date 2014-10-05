@@ -19,6 +19,7 @@ public slots:
     void onRecordButtonClicked();
     void onListenButtonClicked();
     void onSendAudioButtonClicked();
+    void onSendTextButtonClicked();
 
 private:
     Ui::MainWindow *ui;

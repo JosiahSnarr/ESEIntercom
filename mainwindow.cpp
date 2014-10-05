@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->bnRecord, SIGNAL(clicked()), this, SLOT(onRecordButtonClicked()));
     connect(ui->bnListen, SIGNAL(clicked()), this, SLOT(onListenButtonClicked()));
     connect(ui->bnSendAudio, SIGNAL(clicked()), this, SLOT(onSendAudioButtonClicked()));
+
+    connect(ui->bnSendText, SIGNAL(clicked()), this, SLOT(onSendTextButtonClicked()));
 }
 
 void MainWindow::onRecordButtonClicked()
@@ -28,6 +30,11 @@ void MainWindow::onListenButtonClicked()
 void MainWindow::onSendAudioButtonClicked()
 {
     qDebug() << "Send Audio Button Pressed\n";
+}
+
+void MainWindow::onSendTextButtonClicked()
+{
+    qDebug() << "Send Text Button Pressed\n";
 }
 
 MainWindow::~MainWindow()
