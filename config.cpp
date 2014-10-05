@@ -19,3 +19,8 @@ const char *configString(const char * var)
 	lua_getglobal(lua, var);
 	return lua_tostring(lua, -1);
 }
+
+const char *configError()
+{
+    return lua_tostring(lua, -1);
+}

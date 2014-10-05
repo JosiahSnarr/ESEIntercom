@@ -42,8 +42,8 @@ static short iBigBuf[SAMPLES_SEC * RECORD_TIME];
 static long	 lBigBufSize = SAMPLES_SEC * RECORD_TIME;	// in samples
 
 // output and input channel parameters
-static	int		g_nSamplesPerSec = SAMPLES_SEC;
-static	int		g_nBitsPerSample = 16;
+//static	int		g_nSamplesPerSec = SAMPLES_SEC;
+//static	int		g_nBitsPerSample = 16;
 static	HWAVEOUT	HWaveOut;				/* Handle of opened WAVE Out and In device */
 static  HWAVEIN		HWaveIn;
 static	WAVEFORMATEX WaveFormat;			/* WAVEFORMATEX structure for reading in the WAVE fmt chunk */
@@ -70,12 +70,12 @@ static void SetupFormat(WAVEFORMATEX *wf)
 	wf->cbSize = 0;
 */
     wf->wFormatTag = WAVE_FORMAT_PCM;
-	wf->nChannels = nChannels;
-	wf->nSamplesPerSec = nSamplesPerSec;
-	wf->wBitsPerSample = nBitsPerSample;
+    wf->nChannels = g_nChannels;
+    wf->nSamplesPerSec = g_nSamplesPerSec;
+    wf->wBitsPerSample = g_nBitsPerSample;
 	wf->nBlockAlign = wf->nChannels * (wf->wBitsPerSample / 8);
 	wf->nAvgBytesPerSec = wf->nSamplesPerSec * wf->nBlockAlign;
-	wf->cbSize = cbSize;
+    wf->cbSize = g_cbSize;
 	return;
 }
 
@@ -336,7 +336,7 @@ static int WaitOnHeader(WAVEHDR *wh, char cDit)
 		// idle for a bit so as to free CPU
 		Sleep(100L);
 		lTime += 100;
-		if (lTime >= timeout) return(0);  // timeout
+        if (lTime >= g_lTimeout) return(0);  // timeout
 		if (cDit) printf("%c", cDit);
 	}
 }

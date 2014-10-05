@@ -1,11 +1,14 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include "Windows.h"
+
 /*Global config settings*/
-extern WORD nChannels;
-extern DWORD nSamplesPerSec;
-extern WORD nBitsPerSample;
-extern WORD cbSize;
-extern long timeout;
+extern WORD   g_nChannels;
+extern DWORD  g_nSamplesPerSec;
+extern WORD   g_nBitsPerSample;
+extern WORD   g_cbSize;
+extern long   g_lTimeout;
+extern WORD  g_wAudioBufferSize;
 
 #endif // GLOBALS_H

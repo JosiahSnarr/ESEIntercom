@@ -13,4 +13,6 @@ int configInit(const char * configFile);
 int configInt(const char * var);
 const char *configString(const char * var);
 
+const char *configError();
+
 #endif
