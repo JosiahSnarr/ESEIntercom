@@ -1,11 +1,33 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QDebug>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // connect button click events to respective slots
+    connect(ui->bnRecord, SIGNAL(clicked()), this, SLOT(onRecordButtonClicked()));
+    connect(ui->bnListen, SIGNAL(clicked()), this, SLOT(onListenButtonClicked()));
+    connect(ui->bnSendAudio, SIGNAL(clicked()), this, SLOT(onSendAudioButtonClicked()));
+}
+
+void MainWindow::onRecordButtonClicked()
+{
+    qDebug() << "Record Button Pressed\n";
+}
+
+void MainWindow::onListenButtonClicked()
+{
+    qDebug() << "Listen Button Pressed\n";
+}
+
+void MainWindow::onSendAudioButtonClicked()
+{
+    qDebug() << "Send Audio Button Pressed\n";
 }
 
 MainWindow::~MainWindow()

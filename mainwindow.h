@@ -15,6 +15,11 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void onRecordButtonClicked();
+    void onListenButtonClicked();
+    void onSendAudioButtonClicked();
+
 private:
     Ui::MainWindow *ui;
 };

@@ -13,6 +13,7 @@
 
 #include "mainwindow.h"
 #include <QApplication>
+#include <QString>
 
 #include <QDebug>
 
@@ -44,26 +45,11 @@ int main(int argc, char *argv[])
     g_lTimeout         = (long)  configInt("timeout");
     g_wAudioBufferSize = (WORD)  configInt("AudioBufferSize");
 
-    // allocate space for audio data
-    short * audioBuffer = (short *)malloc(g_wAudioBufferSize * sizeof(short));
+    const char * windowName = configString("AppName");
 
-    // record audio
-    if (InitializeRecording())
-    {
-        RecordBuffer(audioBuffer, g_wAudioBufferSize);
-        CloseRecording();
+    w.setWindowTitle(QString(windowName));
 
-        // play buffer
-        if (InitializePlayback())
-        {
-            PlayBuffer(audioBuffer, g_wAudioBufferSize);
-            ClosePlayback();
-        }
-    }
-
-    free(audioBuffer);
-
+    // open the main window and start the event loop
     w.show();
     return a.exec();
-    //return 0;
 }
