@@ -14,7 +14,10 @@
 #include "mainwindow.h"
 #include <QApplication>
 
-#define KILOBYTE 1024
+#include <QDebug>
+
+#define BITS_TO_BYTES(b) (b / 8)
+#define TIMEMS_TO_SEC(t) (t / 1000)
 
 // global vars from config file
 WORD nChannels;
@@ -25,12 +28,18 @@ long timeout;
 
 int main(int argc, char *argv[])
 {
-   // QApplication a(argc, argv);
-   // MainWindow w;
-   //w.show();
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
 
     // load global config vars
-    configInit("config.lua");
+    int ret = configInit("config.lua");
+
+    if(ret){
+        printf("configuration file failed to load\n");
+        return 1;
+    }
+
     nChannels      = (WORD) configInt("nChannels");
     nSamplesPerSec = (DWORD)configInt("nSamplesPerSec");
     nBitsPerSample = (WORD) configInt("wBitsPerSample");
@@ -38,8 +47,10 @@ int main(int argc, char *argv[])
     timeout        = (long) configInt("timeout");
 
     // allocate space for audio data
-    long size = (((nBitsPerSample / 8) * nSamplesPerSec) * timeout * nChannels) / 2;
+    long size = ((BITS_TO_BYTES(nBitsPerSample) * nSamplesPerSec) * TIMEMS_TO_SEC(timeout) * nChannels) / 2;
     short * audioBuffer = (short *)malloc(size * sizeof(short));
+
+    qDebug() << size << "\n";
 
     // record audio
     if (InitializeRecording())
@@ -57,6 +68,6 @@ int main(int argc, char *argv[])
 
     free(audioBuffer);
 
-    //return a.exec();
-    return 0;
+    return a.exec();
+    //return 0;
 }

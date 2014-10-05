@@ -8,7 +8,7 @@
 
 static lua_State* lua;
 
-void configInit(const char * configFile);
+int configInit(const char * configFile);
 
 int configInt(const char * var);
 const char *configString(const char * var);

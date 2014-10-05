@@ -1,12 +1,11 @@
 
 #include "config.h"
 
-void configInit(const char * file)
+int configInit(const char * file)
 {
 	lua = lua_open();
 	luaL_openlibs(lua);
-	luaL_loadfile(lua, file);
-	lua_pcall(lua, 0, 0, 0);
+    return luaL_dofile(lua, file);
 }
 
 int configInt(const char * var)
