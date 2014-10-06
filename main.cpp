@@ -1,7 +1,4 @@
 
-
-#define _CRT_SECURE_NO_WARNINGS
-
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +11,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QString>
+#include <QIcon>
 
 #include <QDebug>
 
@@ -48,6 +46,7 @@ int main(int argc, char *argv[])
     const char * windowName = configString("AppName");
 
     w.setWindowTitle(QString(windowName));
+    w.setWindowIcon(QIcon(":/res/intercom.ico"));
 
     // open the main window and start the event loop
     w.show();
