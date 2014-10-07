@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
+    w.show();
 
     // load global config vars
     int ret = configInit("config.lua");
@@ -40,8 +41,10 @@ int main(int argc, char *argv[])
     g_nSamplesPerSec   = (DWORD) configInt("nSamplesPerSec");
     g_nBitsPerSample   = (WORD)  configInt("wBitsPerSample");
     g_cbSize           = (WORD)  configInt("cbSize");
-    g_lTimeout         = (long)  configInt("timeout");
-    g_wAudioBufferSize = (WORD)  configInt("AudioBufferSize");
+    g_lTimeout         = (long)  configInt("lTimeout");
+
+    int size = ( ( (g_nBitsPerSample/8) * g_nSamplesPerSec ) * (g_lTimeout / 1000) * g_nChannels ) / 2;
+    qDebug() << size << "\n";
 
     const char * windowName = configString("AppName");
 
@@ -49,6 +52,5 @@ int main(int argc, char *argv[])
     w.setWindowIcon(QIcon(":/res/intercom.ico"));
 
     // open the main window and start the event loop
-    w.show();
     return a.exec();
 }

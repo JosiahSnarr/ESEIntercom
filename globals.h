@@ -9,6 +9,5 @@ extern DWORD  g_nSamplesPerSec;
 extern WORD   g_nBitsPerSample;
 extern WORD   g_cbSize;
 extern long   g_lTimeout;
-extern WORD  g_wAudioBufferSize;
 
 #endif // GLOBALS_H
