@@ -49,7 +49,6 @@ int main(int argc, char *argv[])
     const char * windowName = configString("AppName");
 
     w.setWindowTitle(QString(windowName));
-    w.setWindowIcon(QIcon(":/res/intercom.ico"));
 
     // open the main window and start the event loop
     return a.exec();
