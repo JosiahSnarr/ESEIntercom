@@ -2,6 +2,12 @@
 #define AUDIOSETTINGS_H
 
 #include <QDialog>
+#include <QJsonObject>
+
+#define NCHANNELS "Channels"
+#define NBITSPERSAMPLE "BitsPerSample"
+#define NSAMPLESPERSECOND "SamplesPerSecond"
+#define LTIMEOUT "Timeout"
 
 namespace Ui {
 class AudioSettings;
@@ -24,13 +30,17 @@ public:
 
 public slots:
     void onOKButtonClicked();
+    void saveSettings();
 
 private:
     Ui::AudioSettings *ui;
     Settings settings;
+    QJsonObject json;
 
     void fillParams();
     void updateSettings();
+
+    void loadSettings();
 };
 
 #endif // AUDIOSETTINGS_H
