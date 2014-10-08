@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>res/intercom.png</file>
+        <file>res/settings.png</file>
     </qresource>
 </RCC>
