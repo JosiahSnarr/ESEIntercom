@@ -93,6 +93,11 @@ void AudioSettings::saveSettings()
     file.close();
 }
 
+AudioSettings::Settings AudioSettings::getSettings() const
+{
+    return settings;
+}
+
 AudioSettings::~AudioSettings()
 {
     delete ui;

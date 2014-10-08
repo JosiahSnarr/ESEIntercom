@@ -42,6 +42,8 @@ private:
     void updateSettings();
     void loadSettings();
     void saveSettings();
+
+    Settings getSettings() const;
 };
 
 #endif // SERIALSETTINGS_H

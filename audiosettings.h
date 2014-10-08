@@ -41,6 +41,8 @@ private:
     void updateSettings();
 
     void loadSettings();
+
+    Settings getSettings() const;
 };
 
 #endif // AUDIOSETTINGS_H

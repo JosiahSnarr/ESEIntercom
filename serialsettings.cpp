@@ -100,6 +100,11 @@ void SerialSettings::fillParams()
     ui->cmbStopBits->addItem("1", 1);
 }
 
+SerialSettings::Settings SerialSettings::getSettings() const
+{
+    return settings;
+}
+
 SerialSettings::~SerialSettings()
 {
     delete ui;
