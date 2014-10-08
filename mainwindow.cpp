@@ -9,12 +9,18 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // settings dialogs
+    audioSettings = new AudioSettings(this);
+    serialSettings = new SerialSettings(this);
+
     // connect button click events to respective slots
     connect(ui->bnRecord, SIGNAL(clicked()), this, SLOT(onRecordButtonClicked()));
     connect(ui->bnListen, SIGNAL(clicked()), this, SLOT(onListenButtonClicked()));
     connect(ui->bnSendAudio, SIGNAL(clicked()), this, SLOT(onSendAudioButtonClicked()));
 
     connect(ui->bnSendText, SIGNAL(clicked()), this, SLOT(onSendTextButtonClicked()));
+
+    initMenuActions();
 }
 
 void MainWindow::onRecordButtonClicked()
@@ -37,7 +43,15 @@ void MainWindow::onSendTextButtonClicked()
     qDebug() << "Send Text Button Pressed\n";
 }
 
+void MainWindow::initMenuActions()
+{
+    connect(ui->actionAudio_Settings, SIGNAL(triggered()), audioSettings, SLOT(show()));
+    connect(ui->actionSerial_Settings, SIGNAL(triggered()), serialSettings, SLOT(show()));
+}
+
 MainWindow::~MainWindow()
 {
+    delete audioSettings;
+    delete serialSettings;
     delete ui;
 }

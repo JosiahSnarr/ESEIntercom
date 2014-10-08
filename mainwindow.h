@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 
+#include "audiosettings.h"
+#include "serialsettings.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -23,6 +26,10 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
+    AudioSettings* audioSettings;
+    SerialSettings* serialSettings;
+
+    void initMenuActions();
 };
 
 #endif // MAINWINDOW_H
