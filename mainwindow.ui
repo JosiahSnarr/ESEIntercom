@@ -99,11 +99,14 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuBroadcast">
+   <widget class="QMenu" name="menuMessaging">
     <property name="title">
-     <string>Broadcast</string>
+     <string>Messaging</string>
     </property>
-    <addaction name="actionPlay_Messages"/>
+    <addaction name="actionNew_Session"/>
+    <addaction name="actionClose_Session"/>
+    <addaction name="separator"/>
+    <addaction name="actionPlay_Messages_2"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
@@ -119,7 +122,7 @@
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
    </widget>
-   <addaction name="menuBroadcast"/>
+   <addaction name="menuMessaging"/>
    <addaction name="menuSettings"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -150,6 +153,21 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionNew_Session">
+   <property name="text">
+    <string>New Session</string>
+   </property>
+  </action>
+  <action name="actionClose_Session">
+   <property name="text">
+    <string>Close Session</string>
+   </property>
+  </action>
+  <action name="actionPlay_Messages_2">
+   <property name="text">
+    <string>Play Messages</string>
    </property>
   </action>
  </widget>

@@ -6,6 +6,8 @@
 #include "audiosettings.h"
 #include "serialsettings.h"
 
+#include "serialcom.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -24,10 +26,15 @@ public slots:
     void onSendAudioButtonClicked();
     void onSendTextButtonClicked();
 
+    void newSession();
+    void closeSession();
+
 private:
     Ui::MainWindow *ui;
     AudioSettings* audioSettings;
     SerialSettings* serialSettings;
+
+    SerialCom* serial;
 
     void initMenuActions();
 };

@@ -3,11 +3,16 @@
 
 #include <QDialog>
 #include <QJsonObject>
+#include <QString>
+#include <QtSerialPort/QSerialPort>
 
 #define FILE_SERIAL_CONFIG "serial.json"
-#define BAUD     "BaudRate"
-#define PARITY   "Parity"
-#define STOPBITS "StopBits"
+#define PORTNAME    "PortName"
+#define BAUD        "BaudRate"
+#define PARITY      "Parity"
+#define STOPBITS    "StopBits"
+#define DATABITS    "DataBits"
+#define FLOWCONTROL "FlowControl"
 
 namespace Ui {
 class SerialSettings;
@@ -22,10 +27,16 @@ public:
     ~SerialSettings();
 
     struct Settings{
-        int baud;
-        int parity;
-        int stopbits;
+        QString portName;
+        QSerialPort::BaudRate baudrate;
+        QSerialPort::Parity parity;
+        QSerialPort::DataBits databits;
+        QSerialPort::StopBits stopbits;
+        QSerialPort::FlowControl flowcontrol;
     };
+
+public:
+    Settings getSettings() const;
 
 public slots:
     void onOKButtonClicked();
@@ -42,8 +53,6 @@ private:
     void updateSettings();
     void loadSettings();
     void saveSettings();
-
-    Settings getSettings() const;
 };
 
 #endif // SERIALSETTINGS_H
