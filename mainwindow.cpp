@@ -45,7 +45,11 @@ void MainWindow::onSendAudioButtonClicked()
 void MainWindow::onSendTextButtonClicked()
 {
     qDebug() << "Send Text Button Pressed\n";
-    QByteArray data("Hello World");
+
+    QString content = ui->etSend->toPlainText();
+    QByteArray data;
+    data.append(content);
+
     serial->write(data);
 
 }

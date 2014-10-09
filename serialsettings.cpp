@@ -3,7 +3,7 @@
 
 #include <QFile>
 #include <QJsonDocument>
-#include <QSerialPortInfo>
+#include <QtSerialPort/QSerialPortInfo>
 
 #include <QDebug>
 
