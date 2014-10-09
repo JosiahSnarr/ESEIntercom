@@ -141,11 +141,19 @@
    </property>
   </action>
   <action name="actionAudio_Settings">
+   <property name="icon">
+    <iconset resource="intercom.qrc">
+     <normaloff>:/res/settings.png</normaloff>:/res/settings.png</iconset>
+   </property>
    <property name="text">
     <string>Audio Settings</string>
    </property>
   </action>
   <action name="actionSerial_Settings">
+   <property name="icon">
+    <iconset resource="intercom.qrc">
+     <normaloff>:/res/settings.png</normaloff>:/res/settings.png</iconset>
+   </property>
    <property name="text">
     <string>Serial Settings</string>
    </property>
@@ -156,11 +164,19 @@
    </property>
   </action>
   <action name="actionNew_Session">
+   <property name="icon">
+    <iconset resource="intercom.qrc">
+     <normaloff>:/res/new.png</normaloff>:/res/new.png</iconset>
+   </property>
    <property name="text">
     <string>New Session</string>
    </property>
   </action>
   <action name="actionClose_Session">
+   <property name="icon">
+    <iconset resource="intercom.qrc">
+     <normaloff>:/res/exit.png</normaloff>:/res/exit.png</iconset>
+   </property>
    <property name="text">
     <string>Close Session</string>
    </property>

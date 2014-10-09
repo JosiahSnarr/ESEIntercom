@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>res/intercom.png</file>
         <file>res/settings.png</file>
+        <file>res/exit.png</file>
+        <file>res/new.png</file>
     </qresource>
 </RCC>
