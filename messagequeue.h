@@ -95,8 +95,8 @@ Message* deQueue(MessageQueue* queue);
 */
 int isQueueEmpty(MessageQueue* queue);
 
-#endif
-
 #ifdef __cplusplus
 }
+#endif
+
 #endif
