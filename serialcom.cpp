@@ -31,7 +31,8 @@ void SerialCom::onDataReceived()
 {
     if(serial->bytesAvailable() >= READY_READ_SIZE){
         QByteArray data = serial->readAll();
-        qDebug() << data << "\n";
+        QString msg(data);
+        emit messageReceived(msg);
     }
 }
 

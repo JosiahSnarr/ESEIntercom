@@ -29,6 +29,8 @@ public slots:
     void newSession();
     void closeSession();
 
+    void updateMessages(QString);
+
 private:
     Ui::MainWindow *ui;
     AudioSettings* audioSettings;

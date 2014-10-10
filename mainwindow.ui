@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>738</width>
-    <height>507</height>
+    <width>759</width>
+    <height>526</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,38 +18,13 @@
     <normaloff>:/res/intercom.png</normaloff>:/res/intercom.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="horizontalLayoutWidget_2">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>310</y>
-      <width>511</width>
-      <height>111</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QPlainTextEdit" name="etSend"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="bnSendText">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>Enter</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
    <widget class="QGroupBox" name="gbRecord">
     <property name="geometry">
      <rect>
       <x>560</x>
-      <y>290</y>
+      <y>300</y>
       <width>161</width>
-      <height>161</height>
+      <height>151</height>
      </rect>
     </property>
     <property name="title">
@@ -89,13 +64,64 @@
      </layout>
     </widget>
    </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>30</y>
+      <width>521</width>
+      <height>421</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Text Messaging</string>
+    </property>
+    <widget class="QWidget" name="horizontalLayoutWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>300</y>
+       <width>501</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPlainTextEdit" name="etSend"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="bnSendText">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>Enter</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QPlainTextEdit" name="etReceived">
+     <property name="geometry">
+      <rect>
+       <x>13</x>
+       <y>30</y>
+       <width>491</width>
+       <height>251</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>738</width>
+     <width>759</width>
      <height>21</height>
     </rect>
    </property>

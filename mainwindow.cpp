@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // init serial com
     serial = new SerialCom(this);
+    connect(serial, SIGNAL(messageReceived(QString)), this, SLOT(updateMessages(QString)));
 
     // connect button click events to respective slots
     connect(ui->bnRecord, SIGNAL(clicked()), this, SLOT(onRecordButtonClicked()));
@@ -54,13 +55,21 @@ void MainWindow::onSendTextButtonClicked()
 
 }
 
+void MainWindow::updateMessages(QString msg)
+{
+    ui->etReceived->appendPlainText(msg + "\n");
+}
+
 void MainWindow::newSession()
 {
-    if(serial->open(serialSettings->getSettings())){
+    SerialSettings::Settings settings = serialSettings->getSettings();
+    if(serial->open(settings)){
         ui->actionNew_Session->setEnabled(false);
         ui->actionClose_Session->setEnabled(true);
+        ui->statusBar->showMessage("Serial Communication Opened: " + settings.portName);
     }
     else{
+        ui->statusBar->showMessage("Failed to open serial port");
         qDebug() << "Failed to open serial port" << "\n";
     }
 }
@@ -70,6 +79,8 @@ void MainWindow::closeSession()
     serial->close();
     ui->actionNew_Session->setEnabled(true);
     ui->actionClose_Session->setEnabled(false);
+
+    ui->statusBar->showMessage("Serial Communication closed");
 }
 
 void MainWindow::initMenuActions()
