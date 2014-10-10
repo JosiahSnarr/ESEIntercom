@@ -26,6 +26,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->bnSendText, SIGNAL(clicked()), this, SLOT(onSendTextButtonClicked()));
 
     initMenuActions();
+
+    // disable components
+    setEnabledUIComponents(false);
+
+    ui->statusBar->showMessage("Ready");
 }
 
 void MainWindow::onRecordButtonClicked()
@@ -50,8 +55,11 @@ void MainWindow::onSendTextButtonClicked()
     QString content = ui->etSend->toPlainText();
     QByteArray data;
     data.append(content);
-
+#ifndef DEBUG
     serial->write(data);
+#else
+    serial->write("Hello World");
+#endif
 
 }
 
@@ -66,6 +74,7 @@ void MainWindow::newSession()
     if(serial->open(settings)){
         ui->actionNew_Session->setEnabled(false);
         ui->actionClose_Session->setEnabled(true);
+        setEnabledUIComponents(true);
         ui->statusBar->showMessage("Serial Communication Opened: " + settings.portName);
     }
     else{
@@ -79,6 +88,7 @@ void MainWindow::closeSession()
     serial->close();
     ui->actionNew_Session->setEnabled(true);
     ui->actionClose_Session->setEnabled(false);
+    setEnabledUIComponents(false);
 
     ui->statusBar->showMessage("Serial Communication closed");
 }
@@ -94,6 +104,14 @@ void MainWindow::initMenuActions()
     // connect cofiguration dialogs
     connect(ui->actionAudio_Settings, SIGNAL(triggered()), audioSettings, SLOT(show()));
     connect(ui->actionSerial_Settings, SIGNAL(triggered()), serialSettings, SLOT(show()));
+}
+
+void MainWindow::setEnabledUIComponents(bool enabled)
+{
+    ui->bnSendText->setEnabled(enabled);
+    ui->bnRecord->setEnabled(enabled);
+    ui->bnSendAudio->setEnabled(enabled);
+    ui->bnListen->setEnabled(enabled);
 }
 
 MainWindow::~MainWindow()

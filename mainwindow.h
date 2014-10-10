@@ -39,6 +39,7 @@ private:
     SerialCom* serial;
 
     void initMenuActions();
+    void setEnabledUIComponents(bool enabled);
 };
 
 #endif // MAINWINDOW_H
