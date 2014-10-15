@@ -153,6 +153,7 @@ void MainWindow::setEnabledUIComponents(bool enabled)
 MainWindow::~MainWindow()
 {
     delete serial;
+    delete audio;
     delete audioSettings;
     delete serialSettings;
     delete ui;

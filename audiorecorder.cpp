@@ -13,6 +13,8 @@ AudioRecorder::AudioRecorder(QObject *parent) :
 
     connect(probe, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processBuffer(QAudioBuffer)));
 
+    player = NULL;
+
     recording = false;
     listening = false;
 }
@@ -67,7 +69,7 @@ void AudioRecorder::stopListening()
 
 void AudioRecorder::createOutput(QAudioFormat format)
 {
-    if(player == NULL){
+    if(player != NULL){
         delete player;
     }
     player = new QAudioOutput(format, this);
