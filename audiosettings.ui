@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>261</width>
-    <height>314</height>
+    <height>378</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
      <x>20</x>
      <y>20</y>
      <width>221</width>
-     <height>151</height>
+     <height>191</height>
     </rect>
    </property>
    <property name="title">
@@ -64,12 +64,12 @@
      <item>
       <widget class="QLabel" name="lbBitPerSec">
        <property name="text">
-        <string>Bits Per Sample</string>
+        <string>Bit Rate</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="cmbBitsPerSample"/>
+      <widget class="QComboBox" name="cmbBitsRate"/>
      </item>
     </layout>
    </widget>
@@ -86,46 +86,20 @@
      <item>
       <widget class="QLabel" name="lbSamplesPerSec">
        <property name="text">
-        <string>Samples Per Second</string>
+        <string>Sample Rate</string>
        </property>
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="etSamplesPerSecond"/>
+      <widget class="QComboBox" name="cmbSampleRate"/>
      </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="QGroupBox" name="gbAudioTimeout">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>180</y>
-     <width>221</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Additional Options</string>
-   </property>
    <widget class="QWidget" name="horizontalLayoutWidget_4">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
+      <y>140</y>
       <width>191</width>
       <height>31</height>
      </rect>
@@ -144,11 +118,46 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QGroupBox" name="gbAudioTimeout">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>230</y>
+     <width>221</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Additional Options</string>
+   </property>
+   <widget class="QWidget" name="horizontalLayoutWidget_6">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QLabel" name="lbAudioCodec">
+       <property name="text">
+        <string>Audio Codec</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="cmbAudioCodec"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <widget class="QWidget" name="horizontalLayoutWidget_5">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>250</y>
+     <y>310</y>
      <width>239</width>
      <height>51</height>
     </rect>

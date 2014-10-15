@@ -14,6 +14,9 @@ MainWindow::MainWindow(QWidget *parent) :
     audioSettings = new AudioSettings(this);
     serialSettings = new SerialSettings(this);
 
+    // audio recording and playback
+    audio = new AudioRecorder(this);
+
     // init serial com
     serial = new SerialCom(this);
     connect(serial, SIGNAL(messageReceived(QString)), this, SLOT(updateMessages(QString)));
@@ -35,12 +38,32 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::onRecordButtonClicked()
 {
-    qDebug() << "Record Button Pressed\n";
+    if(!audio->isRecording()){
+        qDebug() << "Starting Recording\n";
+        audio->record(audioSettings->getSettings());
+        ui->bnRecord->setText("Stop");
+        ui->bnListen->setEnabled(false);
+    }
+    else{
+        qDebug() << "Stoping recording\n";
+        audio->stopRecording();
+        ui->bnRecord->setText("Record");
+        ui->bnListen->setEnabled(true);
+    }
 }
 
 void MainWindow::onListenButtonClicked()
 {
-    qDebug() << "Listen Button Pressed\n";
+    if(!audio->isListening()){
+        audio->listen();
+        ui->bnListen->setText("Stop Listening");
+        ui->bnRecord->setEnabled(false);
+    }
+    else{
+        audio->stopListening();
+        ui->bnListen->setText("Listen");
+        ui->bnRecord->setEnabled(true);
+    }
 }
 
 void MainWindow::onSendAudioButtonClicked()

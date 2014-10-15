@@ -3,11 +3,14 @@
 
 #include <QDialog>
 #include <QJsonObject>
+#include <QString>
+#include <QAudioEncoderSettings>
 
-#define NCHANNELS "Channels"
-#define NBITSPERSAMPLE "BitsPerSample"
+#define NCHANNELS         "Channels"
+#define NBITSPERSAMPLE    "BitsPerSample"
 #define NSAMPLESPERSECOND "SamplesPerSecond"
-#define LTIMEOUT "Timeout"
+#define LTIMEOUT          "Timeout"
+#define AUDIOCODEC        "AudioCodec"
 
 namespace Ui {
 class AudioSettings;
@@ -21,12 +24,7 @@ public:
     explicit AudioSettings(QWidget *parent = 0);
     ~AudioSettings();
 
-    struct Settings{
-        int nChannels;
-        int nSamplesPerSec;
-        int nBitsPerSample;
-        long timeout;
-    };
+     QAudioEncoderSettings getSettings() const;
 
 public slots:
     void onOKButtonClicked();
@@ -34,15 +32,13 @@ public slots:
 
 private:
     Ui::AudioSettings *ui;
-    Settings settings;
+    QAudioEncoderSettings settings;
     QJsonObject json;
 
     void fillParams();
     void updateSettings();
 
     void loadSettings();
-
-    Settings getSettings() const;
 };
 
 #endif // AUDIOSETTINGS_H

@@ -7,6 +7,7 @@
 #include "serialsettings.h"
 
 #include "serialcom.h"
+#include "audiorecorder.h"
 
 namespace Ui {
 class MainWindow;
@@ -37,6 +38,7 @@ private:
     SerialSettings* serialSettings;
 
     SerialCom* serial;
+    AudioRecorder* audio;
 
     void initMenuActions();
     void setEnabledUIComponents(bool enabled);

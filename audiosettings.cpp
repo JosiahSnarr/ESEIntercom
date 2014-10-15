@@ -3,6 +3,7 @@
 
 #include <QFile>
 #include <QJsonDocument>
+#include <QAudioRecorder>
 
 #include <QDebug>
 
@@ -30,21 +31,33 @@ void AudioSettings::onOKButtonClicked()
 
 void AudioSettings::updateSettings()
 {
-    settings.nChannels = ui->cmbChannels->itemData(ui->cmbChannels->currentIndex()).toInt();
-    settings.nBitsPerSample = ui->cmbBitsPerSample->itemData(ui->cmbBitsPerSample->currentIndex()).toInt();
-    settings.nSamplesPerSec = ui->etSamplesPerSecond->text().toInt();
-    settings.timeout = ui->etTimeout->text().toLong();
+    settings.setChannelCount(ui->cmbChannels->itemData(ui->cmbChannels->currentIndex()).toInt());
+    settings.setBitRate(ui->cmbBitsRate->itemData(ui->cmbBitsRate->currentIndex()).toInt());
+    settings.setSampleRate(ui->cmbSampleRate->itemData(ui->cmbSampleRate->currentIndex()).toInt());
+   // settings.timeout = ui->etTimeout->text().toLong();
+    settings.setCodec(ui->cmbAudioCodec->currentText());
 }
 
 void AudioSettings::fillParams()
 {
+    QAudioRecorder info;
+
     // set channel options
-    ui->cmbChannels->addItem("Mono", 1);
-    ui->cmbChannels->addItem("Stereo", 2);
+    ui->cmbChannels->addItem("1", 1);
+    ui->cmbChannels->addItem("2", 2);
 
     // sampling options
-    ui->cmbBitsPerSample->addItem("8 bits", 8);
-    ui->cmbBitsPerSample->addItem("16 bits", 16);
+    foreach(const int sampleRate, info.supportedAudioSampleRates()){
+        ui->cmbSampleRate->addItem(QString::number(sampleRate), sampleRate);
+    }
+
+    ui->cmbBitsRate->addItem("32000", 32000);
+    ui->cmbBitsRate->addItem("64000", 64000);
+
+    // audio codec options
+    foreach(const QString codec, info.supportedAudioCodecs()){
+        ui->cmbAudioCodec->addItem(codec);
+    }
 }
 
 void AudioSettings::loadSettings()
@@ -59,17 +72,18 @@ void AudioSettings::loadSettings()
 
         json = doc.object();
 
-        settings.nChannels = json[NCHANNELS].toInt();
-        settings.nBitsPerSample = json[NBITSPERSAMPLE].toInt();
-        settings.nSamplesPerSec = json[NSAMPLESPERSECOND].toInt();
-        settings.timeout = (long)json[LTIMEOUT].toInt();
+        settings.setChannelCount(json[NCHANNELS].toInt());
+        settings.setBitRate(json[NBITSPERSAMPLE].toInt());
+        settings.setSampleRate(json[NSAMPLESPERSECOND].toInt());
+        //settings.timeout = (long)json[LTIMEOUT].toInt();
+        settings.setCodec(json[AUDIOCODEC].toString());
 
         // update the dialoag to match
-        ui->etTimeout->setText(QString::number(settings.timeout));
-        ui->etSamplesPerSecond->setText(QString::number(settings.nSamplesPerSec));
+       // ui->etTimeout->setText(QString::number(settings.timeout));
+        ui->cmbSampleRate->setCurrentIndex(ui->cmbSampleRate->findData(settings.sampleRate()));
 
-        ui->cmbChannels->setCurrentIndex( (settings.nChannels == 1) ? 0 : 1 );
-        ui->cmbBitsPerSample->setCurrentIndex( (settings.nBitsPerSample == 8) ? 0 : 1 );
+        ui->cmbChannels->setCurrentIndex( ui->cmbChannels->findData(settings.channelCount()) );
+        ui->cmbBitsRate->setCurrentIndex( ui->cmbBitsRate->findData(settings.bitRate()) );
 
         file.close();
 
@@ -80,10 +94,11 @@ void AudioSettings::saveSettings()
 {
     updateSettings();
 
-    json[NCHANNELS] = settings.nChannels;
-    json[NBITSPERSAMPLE] = settings.nBitsPerSample;
-    json[NSAMPLESPERSECOND] = settings.nSamplesPerSec;
-    json[LTIMEOUT] = settings.timeout;
+    json[NCHANNELS] = settings.channelCount();
+    json[NBITSPERSAMPLE] = settings.bitRate();
+    json[NSAMPLESPERSECOND] = settings.sampleRate();
+    //json[LTIMEOUT] = settings.timeout;
+    json[AUDIOCODEC] = settings.codec();
 
     QJsonDocument doc(json);
 
@@ -93,7 +108,7 @@ void AudioSettings::saveSettings()
     file.close();
 }
 
-AudioSettings::Settings AudioSettings::getSettings() const
+QAudioEncoderSettings AudioSettings::getSettings() const
 {
     return settings;
 }
