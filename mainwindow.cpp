@@ -116,6 +116,16 @@ void MainWindow::closeSession()
     ui->statusBar->showMessage("Serial Communication closed");
 }
 
+/**
+    Debug Serial
+*/
+void MainWindow::debugSerial()
+{
+    QByteArray data;
+    data.append(DEBUG_SERIAL_OUT);
+    serial->write(data);
+}
+
 void MainWindow::initMenuActions()
 {
     // connect session actions
@@ -127,6 +137,9 @@ void MainWindow::initMenuActions()
     // connect cofiguration dialogs
     connect(ui->actionAudio_Settings, SIGNAL(triggered()), audioSettings, SLOT(show()));
     connect(ui->actionSerial_Settings, SIGNAL(triggered()), serialSettings, SLOT(show()));
+
+    // connect the debug serial o/p
+    connect(ui->actionDebugSerial, SIGNAL(triggered()), this, SLOT(debugSerial()));
 }
 
 void MainWindow::setEnabledUIComponents(bool enabled)

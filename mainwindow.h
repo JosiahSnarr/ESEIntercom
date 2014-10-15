@@ -32,6 +32,8 @@ public slots:
 
     void updateMessages(QString);
 
+    void debugSerial();
+
 private:
     Ui::MainWindow *ui;
     AudioSettings* audioSettings;

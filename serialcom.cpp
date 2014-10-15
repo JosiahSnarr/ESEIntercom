@@ -34,6 +34,18 @@ void SerialCom::onDataReceived()
         QString msg(data);
         emit messageReceived(msg);
     }
+
+    // debug
+    if(serial->bytesAvailable() >= DEBUG_SERIAL_OUT.length()){
+        QByteArray data = serial->readAll();
+        QString msg(data);
+
+        if(msg == DEBUG_SERIAL_OUT){
+            qDebug() << "Debug message recieved" << "\n";
+            qDebug() << msg << "\n";
+        }
+    }
+
 }
 
 void SerialCom::write(QByteArray data)

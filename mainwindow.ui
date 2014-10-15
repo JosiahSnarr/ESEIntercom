@@ -147,6 +147,8 @@
     </property>
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
+    <addaction name="separator"/>
+    <addaction name="actionDebugSerial"/>
    </widget>
    <addaction name="menuMessaging"/>
    <addaction name="menuSettings"/>
@@ -210,6 +212,11 @@
   <action name="actionPlay_Messages_2">
    <property name="text">
     <string>Play Messages</string>
+   </property>
+  </action>
+  <action name="actionDebugSerial">
+   <property name="text">
+    <string>Debug Serial Message</string>
    </property>
   </action>
  </widget>

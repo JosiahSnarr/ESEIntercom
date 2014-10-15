@@ -15,7 +15,9 @@
 #include "serialsettings.h"
 #include "messagequeue.h"
 
-#define READY_READ_SIZE 11
+#define DEBUG_SERIAL_OUT QString("DEADBEEF")
+
+#define READY_READ_SIZE sizeof(Message)
 
 /**
     Serial communication interface.
