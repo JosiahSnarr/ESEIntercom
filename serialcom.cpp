@@ -31,8 +31,16 @@ void SerialCom::onDataReceived()
 {
     if(serial->bytesAvailable() >= READY_READ_SIZE){
         QByteArray data = serial->readAll();
-        QString msg(data);
+
+        // allocate space for a new message and add to the message queue
+        Message * message = (Message *) malloc(sizeof(Message));
+        memcpy(message, data.data(), sizeof(Message));
+
+        enQueue(&queue, message);
+
+        QString msg(message->msg);
         emit messageReceived(msg);
+
     }
 
     // debug
