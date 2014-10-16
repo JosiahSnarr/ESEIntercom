@@ -7,6 +7,7 @@ AudioRecorder::AudioRecorder(QObject *parent) :
 //    playerBuffer->open(QIODevice::ReadWrite);
 
     recorder = new QAudioRecorder(this);
+    recorder->setAudioInput("Default");
     probe = new QAudioProbe(this);
 
     probe->setSource(recorder);
@@ -21,8 +22,8 @@ AudioRecorder::AudioRecorder(QObject *parent) :
 
 void AudioRecorder::processBuffer(QAudioBuffer buff)
 {
-    qDebug() << "processBuffer(buffer)\n";
-    buffer = buff;
+   // qDebug() << "processBuffer(buffer)\n";
+    audioBuffer = buff;
 }
 
 void AudioRecorder::record(QAudioEncoderSettings settings)
@@ -38,6 +39,7 @@ void AudioRecorder::record(QAudioEncoderSettings settings)
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::UnSignedInt);
 
+    // create output for current recording
     createOutput(format);
 
     // record
@@ -67,17 +69,32 @@ void AudioRecorder::stopListening()
     listening = false;
 }
 
+void AudioRecorder::playbackStateChanged(QAudio::State state)
+{
+    if(state == QAudio::IdleState){
+        qDebug() << "Idle\n";
+    }
+    else if (state == QAudio::ActiveState){
+        qDebug() << "Active\n";
+    }
+    else if(state == QAudio::StoppedState){
+        qDebug() << "Stopped\n";
+    }
+}
+
 void AudioRecorder::createOutput(QAudioFormat format)
 {
     if(player != NULL){
+        disconnect(player, SIGNAL(stateChanged(QAudio::State)), this, SLOT(playbackStateChanged(QAudio::State)));
         delete player;
     }
     player = new QAudioOutput(format, this);
+    connect(player, SIGNAL(stateChanged(QAudio::State)), this, SLOT(playbackStateChanged(QAudio::State)));
 }
 
 QByteArray AudioRecorder::getBuffer()
 {
-    return QByteArray((const char *)buffer.data(), buffer.byteCount());
+    return QByteArray((const char *)audioBuffer.data(), audioBuffer.byteCount());
 }
 
 bool AudioRecorder::isRecording()

@@ -21,6 +21,7 @@ signals:
 
 public slots:
     void processBuffer(QAudioBuffer);
+    void playbackStateChanged(QAudio::State);
 
 public:
     void record(QAudioEncoderSettings settings);
@@ -38,7 +39,7 @@ private:
     QAudioRecorder* recorder;
     QAudioProbe* probe;
 
-    QAudioBuffer buffer;
+    QAudioBuffer audioBuffer;
 
     QAudioOutput* player;
     QBuffer* playerBuffer;
