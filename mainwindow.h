@@ -32,6 +32,8 @@ public slots:
 
     void updateMessages(QString);
 
+    void onPlaybackStopped();
+
     void debugSerial();
 
 private:

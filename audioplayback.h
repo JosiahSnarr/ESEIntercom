@@ -6,18 +6,22 @@
 #include <QAudioInput>
 #include <QAudioOutput>
 #include <QAudioFormat>
+#include <QAudioEncoderSettings>
 
 class AudioPlayback : public QObject
 {
     Q_OBJECT
 public:
-    explicit AudioPlayback(QAudioFormat format, QObject *parent = 0);
+    explicit AudioPlayback(QAudioEncoderSettings format, QObject *parent = 0);
     ~AudioPlayback(void);
 
     void record();
     void stopRecording();
     void play();
     void stopPlayback();
+
+    void setAudioFormat(QAudioFormat format);
+    void setAudioFormat(QAudioEncoderSettings settings);
 
     bool isRecording();
     bool isPlaying();
@@ -30,9 +34,13 @@ private:
     bool _recording;
     bool _playing;
 
+    void createAudioIO(QAudioFormat format);
+
 signals:
+    void stoppedPlaying();
 
 public slots:
+    void onPlayerStateChanged(QAudio::State);
 
 };
 

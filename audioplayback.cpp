@@ -3,12 +3,10 @@
 
 #include <QDebug>
 
-AudioPlayback::AudioPlayback(QAudioFormat format, QObject *parent) :
+AudioPlayback::AudioPlayback(QAudioEncoderSettings format, QObject *parent) :
     QObject(parent)
 {
-    QAudioDeviceInfo info = QAudioDeviceInfo::defaultInputDevice();
-    _input = new QAudioInput(info, format, this);
-    _output = new QAudioOutput(format, this);
+    setAudioFormat(format);
 
     _recording = false;
     _playing = false;
@@ -45,6 +43,43 @@ void AudioPlayback::stopPlayback()
     _output->stop();
     _buffer.close();
     _playing = false;
+}
+
+void AudioPlayback::onPlayerStateChanged(QAudio::State state)
+{
+    if(state == QAudio::StoppedState || state == QAudio::IdleState){
+        emit stoppedPlaying();
+    }
+}
+
+void AudioPlayback::createAudioIO(QAudioFormat format)
+{
+    QAudioDeviceInfo info = QAudioDeviceInfo::defaultInputDevice();
+    _input = new QAudioInput(info, format, this);
+
+    _output = new QAudioOutput(format, this);
+    connect(_output, SIGNAL(stateChanged(QAudio::State)), this, SLOT(onPlayerStateChanged(QAudio::State)));
+}
+
+void AudioPlayback::setAudioFormat(QAudioFormat format)
+{
+    if(_input == NULL) delete _input;
+    if(_output == NULL) delete _output;
+
+    createAudioIO(format);
+}
+
+void AudioPlayback::setAudioFormat(QAudioEncoderSettings settings)
+{
+    QAudioFormat format;
+    format.setSampleRate(settings.sampleRate());
+    format.setSampleSize(8);
+    format.setChannelCount(settings.channelCount());
+    format.setCodec(settings.codec());
+    format.setByteOrder(QAudioFormat::LittleEndian);
+    format.setSampleType(QAudioFormat::UnSignedInt);
+
+    setAudioFormat(format);
 }
 
 bool AudioPlayback::isRecording()

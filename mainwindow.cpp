@@ -14,16 +14,10 @@ MainWindow::MainWindow(QWidget *parent) :
     audioSettings = new AudioSettings(this);
     serialSettings = new SerialSettings(this);
 
-    QAudioEncoderSettings settings = audioSettings->getSettings();
-    QAudioFormat format;
-    format.setSampleRate(settings.sampleRate());
-    format.setSampleSize(8);
-    format.setChannelCount(settings.channelCount());
-    format.setCodec(settings.codec());
-    format.setByteOrder(QAudioFormat::LittleEndian);
-    format.setSampleType(QAudioFormat::UnSignedInt);
+    // audio recording and playback
+    audio = new AudioPlayback(audioSettings->getSettings(), this);
 
-    audio = new AudioPlayback(format, this);
+    connect(audio, SIGNAL(stoppedPlaying()), this, SLOT(onPlaybackStopped()));
 
     // init serial com
     serial = new SerialCom(this);
@@ -66,6 +60,12 @@ void MainWindow::onListenButtonClicked()
         audio->play();
         ui->bnListen->setText("Stop Listening");
     }
+}
+
+void MainWindow::onPlaybackStopped()
+{
+    audio->stopPlayback();
+    ui->bnListen->setText("Listen");
 }
 
 void MainWindow::onSendAudioButtonClicked()
