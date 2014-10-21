@@ -80,12 +80,8 @@ void MainWindow::onSendTextButtonClicked()
     QString content = ui->etSend->toPlainText();
     QByteArray data;
     data.append(content);
-#ifndef DEBUG
-    serial->write(data);
-#else
-    serial->write("Hello World");
-#endif
 
+    serial->write(data, 0);
 }
 
 void MainWindow::updateMessages(QString msg)
@@ -125,7 +121,7 @@ void MainWindow::debugSerial()
 {
     QByteArray data;
     data.append(DEBUG_SERIAL_OUT);
-    serial->write(data);
+    serial->write(data, 0);
 }
 
 void MainWindow::initMenuActions()

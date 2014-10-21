@@ -8,6 +8,8 @@
 #ifndef SERIALCOM_H
 #define SERIALCOM_H
 
+#include <cstdint>
+
 #include <QObject>
 #include <QtSerialPort/QSerialPort>
 #include <QByteArray>
@@ -18,6 +20,15 @@
 #define DEBUG_SERIAL_OUT QString("DEADBEEF")
 
 #define READY_READ_SIZE sizeof(Message)
+
+typedef struct header{
+    long lSignature;
+    uint8_t bReceiverId;
+    uint8_t bVersion;
+    long lDataLength;
+    uint8_t bTBD[1];
+    uint8_t bPattern;
+}FrameHeader;
 
 /**
     Serial communication interface.
@@ -62,12 +73,18 @@ public:
         @param data
             data to be written to the serial port
     */
-    void write(QByteArray data);
+    void write(QByteArray data, uint8_t receiverId);
+
+    /**
+    */
+    void frameBuffer(QByteArray& buffer);
 
 private:
     //! serial port access
-    QSerialPort* serial;
-    MessageQueue queue;
+    QSerialPort* _serial;
+    FrameHeader _header;
+
+    MessageQueue _queue;
 
 };
 

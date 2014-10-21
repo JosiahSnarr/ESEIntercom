@@ -2,6 +2,8 @@
 
 #include "messagequeue.h"
 
+static void _printMessage(MessageNode* message);
+static void _deleteNode(MessageNode* node);
 
 void initQueue(MessageQueue* queue)
 {
@@ -60,6 +62,46 @@ Message* deQueue(MessageQueue* queue)
 int isQueueEmpty(MessageQueue* queue)
 {
 	return (queue->head == NULL);
+}
+
+void transverse(MessageNode* node, MessageNodeFunction function)
+{
+    if (node == NULL) return;
+    function(node);
+    transverse(node->next, function);
+}
+
+void transverseR(MessageNode* node, MessageNodeFunction function)
+{
+    if (node == NULL) return;
+    transverseR(node->next, function);
+    function(node);
+}
+
+void printMessages(MessageQueue* queue, BOOL reversed)
+{
+    if (reversed == FALSE){
+        transverse(queue->head, _printMessage);
+    }
+    else{
+        transverseR(queue->head, _printMessage);
+    }
+}
+
+static void _printMessage(MessageNode* node)
+{
+    printf("\n%s\n", node->msg->msg);
+}
+
+void deleteQueue(MessageQueue* queue)
+{
+    transverseR(queue->head, _deleteNode);
+}
+
+static void _deleteNode(MessageNode* node)
+{
+    free(node->msg);
+    free(node);
 }
 
 int getMessageFromFile(char szBuf[], int iLen)

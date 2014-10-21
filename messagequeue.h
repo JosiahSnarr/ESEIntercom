@@ -49,6 +49,14 @@ typedef struct {
 	int size;          ///< The number of messages in the queue
 }MessageQueue;
 
+//!
+typedef void(*MessageNodeFunction)(MessageNode*);
+
+//! boolean
+typedef enum boolean{
+    TRUE, FALSE
+}BOOL;
+
 /**
 	Get a random message from the fortune file
 
@@ -94,6 +102,47 @@ Message* deQueue(MessageQueue* queue);
 		The given queue
 */
 int isQueueEmpty(MessageQueue* queue);
+
+/**
+    Recursively tranverse the linked link from a startign node. Top to bottom
+
+    @param node
+        starting node
+
+    @param function
+        function to apply to all nodes
+*/
+void transverse(MessageNode* node, MessageNodeFunction function);
+
+/**
+    Recursively tranverse the linked link from a starting node. Bottom to Top
+
+    @param node
+        starting node
+
+    @param function
+        function to apply to all nodes
+*/
+void tranverseR(MessageNode *node, MessageNodeFunction function);
+
+/**
+    Recursively print the messages in the queue
+
+    @param queue
+        The queue to print
+
+    @param reversed
+        select printing in reverse or not
+*/
+void printMessages(MessageQueue* queue, BOOL reversed);
+
+/**
+    Delete the content of the queue, recursively
+
+    @param queue
+        The queue
+*/
+void deleteQueue(MessageQueue* queue);
 
 #ifdef __cplusplus
 }
