@@ -75,13 +75,20 @@ void MainWindow::onSendAudioButtonClicked()
 
 void MainWindow::onSendTextButtonClicked()
 {
-    qDebug() << "Send Text Button Pressed\n";
-
     QString content = ui->etSend->toPlainText();
+
+    // limit 140 characters
+    int size = content.size();
+    if(size > 140){
+        content.chop(size-140);
+    }
+
     QByteArray data;
     data.append(content);
 
-    serial->write(data, 0);
+    qDebug() << "content size: " << content.length() << "\n";
+
+    serial->write(data, 99);
 }
 
 void MainWindow::updateMessages(QString msg)

@@ -13,21 +13,23 @@
 #include <QObject>
 #include <QtSerialPort/QSerialPort>
 #include <QByteArray>
+#include <QBuffer>
 
 #include "serialsettings.h"
 #include "messagequeue.h"
 
+#define FRAME_SIGNATURE 0xDEADBEEF
 #define DEBUG_SERIAL_OUT QString("DEADBEEF")
 
 #define READY_READ_SIZE sizeof(Message)
 
 typedef struct header{
-    long lSignature;
-    uint8_t bReceiverId;
-    uint8_t bVersion;
-    long lDataLength;
-    uint8_t bTBD[1];
-    uint8_t bPattern;
+    uint32_t lSignature;
+    uint8_t  bReceiverId;
+    uint32_t lDataLength;
+    uint8_t  bVersion;
+    uint8_t  bPattern;
+    uint8_t  bTBD[21];
 }FrameHeader;
 
 /**
