@@ -80,7 +80,7 @@ void transverseR(MessageNode* node, MessageNodeFunction function)
 
 void printMessages(MessageQueue* queue, BOOL reversed)
 {
-    if (reversed == FALSE){
+    if (reversed){
         transverse(queue->head, _printMessage);
     }
     else{

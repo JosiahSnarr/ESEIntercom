@@ -4,6 +4,8 @@
 
 #include <string>
 
+#define Q_HEXSTR(x) QString("%1").arg(x, 0, 16)
+
 SerialCom::SerialCom(QObject *parent) :
     QObject(parent)
 {
@@ -14,6 +16,13 @@ SerialCom::SerialCom(QObject *parent) :
     _header.bPattern = 0x5A;
     _header.bVersion = 1;
     _header.bTBD[0] = 0;
+
+    initQueue(&_queue);
+
+    qDebug() << "sizeof(Message): " << sizeof(Message) << "\n";
+    qDebug() << "sizeof(FrameHeader): " << sizeof(FrameHeader) << "\n";
+    qDebug() << "Message + FrameHeader: " << sizeof(Message) + sizeof(FrameHeader)  << "\n";
+    qDebug() << "Message - FrameHeader:" << sizeof(Message) - sizeof(FrameHeader) << "\n";
 }
 
 bool SerialCom::open(SerialSettings::Settings settings)
@@ -26,6 +35,8 @@ bool SerialCom::open(SerialSettings::Settings settings)
     _serial->setFlowControl(settings.flowcontrol);
     _serial->setReadBufferSize(sizeof(Message));
 
+    _receiveBuffer.open(QIODevice::ReadWrite);
+
     return _serial->open(QIODevice::ReadWrite);
 }
 
@@ -36,29 +47,36 @@ void SerialCom::close()
 
 void SerialCom::onDataReceived()
 {
-    if(_serial->bytesAvailable() >= READY_READ_SIZE){
+    // store in the cumulative buffer
+    _receiveBuffer.write(_serial->readAll());
+
+    qDebug() << "Stored  : " << _receiveBuffer.size() << "\n";
+
+    if(_receiveBuffer.size() >= READY_READ_SIZE){
+        qDebug() << "Received\n";
+
+        _receiveBuffer.seek(0);
 
         FrameHeader header;
-        _serial->read((char*)&header, sizeof(FrameHeader));
+        _receiveBuffer.read((char*)&header, sizeof(FrameHeader));
 
         if(header.lSignature == FRAME_SIGNATURE){
-            qDebug() << "Valid Signature\n";
+            qDebug() << "Valid Signature: " << Q_HEXSTR(header.lSignature) << "\n";
             qDebug() << "Receiver: " << header.bReceiverId << "\n";
             qDebug() << "Data Length: " << header.lDataLength << "\n";
 
-            qDebug() << "available: " << _serial->bytesAvailable() << "\n";
+            // check if any data was dropped
+            if(header.lDataLength <= _receiveBuffer.size()){
 
-            if(header.lDataLength <= _serial->bytesAvailable()){
-
+                // check if its a message
                 if(header.lDataLength == sizeof(Message)){
 
                     Message* message = (Message*) malloc(sizeof(Message));
-                    _serial->read((char*)&message, sizeof(Message));
+                    _receiveBuffer.read((char*)&message, sizeof(Message));
 
                     enQueue(&_queue, message);
 
                     qDebug() << message->msg << "\n";
-
                 }
 
             }
@@ -75,7 +93,7 @@ void SerialCom::onDataReceived()
     }
 
     // debug
-    if(_serial->bytesAvailable() == DEBUG_SERIAL_OUT.length()){
+    if(_serial->bytesAvailable() == DEBUG_SERIAL_OUT.length() + sizeof(FrameHeader)){
         QByteArray data = _serial->readAll();
         QString msg(data);
 
@@ -99,32 +117,33 @@ void SerialCom::write(QByteArray stringBuffer, uint8_t receiverId)
     // frame the data
     outData.write((char*)&_header, sizeof(FrameHeader));
 
-    qDebug() << "stringbuffer len: " << stringBuffer.length() << "\n";
-
+    // write message data
     Message message;
     message.priority = 1;
     message.msgSeq = 7;
     message.receiverID = receiverId;
-    message.senderID = 99;
+    message.senderID = 42;
 
     memcpy(message.msg, stringBuffer.data(), BUFFER_MAX);
 
-    qDebug() << "message: " << message.msg << "\n" << "msg len: " << strlen(message.msg) << "\n";
+    qDebug() << "msg len: " << strlen(message.msg) << "\n";
 
     outData.write((char*)&message, sizeof(Message));
 
+    qDebug() << "buffer size: " << outData.size() << "\n";
+
     // write out to serial
-    _serial->write(outData.buffer());
+    outData.close();
+    qDebug() << "written bytes: " << _serial->write(outData.buffer());
+    qDebug() << "flush: " << _serial->flush() << "\n";
 }
 
 void SerialCom::frameBuffer(QByteArray& buffer)
 {
-    // add the frame header to the serial output buffer
-
+    Q_UNUSED(buffer);
 }
 
 SerialCom::~SerialCom()
 {
     delete _serial;
-    deleteQueue(&_queue);
 }

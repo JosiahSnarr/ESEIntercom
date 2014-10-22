@@ -78,10 +78,10 @@ void MainWindow::onSendTextButtonClicked()
     QString content = ui->etSend->toPlainText();
 
     // limit 140 characters
-    int size = content.size();
-    if(size > 140){
-        content.chop(size-140);
-    }
+    //int size = content.size();
+   // if(size > 140){
+   //     content.chop(size-140);
+   // }
 
     QByteArray data;
     data.append(content);

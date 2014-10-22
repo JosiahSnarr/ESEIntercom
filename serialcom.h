@@ -21,12 +21,12 @@
 #define FRAME_SIGNATURE 0xDEADBEEF
 #define DEBUG_SERIAL_OUT QString("DEADBEEF")
 
-#define READY_READ_SIZE sizeof(Message)
+#define READY_READ_SIZE sizeof(FrameHeader) + sizeof(Message)
 
 typedef struct header{
     uint32_t lSignature;
-    uint8_t  bReceiverId;
     uint32_t lDataLength;
+    uint8_t  bReceiverId;
     uint8_t  bVersion;
     uint8_t  bPattern;
     uint8_t  bTBD[21];
@@ -84,6 +84,8 @@ public:
 private:
     //! serial port access
     QSerialPort* _serial;
+    QBuffer _receiveBuffer;
+
     FrameHeader _header;
 
     MessageQueue _queue;

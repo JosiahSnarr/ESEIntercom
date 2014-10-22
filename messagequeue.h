@@ -33,7 +33,7 @@ typedef struct{
 	uint16_t receiverID;   ///< ID of the message receiver
 	uint8_t priority;      ///< Message Priority in the queue
 	uint16_t msgSeq;       ///< Message Sequence
-	uint8_t fun_bytes[25]; ///< Extra fun
+    uint8_t fun_bytes[27]; ///< Extra fun
 }Message;
 
 //! Linked List of Messages
@@ -53,9 +53,13 @@ typedef struct {
 typedef void(*MessageNodeFunction)(MessageNode*);
 
 //! boolean
+#ifndef __cplusplus
 typedef enum boolean{
-    TRUE, FALSE
+    FALSE = 0, TRUE = 1
 }BOOL;
+#else
+typedef bool BOOL;
+#endif
 
 /**
 	Get a random message from the fortune file
