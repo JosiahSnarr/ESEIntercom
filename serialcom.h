@@ -23,14 +23,27 @@
 
 #define READY_READ_SIZE sizeof(FrameHeader) + sizeof(Message)
 
+#define MSG_TYPE_TEXT         0x00
+#define MSG_TYPE_AUDIO        0x01
+#define MSG_TYPE_AUDIO_STREAM 0x02
+
+#define ENCRYPT_TYPE_NONE     0x00
+#define ENCRYPT_TYPE_XOR      0x01
+
+#define COMPRESS_TYPE_NONE    0x00
+#define COMPRESS_TYPE_RLE     0x01
+#define COMPRESS_TYPE_HUFF    0x02
+
 //! Packet header for the outgoing data
-typedef struct header{
-    uint32_t lSignature;  ///< Signature to verify the packet
-    uint32_t lDataLength; ///< length of data after the header
-    uint8_t  bReceiverId; ///< the id of the receiver
-    uint8_t  bVersion;    ///< the header version
-    uint8_t  bPattern;    ///< extra verification
-    uint8_t  bTBD[21];    ///< to be determined
+typedef struct frameHeader{
+    uint32_t lSignature;       ///< Signature to verify the packet
+    uint32_t lDataLength;      ///< length of data after the header
+    uint8_t  bReceiverId;      ///< the id of the receiver
+    uint8_t  bVersion;         ///< the header version
+    uint8_t  bPattern;         ///< extra verification
+    uint8_t  bMessageType;     ///< Audio\Text, (Audio Stream?)
+    uint8_t  bEncryptType;     ///< XOR\None
+    uint8_t  bCompressionType; ///< RLE\Huffman\None
 }FrameHeader;
 
 /**

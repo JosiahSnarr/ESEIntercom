@@ -33,7 +33,6 @@ typedef struct message{
 	uint16_t receiverID;   ///< ID of the message receiver
 	uint8_t priority;      ///< Message Priority in the queue
 	uint16_t msgSeq;       ///< Message Sequence
-    uint8_t fun_bytes[27]; ///< Extra fun
 }Message;
 
 //! Linked List of Messages

@@ -4,12 +4,9 @@
 
 #include <string>
 
-#define Q_HEXSTR(x) QString("%1").arg(x, 0, 16)
+#include "bitopts.h"
 
-typedef struct test{
-    int x, y, z;
-    int chunk[100];
-}Test;
+#define Q_HEXSTR(x) QString("%1").arg(x, 0, 16)
 
 SerialCom::SerialCom(QObject *parent) :
     QObject(parent)
@@ -20,7 +17,6 @@ SerialCom::SerialCom(QObject *parent) :
     _header.lSignature = FRAME_SIGNATURE;
     _header.bPattern = 0x5A;
     _header.bVersion = 1;
-    _header.bTBD[0] = 0;
 
     initQueue(&_queue);
 }

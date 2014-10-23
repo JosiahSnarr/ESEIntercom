@@ -21,7 +21,8 @@ HEADERS += audioplayback.h \
            mainwindow.h \
            messagequeue.h \
            serialcom.h \
-           serialsettings.h
+           serialsettings.h \
+           bitopts.h
 FORMS += audiosettings.ui mainwindow.ui serialsettings.ui
 SOURCES += audioplayback.cpp \
            audiosettings.cpp \
