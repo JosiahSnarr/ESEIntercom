@@ -30,7 +30,7 @@ public slots:
     void newSession();
     void closeSession();
 
-    void updateMessages(QString);
+    void onMessageReceived(int numQueued);
 
     void onPlaybackStopped();
 

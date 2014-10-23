@@ -27,7 +27,7 @@ extern "C"{
 #endif
 
 //! Structure of the message in the queue
-typedef struct{
+typedef struct message{
 	char msg[140];         ///< message data. Same size as a tweet...
 	uint16_t senderID;     ///< ID of the message sender
 	uint16_t receiverID;   ///< ID of the message receiver

@@ -6,6 +6,11 @@
 
 #define Q_HEXSTR(x) QString("%1").arg(x, 0, 16)
 
+typedef struct test{
+    int x, y, z;
+    int chunk[100];
+}Test;
+
 SerialCom::SerialCom(QObject *parent) :
     QObject(parent)
 {
@@ -50,20 +55,18 @@ void SerialCom::onDataReceived()
     // store in the cumulative buffer
     _receiveBuffer.write(_serial->readAll());
 
-    qDebug() << "Stored  : " << _receiveBuffer.size() << "\n";
-
+    // don't process buffer until it has buffered enough data
     if(_receiveBuffer.size() >= READY_READ_SIZE){
-        qDebug() << "Received\n";
 
+        // go to the start of the buffer
         _receiveBuffer.seek(0);
 
+        // pull the frame header
         FrameHeader header;
         _receiveBuffer.read((char*)&header, sizeof(FrameHeader));
 
+        // check if the signature is valid
         if(header.lSignature == FRAME_SIGNATURE){
-            qDebug() << "Valid Signature: " << Q_HEXSTR(header.lSignature) << "\n";
-            qDebug() << "Receiver: " << header.bReceiverId << "\n";
-            qDebug() << "Data Length: " << header.lDataLength << "\n";
 
             // check if any data was dropped
             if(header.lDataLength <= _receiveBuffer.size()){
@@ -71,12 +74,19 @@ void SerialCom::onDataReceived()
                 // check if its a message
                 if(header.lDataLength == sizeof(Message)){
 
-                    Message* message = (Message*) malloc(sizeof(Message));
-                    _receiveBuffer.read((char*)&message, sizeof(Message));
+                    // allocate memory for the message
+                    Message* m = (Message*) malloc(sizeof(Message));
 
-                    enQueue(&_queue, message);
-
-                    qDebug() << message->msg << "\n";
+                    if(m != NULL){
+                        // pull the message and place in queue
+                        _receiveBuffer.read((char*)m, sizeof(Message));
+                        enQueue(&_queue, m);
+                        emit messageReceived(_queue.size);
+                        qDebug() << m->msg << "\n";
+                    }
+                    else{
+                        qDebug() << "Could not allocate memory for a new message :(\n";
+                    }
                 }
 
             }
@@ -126,24 +136,16 @@ void SerialCom::write(QByteArray stringBuffer, uint8_t receiverId)
 
     memcpy(message.msg, stringBuffer.data(), BUFFER_MAX);
 
-    qDebug() << "msg len: " << strlen(message.msg) << "\n";
-
     outData.write((char*)&message, sizeof(Message));
-
-    qDebug() << "buffer size: " << outData.size() << "\n";
 
     // write out to serial
     outData.close();
     qDebug() << "written bytes: " << _serial->write(outData.buffer());
-    qDebug() << "flush: " << _serial->flush() << "\n";
 }
 
-void SerialCom::frameBuffer(QByteArray& buffer)
-{
-    Q_UNUSED(buffer);
-}
 
 SerialCom::~SerialCom()
 {
     delete _serial;
+    if(_queue.size > 0) deleteQueue(&_queue);
 }

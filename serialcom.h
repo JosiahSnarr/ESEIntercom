@@ -23,13 +23,14 @@
 
 #define READY_READ_SIZE sizeof(FrameHeader) + sizeof(Message)
 
+//! Packet header for the outgoing data
 typedef struct header{
-    uint32_t lSignature;
-    uint32_t lDataLength;
-    uint8_t  bReceiverId;
-    uint8_t  bVersion;
-    uint8_t  bPattern;
-    uint8_t  bTBD[21];
+    uint32_t lSignature;  ///< Signature to verify the packet
+    uint32_t lDataLength; ///< length of data after the header
+    uint8_t  bReceiverId; ///< the id of the receiver
+    uint8_t  bVersion;    ///< the header version
+    uint8_t  bPattern;    ///< extra verification
+    uint8_t  bTBD[21];    ///< to be determined
 }FrameHeader;
 
 /**
@@ -45,7 +46,7 @@ public:
     ~SerialCom();
 
 signals:
-    void messageReceived(QString);
+    void messageReceived(int);
 
 public slots:
     /**
@@ -77,17 +78,16 @@ public:
     */
     void write(QByteArray data, uint8_t receiverId);
 
-    /**
-    */
-    void frameBuffer(QByteArray& buffer);
-
 private:
     //! serial port access
     QSerialPort* _serial;
+    //! serial data buffer
     QBuffer _receiveBuffer;
 
+    //! Packet header
     FrameHeader _header;
 
+    //! queue for the incoming messages
     MessageQueue _queue;
 
 };

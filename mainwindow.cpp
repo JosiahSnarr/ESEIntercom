@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // init serial com
     serial = new SerialCom(this);
-    connect(serial, SIGNAL(messageReceived(QString)), this, SLOT(updateMessages(QString)));
+    connect(serial, SIGNAL(messageReceived(int)), this, SLOT(onMessageReceived(int)));
 
     // connect button click events to respective slots
     connect(ui->bnRecord, SIGNAL(clicked()), this, SLOT(onRecordButtonClicked()));
@@ -77,12 +77,6 @@ void MainWindow::onSendTextButtonClicked()
 {
     QString content = ui->etSend->toPlainText();
 
-    // limit 140 characters
-    //int size = content.size();
-   // if(size > 140){
-   //     content.chop(size-140);
-   // }
-
     QByteArray data;
     data.append(content);
 
@@ -91,9 +85,9 @@ void MainWindow::onSendTextButtonClicked()
     serial->write(data, 99);
 }
 
-void MainWindow::updateMessages(QString msg)
+void MainWindow::onMessageReceived(int numQueued)
 {
-    ui->etReceived->appendPlainText(msg + "\n");
+
 }
 
 void MainWindow::newSession()
