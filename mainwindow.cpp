@@ -147,9 +147,6 @@ void MainWindow::debugSerial()
     QByteArray data;
     data.append(debugMessage);
 
-    qDebug() << str << "\n\n";
-    qDebug() << data << "\n\n";
-
     serial->write(data, 99);
 }
 
