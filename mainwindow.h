@@ -39,14 +39,32 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
+    //! Audio settings dialog
     AudioSettings* audioSettings;
+    //! serial settings dialog
     SerialSettings* serialSettings;
 
+    // serial read write access
     SerialCom* serial;
+    // audio plack and recording
     AudioPlayback* audio;
 
+    /**
+        Initialize the Menu Actions
+    */
     void initMenuActions();
+
+    /**
+        Enable of Disable a group of ui components
+    */
     void setEnabledUIComponents(bool enabled);
+
+    /**
+     * Updates the ui with info from a message
+     *
+     * @param message
+     *      the message information
+    */
     void updateMessageDisplay(Message* message);
 };
 

@@ -101,6 +101,9 @@ private:
     //! queue for the incoming messages
     MessageQueue _queue;
 
+    /**
+        Clear the serial buffer
+    */
     void resetSerialBuffer();
 
 };
