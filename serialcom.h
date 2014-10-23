@@ -46,7 +46,13 @@ public:
     ~SerialCom();
 
 signals:
-    void messageReceived(int);
+    /**
+        Emmitted when the data in the queue changes
+
+        @param numQueued
+            The number of messages in the queue
+    */
+    void onQueueUpdate(int numQueued);
 
 public slots:
     /**
@@ -78,6 +84,11 @@ public:
     */
     void write(QByteArray data, uint8_t receiverId);
 
+    /**
+        @return the next message in the queue
+    */
+    Message* getNextMessageFromQueue();
+
 private:
     //! serial port access
     QSerialPort* _serial;
@@ -89,6 +100,8 @@ private:
 
     //! queue for the incoming messages
     MessageQueue _queue;
+
+    void resetSerialBuffer();
 
 };
 

@@ -107,7 +107,7 @@ static void _deleteNode(MessageNode* node)
 int getMessageFromFile(char szBuf[], int iLen)
 {
 	FILE* file;
-	file = fopen("FortuneCookies2.txt", "r");
+    file = fopen("FortuneCookies.txt", "r");
 
 	// check if the file valid before proceeding
 	if (file){

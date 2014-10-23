@@ -26,6 +26,7 @@ public slots:
     void onListenButtonClicked();
     void onSendAudioButtonClicked();
     void onSendTextButtonClicked();
+    void onNextMessageButtonClicked();
 
     void newSession();
     void closeSession();
@@ -46,6 +47,7 @@ private:
 
     void initMenuActions();
     void setEnabledUIComponents(bool enabled);
+    void updateMessageDisplay(Message* message);
 };
 
 #endif // MAINWINDOW_H

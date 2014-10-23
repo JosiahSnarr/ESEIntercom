@@ -21,12 +21,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // init serial com
     serial = new SerialCom(this);
-    connect(serial, SIGNAL(messageReceived(int)), this, SLOT(onMessageReceived(int)));
+    connect(serial, SIGNAL(onQueueUpdate(int)), this, SLOT(onMessageReceived(int)));
 
     // connect button click events to respective slots
     connect(ui->bnRecord, SIGNAL(clicked()), this, SLOT(onRecordButtonClicked()));
     connect(ui->bnListen, SIGNAL(clicked()), this, SLOT(onListenButtonClicked()));
     connect(ui->bnSendAudio, SIGNAL(clicked()), this, SLOT(onSendAudioButtonClicked()));
+    connect(ui->bnNextMessage, SIGNAL(clicked()), this, SLOT(onNextMessageButtonClicked()));
 
     connect(ui->bnSendText, SIGNAL(clicked()), this, SLOT(onSendTextButtonClicked()));
 
@@ -85,9 +86,27 @@ void MainWindow::onSendTextButtonClicked()
     serial->write(data, 99);
 }
 
+void MainWindow::onNextMessageButtonClicked()
+{
+    Message* message = serial->getNextMessageFromQueue();
+    updateMessageDisplay(message);
+    free(message);
+}
+
+void MainWindow::updateMessageDisplay(Message* message)
+{
+    QString displayText(message->msg);
+    ui->etReceived->setPlainText(displayText);
+}
+
 void MainWindow::onMessageReceived(int numQueued)
 {
+    ui->lbNumQueued->setText(QString("Messages: %1").arg(numQueued));
 
+    if(numQueued == 0)
+        ui->bnNextMessage->setEnabled(false);
+    else if(numQueued > 0)
+        ui->bnNextMessage->setEnabled(true);
 }
 
 void MainWindow::newSession()
@@ -120,9 +139,17 @@ void MainWindow::closeSession()
 */
 void MainWindow::debugSerial()
 {
+    char str[BUFFER_MAX];
+    getMessageFromFile(str, BUFFER_MAX);
+
+    QString debugMessage(str);
     QByteArray data;
-    data.append(DEBUG_SERIAL_OUT);
-    serial->write(data, 0);
+    data.append(debugMessage);
+
+    qDebug() << str << "\n\n";
+    qDebug() << data << "\n\n";
+
+    serial->write(data, 99);
 }
 
 void MainWindow::initMenuActions()

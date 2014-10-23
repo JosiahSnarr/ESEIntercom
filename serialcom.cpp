@@ -23,11 +23,6 @@ SerialCom::SerialCom(QObject *parent) :
     _header.bTBD[0] = 0;
 
     initQueue(&_queue);
-
-    qDebug() << "sizeof(Message): " << sizeof(Message) << "\n";
-    qDebug() << "sizeof(FrameHeader): " << sizeof(FrameHeader) << "\n";
-    qDebug() << "Message + FrameHeader: " << sizeof(Message) + sizeof(FrameHeader)  << "\n";
-    qDebug() << "Message - FrameHeader:" << sizeof(Message) - sizeof(FrameHeader) << "\n";
 }
 
 bool SerialCom::open(SerialSettings::Settings settings)
@@ -59,7 +54,7 @@ void SerialCom::onDataReceived()
     if(_receiveBuffer.size() >= READY_READ_SIZE){
 
         // go to the start of the buffer
-        _receiveBuffer.seek(0);
+        _receiveBuffer.reset();
 
         // pull the frame header
         FrameHeader header;
@@ -80,9 +75,13 @@ void SerialCom::onDataReceived()
                     if(m != NULL){
                         // pull the message and place in queue
                         _receiveBuffer.read((char*)m, sizeof(Message));
+
+                        // add to queue and notify the ui
                         enQueue(&_queue, m);
-                        emit messageReceived(_queue.size);
-                        qDebug() << m->msg << "\n";
+                        emit onQueueUpdate(_queue.size);
+
+                        // clear the serial buffer
+                        resetSerialBuffer();
                     }
                     else{
                         qDebug() << "Could not allocate memory for a new message :(\n";
@@ -143,6 +142,25 @@ void SerialCom::write(QByteArray stringBuffer, uint8_t receiverId)
     qDebug() << "written bytes: " << _serial->write(outData.buffer());
 }
 
+Message* SerialCom::getNextMessageFromQueue()
+{
+    Message* message = deQueue(&_queue);
+    emit onQueueUpdate(_queue.size);
+    return message;
+}
+
+void SerialCom::resetSerialBuffer()
+{
+    if(_receiveBuffer.isOpen()){
+        _receiveBuffer.reset();
+        _receiveBuffer.close();
+        _receiveBuffer.setData(QByteArray());
+        _receiveBuffer.open(QIODevice::ReadWrite);
+    }
+    else{
+        _receiveBuffer.open(QIODevice::ReadWrite);
+    }
+}
 
 SerialCom::~SerialCom()
 {

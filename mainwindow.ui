@@ -105,13 +105,39 @@
      <property name="geometry">
       <rect>
        <x>13</x>
-       <y>30</y>
+       <y>60</y>
        <width>491</width>
-       <height>251</height>
+       <height>191</height>
       </rect>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="bnNextMessage">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>260</y>
+       <width>81</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Next Message</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbNumQueued">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>91</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Messages: 0</string>
      </property>
     </widget>
    </widget>
