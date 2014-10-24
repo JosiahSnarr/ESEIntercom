@@ -15,7 +15,6 @@ SerialCom::SerialCom(QObject *parent) :
     connect(_serial, SIGNAL(readyRead()), this, SLOT(onDataReceived()));
 
     _header.lSignature = FRAME_SIGNATURE;
-    _header.bPattern = 0x5A;
     _header.bVersion = 1;
 
     initQueue(&_queue);
@@ -75,24 +74,25 @@ void SerialCom::onDataReceived()
                         // add to queue and notify the ui
                         enQueue(&_queue, m);
                         emit onQueueUpdate(_queue.size);
-
-                        // clear the serial buffer
-                        resetSerialBuffer();
                     }
                     else{
                         qDebug() << "Could not allocate memory for a new message :(\n";
                     }
+
+                    // clear the serial buffer
+                    resetBuffer(_receiveBuffer);
                 }
 
             }
             else{
                 qDebug() << "not enough sent! problem!\n";
+                resetBuffer(_receiveBuffer);
             }
 
         }
         else{
             qDebug() << "Corrupt data!\n";
-            qDebug() << "available: " << _serial->bytesAvailable() << "\n";
+            resetBuffer(_receiveBuffer);
         }
 
     }
@@ -117,6 +117,7 @@ void SerialCom::write(QByteArray stringBuffer, uint8_t receiverId)
 
     // fill some header data
     _header.bReceiverId = receiverId;
+    _header.bDecodeOpts = bv(MSG_TYPE_TEXT) | bv(COMPRESS_TYPE_NONE) | bv(ENCRYPT_TYPE_NONE);
     _header.lDataLength = sizeof(Message);
 
     // frame the data
@@ -145,16 +146,20 @@ Message* SerialCom::getNextMessageFromQueue()
     return message;
 }
 
-void SerialCom::resetSerialBuffer()
+void SerialCom::resetBuffer(QBuffer& buffer)
 {
-    if(_receiveBuffer.isOpen()){
-        _receiveBuffer.reset();
-        _receiveBuffer.close();
-        _receiveBuffer.setData(QByteArray());
-        _receiveBuffer.open(QIODevice::ReadWrite);
+    if(buffer.isOpen()){
+        // seek to start and close
+        buffer.reset();
+        buffer.close();
+        // clear data
+        buffer.setData(QByteArray());
+        // reopen
+        buffer.open(QIODevice::ReadWrite);
     }
     else{
-        _receiveBuffer.open(QIODevice::ReadWrite);
+        // open
+        buffer.open(QIODevice::ReadWrite);
     }
 }
 

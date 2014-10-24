@@ -1,7 +1,5 @@
 
-
 #include "rlencoding.h"
-
 
 int rlencode(uint8_t *inBuffer, int inLen, uint8_t *outBuffer, int outLen, uint8_t esc)
 {
@@ -48,9 +46,35 @@ int rlencode(uint8_t *inBuffer, int inLen, uint8_t *outBuffer, int outLen, uint8
         }
 
     }
+
+    return outIdx;
 }
 
-void rldecode()
+int rldecode(uint8_t* inBuffer, int iLen, uint8_t* outBuffer, int max, uint8_t esc)
 {
+    int i, j, outIdx = 0;
+    for(i = 0; i < iLen; ++i)
+    {
+        // escape sequence found
+        if(inBuffer[i] == esc){
 
+            uint8_t count = inBuffer[++i];
+            uint8_t byte = inBuffer[++i];
+
+            if(count > 1){
+                for(j = 0; j < count; j++){
+                    outBuffer[outIdx++] = byte;
+                }
+            }
+            else if(count == 0){
+                outBuffer[outIdx++] = esc;
+            }
+
+        }
+        else{
+            outBuffer[outIdx++] = inBuffer[i];
+        }
+    }
+
+    return outIdx;
 }

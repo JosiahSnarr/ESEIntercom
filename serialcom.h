@@ -115,7 +115,7 @@ private:
     /**
         Clear the serial buffer
     */
-    void resetSerialBuffer();
+    void resetBuffer(QBuffer&);
 
 };
 
