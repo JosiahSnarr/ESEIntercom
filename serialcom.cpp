@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "rlencoding.h"
 #include "bitopts.h"
 
 #define Q_HEXSTR(x) QString("%1").arg(x, 0, 16)
@@ -59,7 +60,7 @@ void SerialCom::onDataReceived()
         if(header.lSignature == FRAME_SIGNATURE){
 
             // check if any data was dropped
-            if(header.lDataLength <= _receiveBuffer.size()){
+            if(header.lDataLength < _receiveBuffer.size()){
 
                 // check if its a message
                 if(header.lDataLength == sizeof(Message)){
@@ -117,11 +118,7 @@ void SerialCom::write(QByteArray stringBuffer, uint8_t receiverId)
 
     // fill some header data
     _header.bReceiverId = receiverId;
-    _header.bDecodeOpts = bv(MSG_TYPE_TEXT) | bv(COMPRESS_TYPE_NONE) | bv(ENCRYPT_TYPE_NONE);
-    _header.lDataLength = sizeof(Message);
-
-    // frame the data
-    outData.write((char*)&_header, sizeof(FrameHeader));
+    _header.bDecodeOpts = bv(MSG_TYPE_TEXT) | bv(COMPRESS_TYPE_RLE) | bv(ENCRYPT_TYPE_NONE);
 
     // write message data
     Message message;
@@ -132,11 +129,23 @@ void SerialCom::write(QByteArray stringBuffer, uint8_t receiverId)
 
     memcpy(message.msg, stringBuffer.data(), BUFFER_MAX);
 
-    outData.write((char*)&message, sizeof(Message));
+    // RL Encode the data to be sent
+    uint8_t* encodedBuffer = (uint8_t*) malloc(sizeof(Message));
+    int encodeLen = rlencode((uint8_t*)&message, sizeof(Message), encodedBuffer, sizeof(Message), 27);
+
+    _header.lDataLength = encodeLen;
+
+    //outData.write((char*)&message, sizeof(Message));
+
+    // write framed data to the out Buffer
+    outData.write((char*)&_header, sizeof(FrameHeader));
+    outData.write((char*)encodedBuffer, encodeLen);
 
     // write out to serial
     outData.close();
     qDebug() << "written bytes: " << _serial->write(outData.buffer());
+
+    free(encodedBuffer);
 }
 
 Message* SerialCom::getNextMessageFromQueue()
