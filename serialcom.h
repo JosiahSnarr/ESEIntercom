@@ -23,16 +23,16 @@
 
 #define READY_READ_SIZE sizeof(FrameHeader) + sizeof(Message)
 
-#define MSG_TYPE_TEXT         0x00
-#define MSG_TYPE_AUDIO        0x01
-#define MSG_TYPE_AUDIO_STREAM 0x02
+#define MSG_TYPE_TEXT         0x00 ///< Message is a text message
+#define MSG_TYPE_AUDIO        0x01 ///< Message is audio
+#define MSG_TYPE_AUDIO_STREAM 0x02 ///< Message is streaming audio
 
-#define ENCRYPT_TYPE_NONE     0x00
-#define ENCRYPT_TYPE_XOR      0x01
+#define ENCRYPT_TYPE_NONE     0x03 ///< No encryption
+#define ENCRYPT_TYPE_XOR      0x04 ///< XOR encryption
 
-#define COMPRESS_TYPE_NONE    0x00
-#define COMPRESS_TYPE_RLE     0x01
-#define COMPRESS_TYPE_HUFF    0x02
+#define COMPRESS_TYPE_NONE    0x05 ///< No compression
+#define COMPRESS_TYPE_RLE     0x06 ///< Run Length Encoding Compression
+#define COMPRESS_TYPE_HUFF    0x07 ///< Huffman Encoding Compression
 
 //! Packet header for the outgoing data
 typedef struct frameHeader{
@@ -40,10 +40,8 @@ typedef struct frameHeader{
     uint32_t lDataLength;      ///< length of data after the header
     uint8_t  bReceiverId;      ///< the id of the receiver
     uint8_t  bVersion;         ///< the header version
-    uint8_t  bPattern;         ///< extra verification
-    uint8_t  bMessageType;     ///< Audio\Text, (Audio Stream?)
-    uint8_t  bEncryptType;     ///< XOR\None
-    uint8_t  bCompressionType; ///< RLE\Huffman\None
+    uint8_t  bDecodeOpts;      ///< Flags to specify how to decode message
+    uint8_t  bPattern[4];      ///< extra verification
 }FrameHeader;
 
 /**
