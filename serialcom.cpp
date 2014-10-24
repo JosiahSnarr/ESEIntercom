@@ -131,15 +131,13 @@ void SerialCom::write(QByteArray stringBuffer, uint8_t receiverId)
 
     // RL Encode the data to be sent
     uint8_t* encodedBuffer = (uint8_t*) malloc(sizeof(Message));
-    int encodeLen = rlencode((uint8_t*)&message, sizeof(Message), encodedBuffer, sizeof(Message), 27);
+    int iEncodeLen = rlencode((uint8_t*)&message, sizeof(Message), encodedBuffer, sizeof(Message), 27);
 
-    _header.lDataLength = encodeLen;
-
-    //outData.write((char*)&message, sizeof(Message));
+    _header.lDataLength = iEncodeLen;
 
     // write framed data to the out Buffer
     outData.write((char*)&_header, sizeof(FrameHeader));
-    outData.write((char*)encodedBuffer, encodeLen);
+    outData.write((char*)encodedBuffer, iEncodeLen);
 
     // write out to serial
     outData.close();
