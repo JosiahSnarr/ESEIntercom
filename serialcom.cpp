@@ -106,15 +106,25 @@ void SerialCom::onDataReceived()
 
                     Message* message = (Message*)decodeBuffer;
                     enQueue(&_queue, message);
+                    emit onQueueUpdate(_queue.size);
 
                     qDebug() << message->msg << "\n";
-                    qDebug() << message->priority;
-                    qDebug() << message->receiverID;
-                    qDebug() << message->senderID;
-
-                    emit onQueueUpdate(_queue.size);
                 }
 
+            }else{
+                qDebug() << "No compression";
+
+                if(isBitSet(_inHeader.bDecodeOpts, MSG_TYPE_TEXT)){
+
+                    Message* message = (Message*) malloc(sizeof(Message));
+                    _receiveBuffer.read((char*)&message, sizeof(Message));
+
+                    enQueue(&_queue, message);
+                    emit onQueueUpdate(_queue.size);
+
+                    qDebug() << message->msg << "\n";
+
+                }
             }
 
             // finished packet processing
@@ -128,6 +138,7 @@ void SerialCom::onDataReceived()
 
 void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uint8_t decodeOptions)
 {
+    qDebug() << "Serial Write";
     QBuffer outData;
     outData.open(QIODevice::WriteOnly);
 
@@ -143,6 +154,7 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
         if(isBitSet(decodeOptions, MSG_TYPE_TEXT)){
             qDebug() << "Sending Text";
 
+            // copy buffer into the message structure
             Message message;
             message.receiverID = receiverId;
             message.priority = 1;
@@ -150,6 +162,7 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
 
             memcpy(message.msg, buffer.data(), BUFFER_MAX);
 
+            // apply compress
             if(isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
                 qDebug() << "RL Encoding";
 
@@ -165,6 +178,14 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
             }
             if(isBitSet(decodeOptions, COMPRESS_TYPE_HUFF)){
 
+            }
+
+            // no compression of a message
+            if(!isBitSet(decodeOptions, COMPRESS_TYPE_HUFF) && !isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
+                _outHeader.lUncompressedLength = sizeof(Message);
+                _outHeader.lDataLength = sizeof(Message);
+                outData.write((char*)&_outHeader, sizeof(FrameHeader));
+                outData.write((char*)&message, sizeof(Message));
             }
 
         }
