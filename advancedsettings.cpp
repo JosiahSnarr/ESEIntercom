@@ -15,9 +15,6 @@ AdvancedSettings::AdvancedSettings(QWidget *parent) :
     connect(ui->bnSave, SIGNAL(clicked()), this, SLOT(onSaveButtonClicked()));
     connect(ui->bnCancel, SIGNAL(clicked()), this, SLOT(close()));
 
-    ui->cbCompressRLE->setChecked(true);
-    ui->rbPacketFrame->setChecked(true);
-
     _settings.bDecodeOpts = 0;
 
     loadSettings();
