@@ -42,7 +42,7 @@ typedef struct frameHeader{
     uint8_t  bReceiverId;         ///< the id of the receiver
     uint8_t  bVersion;            ///< the header version
     uint8_t  bDecodeOpts;         ///< Flags to specify how to decode message
-    uint8_t  bPattern[6];         ///< extra verification
+    uint8_t  bPattern[4];         ///< extra verification
 }FrameHeader;
 
 /**
@@ -94,7 +94,7 @@ public:
         @param data
             data to be written to the serial port
     */
-    void write(QByteArray data, uint8_t receiverId);
+    void write(QByteArray data, uint8_t receiverId, bool useHeader, uint8_t decodeOptions);
 
     /**
         @return the next message in the queue

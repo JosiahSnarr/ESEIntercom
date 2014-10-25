@@ -128,6 +128,11 @@ void AdvancedSettings::saveSettings()
     file.close();;
 }
 
+AdvancedSettings::Settings AdvancedSettings::getSettings() const
+{
+    return _settings;
+}
+
 AdvancedSettings::~AdvancedSettings()
 {
     delete ui;

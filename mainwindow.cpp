@@ -4,6 +4,8 @@
 #include <QDebug>
 #include <QByteArray>
 
+#include "bitopts.h"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -85,7 +87,11 @@ void MainWindow::onSendTextButtonClicked()
 
     qDebug() << "content size: " << content.length() << "\n";
 
-    serial->write(data, 99);
+    AdvancedSettings::Settings settings = advancedSettings->getSettings();
+    uint8_t decodeOpts = settings.bDecodeOpts;
+    setbit(decodeOpts, MSG_TYPE_TEXT);
+
+    serial->write(data, 99, settings.useHeader, decodeOpts);
 }
 
 void MainWindow::onNextMessageButtonClicked()
@@ -148,7 +154,11 @@ void MainWindow::debugSerial()
     QByteArray data;
     data.append(debugMessage);
 
-    serial->write(data, 99);
+    AdvancedSettings::Settings settings = advancedSettings->getSettings();
+    uint8_t decodeOpts = settings.bDecodeOpts;
+    setbit(decodeOpts, MSG_TYPE_TEXT);
+
+    serial->write(data, 99, settings.useHeader, decodeOpts);
 }
 
 void MainWindow::initMenuActions()

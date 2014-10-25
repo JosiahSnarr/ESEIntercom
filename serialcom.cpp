@@ -126,47 +126,61 @@ void SerialCom::onDataReceived()
 
 }
 
-void SerialCom::write(QByteArray stringBuffer, uint8_t receiverId)
+void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uint8_t decodeOptions)
 {
     QBuffer outData;
     outData.open(QIODevice::WriteOnly);
 
-    // fill some header data
-    _outHeader.bReceiverId = receiverId;
-    _outHeader.bDecodeOpts = bv(MSG_TYPE_TEXT) | bv(COMPRESS_TYPE_RLE) | bv(ENCRYPT_TYPE_NONE);
+    if(useHeader){
+        qDebug() << "Using Framed Data";
+        // fill initial header data
+        _outHeader.bReceiverId = receiverId;
 
-    // write message data
-    Message message;
-    message.priority = 1;
-    message.msgSeq = 7;
-    message.receiverID = receiverId;
-    message.senderID = 42;
+        _outHeader.bDecodeOpts = 0;
+        set(_outHeader.bDecodeOpts, decodeOptions);
 
-    memcpy(message.msg, stringBuffer.data(), BUFFER_MAX);
+        // handle text message
+        if(isBitSet(decodeOptions, MSG_TYPE_TEXT)){
+            qDebug() << "Sending Text";
 
-    qDebug() << message.msg << "\n";
+            Message message;
+            message.receiverID = receiverId;
+            message.priority = 1;
+            message.senderID = 42;
 
-    // RL Encode the data to be sent
-    uint8_t* encodedBuffer = (uint8_t*) malloc(sizeof(Message));
-    int iEncodeLen = rlencode((uint8_t*)&message, sizeof(Message), encodedBuffer, sizeof(Message), 0x1B);
+            memcpy(message.msg, buffer.data(), BUFFER_MAX);
 
-    qDebug() << "I/P Data Size: " << sizeof(Message);
-    qDebug() << "Encoded Buffer Size: " << iEncodeLen;
-    qDebug() << "Compression Ratio: " << ((float)sizeof(Message)/(float)iEncodeLen) << "\n";
+            if(isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
+                qDebug() << "RL Encoding";
 
-    _outHeader.lDataLength = iEncodeLen;
-    _outHeader.lUncompressedLength = sizeof(Message);
+                uint8_t* encodedBuffer = (uint8_t*) malloc(sizeof(Message));
+                int iEncodeLen = rlencode((uint8_t*)&message, sizeof(Message), encodedBuffer, sizeof(Message), 27);
 
-    // write framed data to the out Buffer
-    outData.write((char*)&_outHeader, sizeof(FrameHeader));
-    outData.write((char*)encodedBuffer, iEncodeLen);
+                _outHeader.lUncompressedLength = sizeof(Message);
+                _outHeader.lDataLength = iEncodeLen;
+
+                outData.write((char*)&_outHeader, sizeof(FrameHeader));
+                outData.write((char*)encodedBuffer, iEncodeLen);
+
+            }
+            // handle audio message
+            if(isBitSet(decodeOptions, COMPRESS_TYPE_HUFF)){
+
+            }
+
+        }
+        else if(isBitSet(decodeOptions, MSG_TYPE_AUDIO)){
+
+        }
+    }
+    else{
+        outData.write(buffer);
+    }
 
     // write out to serial
     outData.close();
     qDebug() << "written bytes: " << _serial->write(outData.buffer()) << "\n";
     _serial->flush();
-
-    free(encodedBuffer);
 }
 
 Message* SerialCom::getNextMessageFromQueue()
