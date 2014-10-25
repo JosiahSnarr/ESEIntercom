@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>370</width>
-    <height>326</height>
+    <height>310</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>20</x>
      <y>20</y>
      <width>161</width>
-     <height>131</height>
+     <height>101</height>
     </rect>
    </property>
    <property name="title">
@@ -51,19 +51,6 @@
      <string>Huffman</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="cbCompressNone">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>90</y>
-      <width>70</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>None</string>
-    </property>
-   </widget>
   </widget>
   <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
@@ -71,7 +58,7 @@
      <x>200</x>
      <y>20</y>
      <width>151</width>
-     <height>131</height>
+     <height>101</height>
     </rect>
    </property>
    <property name="title">
@@ -90,25 +77,12 @@
      <string>XOR</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="cbEncryptNone">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>60</y>
-      <width>70</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>None</string>
-    </property>
-   </widget>
   </widget>
   <widget class="QGroupBox" name="groupBox_3">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>160</y>
+     <y>140</y>
      <width>331</width>
      <height>91</height>
     </rect>
@@ -147,7 +121,7 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>270</y>
+     <y>250</y>
      <width>251</width>
      <height>41</height>
     </rect>

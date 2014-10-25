@@ -1,6 +1,10 @@
 #include "advancedsettings.h"
 #include "ui_advancedsettings.h"
 
+#include <QFile>
+#include <QJsonDocument>
+#include "bitopts.h"
+
 AdvancedSettings::AdvancedSettings(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AdvancedSettings)
@@ -11,48 +15,117 @@ AdvancedSettings::AdvancedSettings(QWidget *parent) :
     connect(ui->bnSave, SIGNAL(clicked()), this, SLOT(onSaveButtonClicked()));
     connect(ui->bnCancel, SIGNAL(clicked()), this, SLOT(close()));
 
-    connect(ui->cbCompressNone, SIGNAL(clicked()), this, SLOT(onCompressNoneCheckboxChecked()));
-    connect(ui->cbEncryptNone, SIGNAL(clicked()), this, SLOT(onEncryptNoneCheckboxChecked()));
-    connect(ui->cbCompressHuff, SIGNAL(clicked()), this, SLOT(onCompressCheckboxChecked()));
-    connect(ui->cbCompressRLE, SIGNAL(clicked()), this, SLOT(onCompressCheckboxChecked()));
-    connect(ui->cbEncryptXOR, SIGNAL(clicked()), this, SLOT(onEncryptCheckboxChecked()));
-
     ui->cbCompressRLE->setChecked(true);
-    ui->cbEncryptNone->setChecked(true);
     ui->rbPacketFrame->setChecked(true);
+
+    loadSettings();
 }
 
 void AdvancedSettings::onOkButtonClicked()
 {
-
+    updateSettings();
+    close();
 }
 
 void AdvancedSettings::onSaveButtonClicked()
 {
-
+    saveSettings();
 }
 
-void AdvancedSettings::onCompressCheckboxChecked()
+void AdvancedSettings::loadSettings()
 {
-    ui->cbCompressNone->setChecked(false);
+    QFile file(FILE_ADVANCED_CONFIG);
+    if(file.exists()){
+
+        file.open(QIODevice::ReadOnly | QIODevice::Text);
+
+        // read the json file
+        QString content = file.readAll();
+        QJsonDocument doc = QJsonDocument::fromJson(content.toUtf8());
+
+        _json = doc.object();
+
+        // fill settings
+        bool useHeader = _json[USE_HEADER].toBool();
+        bool XOR = _json[ENCRYPTION_XOR].toBool();
+        bool huff = _json[COMPRESSION_HUFF].toBool();
+        bool rle = _json[COMPRESSION_RLE].toBool();
+
+        if(useHeader){
+            ui->rbPacketFrame->setChecked(true);
+            _settings.useHeader = useHeader;
+        }
+        else{
+            ui->rbPacketRaw->setChecked(true);
+        }
+
+        if(XOR){
+            ui->cbEncryptXOR->setChecked(true);
+            setbit(_settings.bDecodeOpts, ENCRYPT_TYPE_XOR);
+        }
+
+        if(huff){
+            ui->cbCompressHuff->setChecked(true);
+            setbit(_settings.bDecodeOpts, COMPRESS_TYPE_HUFF);
+        }
+
+        if(rle){
+            ui->cbCompressRLE->setChecked(true);
+            setbit(_settings.bDecodeOpts, COMPRESS_TYPE_RLE);
+        }
+
+        file.close();
+    }
 }
 
-void AdvancedSettings::onEncryptCheckboxChecked()
+void AdvancedSettings::updateSettings()
 {
-    ui->cbEncryptNone->setChecked(false);
+    if(ui->cbCompressHuff->isChecked())
+        setbit(_settings.bDecodeOpts, COMPRESS_TYPE_HUFF);
+    else
+        clearbit(_settings.bDecodeOpts, COMPRESS_TYPE_HUFF);
+
+    if(ui->cbCompressRLE->isChecked())
+        setbit(_settings.bDecodeOpts, COMPRESS_TYPE_RLE);
+    else
+        clearbit(_settings.bDecodeOpts, COMPRESS_TYPE_RLE);
+
+    if(ui->cbEncryptXOR)
+        setbit(_settings.bDecodeOpts, ENCRYPT_TYPE_XOR);
+    else
+        clearbit(_settings.bDecodeOpts, ENCRYPT_TYPE_XOR);
+
+    _settings.useHeader = ui->rbPacketFrame->isChecked();
 }
 
-void AdvancedSettings::onCompressNoneCheckboxChecked()
+void AdvancedSettings::saveSettings()
 {
-    ui->cbCompressHuff->setChecked(false);
-    ui->cbCompressRLE->setChecked(false);
-    ui->cbCompressNone->setChecked(true);
-}
+    updateSettings();
 
-void AdvancedSettings::onEncryptNoneCheckboxChecked()
-{
-    ui->cbEncryptXOR->setChecked(false);
-    ui->cbEncryptNone->setChecked(true);
+    _json[USE_HEADER] = _settings.useHeader;
+
+    if(isBitSet(_settings.bDecodeOpts, COMPRESS_TYPE_HUFF))
+        _json[COMPRESSION_HUFF] = true;
+    else
+        _json[COMPRESSION_HUFF] = false;
+
+    if(isBitSet(_settings.bDecodeOpts, COMPRESS_TYPE_RLE))
+        _json[COMPRESSION_RLE] = true;
+    else
+        _json[COMPRESSION_RLE] = false;
+
+    if(isBitSet(_settings.bDecodeOpts, ENCRYPT_TYPE_XOR))
+        _json[ENCRYPTION_XOR] = true;
+    else
+        _json[ENCRYPTION_XOR] = false;
+
+    QFile file(FILE_ADVANCED_CONFIG);
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+
+    QJsonDocument doc(_json);
+
+    file.write(doc.toJson());
+    file.close();;
 }
 
 AdvancedSettings::~AdvancedSettings()

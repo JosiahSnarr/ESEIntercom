@@ -47,10 +47,9 @@ void SerialCom::onDataReceived()
 {
     // store in the cumulative buffer
     _receiveBuffer.write(_serial->readAll());
-    qint64 size = _receiveBuffer.size();
 
     // check if there is either data for a packet header
-    if(_isProcessingPacket == false && size >= sizeof(FrameHeader)){
+    if(_isProcessingPacket == false && _receiveBuffer.size() >= sizeof(FrameHeader)){
         qDebug() << "Getting packet header";
 
         // go to the start of the buffer
@@ -77,6 +76,7 @@ void SerialCom::onDataReceived()
     // check if a packet is being processed
     if(_isProcessingPacket){
 
+        // check for the number of bytes specified by the header
         if(_receiveBuffer.size() >= _inHeader.lDataLength){
             qDebug() << "Enough data received";
 
@@ -192,6 +192,7 @@ void SerialCom::removeProcessedData(QBuffer& buffer, qint64 offset)
 
         // clear the buffer and put the array at the start
         resetBuffer(buffer, array);
+        // move to the end of the data
         buffer.seek(remainingBytes);
     }
     else{
