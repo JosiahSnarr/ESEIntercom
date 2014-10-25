@@ -21,7 +21,7 @@
 #define FRAME_SIGNATURE 0xDEADBEEF
 #define DEBUG_SERIAL_OUT QString("DEADBEEF")
 
-#define READY_READ_SIZE sizeof(FrameHeader) + sizeof(Message)
+#define READY_READ_SIZE sizeof(FrameHeader)
 
 #define MSG_TYPE_TEXT         0x00 ///< Message is a text message
 #define MSG_TYPE_AUDIO        0x01 ///< Message is audio
@@ -36,12 +36,13 @@
 
 //! Packet header for the outgoing data
 typedef struct frameHeader{
-    uint32_t lSignature;       ///< Signature to verify the packet
-    uint32_t lDataLength;      ///< length of data after the header
-    uint8_t  bReceiverId;      ///< the id of the receiver
-    uint8_t  bVersion;         ///< the header version
-    uint8_t  bDecodeOpts;      ///< Flags to specify how to decode message
-    uint8_t  bPattern[4];      ///< extra verification
+    uint32_t lSignature;          ///< Signature to verify the packet
+    uint32_t lDataLength;         ///< length of data after the header
+    uint32_t lUncompressedLength; ///<
+    uint8_t  bReceiverId;         ///< the id of the receiver
+    uint8_t  bVersion;            ///< the header version
+    uint8_t  bDecodeOpts;         ///< Flags to specify how to decode message
+    uint8_t  bPattern[6];         ///< extra verification
 }FrameHeader;
 
 /**
@@ -106,16 +107,33 @@ private:
     //! serial data buffer
     QBuffer _receiveBuffer;
 
-    //! Packet header
-    FrameHeader _header;
+    //! Packet header for sending
+    FrameHeader _outHeader;
+    //! Header of the frame currently in process
+    FrameHeader _inHeader;
+    //!
+    bool _isProcessingPacket;
 
     //! queue for the incoming messages
     MessageQueue _queue;
 
     /**
+        Remove bytes [0, offset] from the buffer and move [offset, remaining] to the start.
+
+        @param offset
+            offset specifing the amout to remove
+    */
+    void removeProcessedData(QBuffer& buffer, qint64 offset);
+
+    /**
         Clear the serial buffer
     */
-    void resetBuffer(QBuffer&);
+    void resetBuffer(QBuffer& buffer);
+
+    /**
+        Reset the buffer with the QByteArray
+    */
+    void resetBuffer(QBuffer& buffer, QByteArray& array);
 
 };
 

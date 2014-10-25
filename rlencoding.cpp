@@ -10,6 +10,8 @@ int rlencode(uint8_t *inBuffer, int inLen, uint8_t *outBuffer, int outLen, uint8
 
     for(i = 0; i < inLen; ++i){
 
+        if(outIdx >= outLen) return outIdx;
+
         // count the number of the current character
         if(current == inBuffer[i] || count == 0xFF){
             count++;
@@ -44,7 +46,6 @@ int rlencode(uint8_t *inBuffer, int inLen, uint8_t *outBuffer, int outLen, uint8
             current = inBuffer[i];
             count = 1;
         }
-
     }
 
     return outIdx;
