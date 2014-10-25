@@ -18,5 +18,9 @@ Prerequisites
 ESEIntercom uses QT as its user interface ( qt5 ).
 Required Qt libraries must be placed in the executable directory or findable on the system path.
 
-Usage
------
+How to Use
+----------
+
+After starting the program you will see this window:
+
+![MainWindow](/res/mainwindow.png?raw=true "MainWindow")
