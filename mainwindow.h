@@ -5,6 +5,7 @@
 
 #include "audiosettings.h"
 #include "serialsettings.h"
+#include "advancedsettings.h"
 
 #include "serialcom.h"
 #include "audioplayback.h"
@@ -43,6 +44,9 @@ private:
     AudioSettings* audioSettings;
     //! serial settings dialog
     SerialSettings* serialSettings;
+    //! advance options
+    AdvancedSettings* advancedSettings;
+
 
     // serial read write access
     SerialCom* serial;

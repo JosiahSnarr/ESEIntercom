@@ -176,8 +176,15 @@
     <addaction name="separator"/>
     <addaction name="actionDebugSerial"/>
    </widget>
+   <widget class="QMenu" name="menuAdvanced">
+    <property name="title">
+     <string>Advanced</string>
+    </property>
+    <addaction name="actionAdvancedOptions"/>
+   </widget>
    <addaction name="menuMessaging"/>
    <addaction name="menuSettings"/>
+   <addaction name="menuAdvanced"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -243,6 +250,11 @@
   <action name="actionDebugSerial">
    <property name="text">
     <string>Debug Serial Message</string>
+   </property>
+  </action>
+  <action name="actionAdvancedOptions">
+   <property name="text">
+    <string>Options</string>
    </property>
   </action>
  </widget>

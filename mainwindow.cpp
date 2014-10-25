@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // settings dialogs
     audioSettings = new AudioSettings(this);
     serialSettings = new SerialSettings(this);
+    advancedSettings = new AdvancedSettings(this);
 
     // audio recording and playback
     audio = new AudioPlayback(audioSettings->getSettings(), this);
@@ -161,6 +162,7 @@ void MainWindow::initMenuActions()
     // connect cofiguration dialogs
     connect(ui->actionAudio_Settings, SIGNAL(triggered()), audioSettings, SLOT(show()));
     connect(ui->actionSerial_Settings, SIGNAL(triggered()), serialSettings, SLOT(show()));
+    connect(ui->actionAdvancedOptions, SIGNAL(triggered()), advancedSettings, SLOT(show()));
 
     // connect the debug serial o/p
     connect(ui->actionDebugSerial, SIGNAL(triggered()), this, SLOT(debugSerial()));
