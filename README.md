@@ -23,4 +23,20 @@ How to Use
 
 After starting the program you will see this window:
 
-![MainWindow](/res/mainwindow.png?raw=true "MainWindow")
+![MainWindow](/res/mainwindow.png)
+
+Here you have the option to send text or audio messages.
+
+The Intercom audio and serial port configurations can all be set via seperate dialogs
+
+Here is the Serial Settings Dialog:
+
+![Serial Settings](/res/serialsettings.png)
+
+Here is the Audio Settings Dialog:
+
+![Audio Settings](/res/audiosettings.png)
+
+And here is the Advanced Options Dialog:
+
+![Advanced Settings](/res/advancedoptions.png)
