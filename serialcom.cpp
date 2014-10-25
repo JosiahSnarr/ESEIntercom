@@ -163,12 +163,12 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
                 outData.write((char*)encodedBuffer, iEncodeLen);
 
             }
-            // handle audio message
             if(isBitSet(decodeOptions, COMPRESS_TYPE_HUFF)){
 
             }
 
         }
+        // handle audio message
         else if(isBitSet(decodeOptions, MSG_TYPE_AUDIO)){
 
         }

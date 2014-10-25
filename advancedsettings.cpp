@@ -18,6 +18,8 @@ AdvancedSettings::AdvancedSettings(QWidget *parent) :
     ui->cbCompressRLE->setChecked(true);
     ui->rbPacketFrame->setChecked(true);
 
+    _settings.bDecodeOpts = 0;
+
     loadSettings();
 }
 
@@ -90,7 +92,7 @@ void AdvancedSettings::updateSettings()
     else
         clearbit(_settings.bDecodeOpts, COMPRESS_TYPE_RLE);
 
-    if(ui->cbEncryptXOR)
+    if(ui->cbEncryptXOR->isChecked())
         setbit(_settings.bDecodeOpts, ENCRYPT_TYPE_XOR);
     else
         clearbit(_settings.bDecodeOpts, ENCRYPT_TYPE_XOR);
@@ -104,20 +106,9 @@ void AdvancedSettings::saveSettings()
 
     _json[USE_HEADER] = _settings.useHeader;
 
-    if(isBitSet(_settings.bDecodeOpts, COMPRESS_TYPE_HUFF))
-        _json[COMPRESSION_HUFF] = true;
-    else
-        _json[COMPRESSION_HUFF] = false;
-
-    if(isBitSet(_settings.bDecodeOpts, COMPRESS_TYPE_RLE))
-        _json[COMPRESSION_RLE] = true;
-    else
-        _json[COMPRESSION_RLE] = false;
-
-    if(isBitSet(_settings.bDecodeOpts, ENCRYPT_TYPE_XOR))
-        _json[ENCRYPTION_XOR] = true;
-    else
-        _json[ENCRYPTION_XOR] = false;
+    _json[COMPRESSION_HUFF] = (isBitSet(_settings.bDecodeOpts, COMPRESS_TYPE_HUFF)) ? true : false;
+    _json[COMPRESSION_RLE] = (isBitSet(_settings.bDecodeOpts, COMPRESS_TYPE_RLE)) ? true : false;
+    _json[ENCRYPTION_XOR] = (isBitSet(_settings.bDecodeOpts, ENCRYPT_TYPE_XOR)) ? true : false;
 
     QFile file(FILE_ADVANCED_CONFIG);
     file.open(QIODevice::WriteOnly | QIODevice::Text);
