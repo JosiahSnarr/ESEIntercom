@@ -19,12 +19,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // audio recording and playback
     audio = new AudioPlayback(audioSettings->getSettings(), this);
-
     connect(audio, SIGNAL(stoppedPlaying()), this, SLOT(onPlaybackStopped()));
 
     // init serial com
     serial = new SerialCom(this);
     connect(serial, SIGNAL(onQueueUpdate(int)), this, SLOT(onMessageReceived(int)));
+
+    // connect serial com to audio broadcast player
+    connect(serial, SIGNAL(onAudioReceived(QByteArray&)), audio, SLOT(onAudioReceived(QByteArray&)));
 
     // connect button click events to respective slots
     connect(ui->bnRecord, SIGNAL(clicked()), this, SLOT(onRecordButtonClicked()));
@@ -75,7 +77,16 @@ void MainWindow::onPlaybackStopped()
 
 void MainWindow::onSendAudioButtonClicked()
 {
-    qDebug() << "Send Audio Button Pressed\n";
+    QBuffer buffer;
+    audio->getRecordedAudio(buffer);
+
+    QByteArray data = buffer.data();
+
+    AdvancedSettings::Settings settings = advancedSettings->getSettings();
+    uint8_t decodeOptions = settings.bDecodeOpts;
+    setbit(decodeOptions, MSG_TYPE_AUDIO);
+
+    serial->write(data, 99, settings.useHeader, decodeOptions);
 }
 
 void MainWindow::onSendTextButtonClicked()
@@ -92,6 +103,8 @@ void MainWindow::onSendTextButtonClicked()
     setbit(decodeOpts, MSG_TYPE_TEXT);
 
     serial->write(data, 99, settings.useHeader, decodeOpts);
+
+    ui->etSend->setPlainText("");
 }
 
 void MainWindow::onNextMessageButtonClicked()

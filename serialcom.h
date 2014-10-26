@@ -38,11 +38,11 @@
 typedef struct frameHeader{
     uint32_t lSignature;          ///< Signature to verify the packet
     uint32_t lDataLength;         ///< length of data after the header
-    uint32_t lUncompressedLength; ///<
+    uint32_t lUncompressedLength; ///< Length of the uncompressed data
     uint8_t  bReceiverId;         ///< the id of the receiver
     uint8_t  bVersion;            ///< the header version
     uint8_t  bDecodeOpts;         ///< Flags to specify how to decode message
-    uint8_t  bPattern[4];         ///< extra verification
+    uint8_t  bPattern[5];         ///< extra verification
 }FrameHeader;
 
 /**
@@ -65,6 +65,7 @@ signals:
             The number of messages in the queue
     */
     void onQueueUpdate(int numQueued);
+    void onAudioReceived(QByteArray&);
 
 public slots:
     /**
@@ -107,11 +108,9 @@ private:
     //! serial data buffer
     QBuffer _receiveBuffer;
 
-    //! Packet header for sending
-    FrameHeader _outHeader;
     //! Header of the frame currently in process
     FrameHeader _inHeader;
-    //!
+    //! flag indicating whether a packet is currently being processed
     bool _isProcessingPacket;
 
     //! queue for the incoming messages

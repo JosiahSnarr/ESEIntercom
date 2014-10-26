@@ -15,9 +15,6 @@ SerialCom::SerialCom(QObject *parent) :
     _serial = new QSerialPort(this);
     connect(_serial, SIGNAL(readyRead()), this, SLOT(onDataReceived()));
 
-    _outHeader.lSignature = FRAME_SIGNATURE;
-    _outHeader.bVersion = 1;
-
     _isProcessingPacket = false;
 
     initQueue(&_queue);
@@ -41,6 +38,8 @@ bool SerialCom::open(SerialSettings::Settings settings)
 void SerialCom::close()
 {
     _serial->close();
+    resetBuffer(_receiveBuffer);
+    _isProcessingPacket = false;
 }
 
 void SerialCom::onDataReceived()
@@ -61,7 +60,7 @@ void SerialCom::onDataReceived()
         // verify the packet is valid
         if(_inHeader.lSignature == FRAME_SIGNATURE){
             qDebug() << "Valid header received\n";
-
+            qDebug() << "Will wait for " << _inHeader.lDataLength << " bytes";
             // specify that a packet is now being processed
             _isProcessingPacket = true;
             removeProcessedData(_receiveBuffer, sizeof(FrameHeader));
@@ -76,11 +75,13 @@ void SerialCom::onDataReceived()
     // check if a packet is being processed
     if(_isProcessingPacket){
 
+        qDebug() << _receiveBuffer.size();
+
         // check for the number of bytes specified by the header
         if(_receiveBuffer.size() >= _inHeader.lDataLength){
             qDebug() << "Enough data received";
 
-            // read the amount of data specified by the header
+            // move to the front of the buffer for reading
             _receiveBuffer.reset();
 
             // using RLE compression
@@ -114,6 +115,7 @@ void SerialCom::onDataReceived()
             }else{
                 qDebug() << "No compression";
 
+                // Uncompressed Text Message
                 if(isBitSet(_inHeader.bDecodeOpts, MSG_TYPE_TEXT)){
 
                     Message* message = (Message*) malloc(sizeof(Message));
@@ -123,6 +125,15 @@ void SerialCom::onDataReceived()
                     emit onQueueUpdate(_queue.size);
 
                     qDebug() << message->msg << "\n";
+
+                }
+                // Uncompressed Audio Message
+                else if(isBitSet(_inHeader.bDecodeOpts, MSG_TYPE_AUDIO)){
+                    qDebug() << "Receive Uncompressed Audio Message";
+
+                    // send the audio buffer to the broadcast player
+                    QByteArray audioBuffer = _receiveBuffer.read(_inHeader.lDataLength);
+                    emit onAudioReceived(audioBuffer);
 
                 }
             }
@@ -142,13 +153,17 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
     QBuffer outData;
     outData.open(QIODevice::WriteOnly);
 
+    FrameHeader outHeader;
+    outHeader.lSignature = FRAME_SIGNATURE;
+    outHeader.bVersion = 1;
+
     if(useHeader){
         qDebug() << "Using Framed Data";
         // fill initial header data
-        _outHeader.bReceiverId = receiverId;
+        outHeader.bReceiverId = receiverId;
 
-        _outHeader.bDecodeOpts = 0;
-        set(_outHeader.bDecodeOpts, decodeOptions);
+        outHeader.bDecodeOpts = 0;
+        set(outHeader.bDecodeOpts, decodeOptions);
 
         // handle text message
         if(isBitSet(decodeOptions, MSG_TYPE_TEXT)){
@@ -162,35 +177,50 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
 
             memcpy(message.msg, buffer.data(), BUFFER_MAX);
 
-            // apply compress
-            if(isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
-                qDebug() << "RL Encoding";
+            // check if doing compression
+            if(isBitSet(decodeOptions, COMPRESS_TYPE_HUFF) || isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
 
-                uint8_t* encodedBuffer = (uint8_t*) malloc(sizeof(Message));
-                int iEncodeLen = rlencode((uint8_t*)&message, sizeof(Message), encodedBuffer, sizeof(Message), 27);
+                // Run length encoding
+                if(isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
+                    qDebug() << "RL Encoding";
 
-                _outHeader.lUncompressedLength = sizeof(Message);
-                _outHeader.lDataLength = iEncodeLen;
+                    uint8_t* encodedBuffer = (uint8_t*) malloc(sizeof(Message));
+                    int iEncodeLen = rlencode((uint8_t*)&message, sizeof(Message), encodedBuffer, sizeof(Message), 27);
 
-                outData.write((char*)&_outHeader, sizeof(FrameHeader));
-                outData.write((char*)encodedBuffer, iEncodeLen);
+                    outHeader.lUncompressedLength = sizeof(Message);
+                    outHeader.lDataLength = iEncodeLen;
 
+                    outData.write((char*)&outHeader, sizeof(FrameHeader));
+                    outData.write((char*)encodedBuffer, iEncodeLen);
+
+                }
+                if(isBitSet(decodeOptions, COMPRESS_TYPE_HUFF)){
+
+                }
             }
-            if(isBitSet(decodeOptions, COMPRESS_TYPE_HUFF)){
-
-            }
-
             // no compression of a message
-            if(!isBitSet(decodeOptions, COMPRESS_TYPE_HUFF) && !isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
-                _outHeader.lUncompressedLength = sizeof(Message);
-                _outHeader.lDataLength = sizeof(Message);
-                outData.write((char*)&_outHeader, sizeof(FrameHeader));
+            else{
+                qDebug() << "No Compression";
+                outHeader.lUncompressedLength = sizeof(Message);
+                outHeader.lDataLength = sizeof(Message);
+                outData.write((char*)&outHeader, sizeof(FrameHeader));
                 outData.write((char*)&message, sizeof(Message));
             }
 
         }
         // handle audio message
         else if(isBitSet(decodeOptions, MSG_TYPE_AUDIO)){
+
+            if(isBitSet(decodeOptions, COMPRESS_TYPE_HUFF) || isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
+
+            }
+            // uncompressed audio
+            else{
+                outHeader.lDataLength = buffer.length();
+                outHeader.lUncompressedLength = buffer.length();
+                outData.write((char*)&outHeader, sizeof(FrameHeader));
+                outData.write(buffer);
+            }
 
         }
     }
@@ -199,9 +229,9 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
     }
 
     // write out to serial
-    outData.close();
     qDebug() << "written bytes: " << _serial->write(outData.buffer()) << "\n";
-    _serial->flush();
+    outData.close();
+    //_serial->flush();
 }
 
 Message* SerialCom::getNextMessageFromQueue()

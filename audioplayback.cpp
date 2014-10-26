@@ -10,6 +10,7 @@ AudioPlayback::AudioPlayback(QAudioEncoderSettings format, QObject *parent) :
 
     _recording = false;
     _playing = false;
+    _broadcastPending = false;
 }
 
 void AudioPlayback::record()
@@ -52,6 +53,24 @@ void AudioPlayback::onPlayerStateChanged(QAudio::State state)
     }
 }
 
+void AudioPlayback::onAudioReceived(QByteArray& buffer)
+{
+    qDebug() << "Broadcast received";
+
+    if(_playing){
+        _broadcastPending = true;
+        _broadcast.close();
+        _broadcast.setBuffer(&buffer);
+    }
+    else{
+        _broadcast.setBuffer(&buffer);
+
+        if(!_broadcast.isOpen()) _broadcast.open(QIODevice::ReadOnly);
+
+        _output->start(&_broadcast);
+    }
+}
+
 void AudioPlayback::createAudioIO(QAudioFormat format)
 {
     QAudioDeviceInfo info = QAudioDeviceInfo::defaultInputDevice();
@@ -80,6 +99,12 @@ void AudioPlayback::setAudioFormat(QAudioEncoderSettings settings)
     format.setSampleType(QAudioFormat::UnSignedInt);
 
     setAudioFormat(format);
+}
+
+void AudioPlayback::getRecordedAudio(QBuffer& data) const
+{
+    QByteArray b = _buffer.data();
+    data.setData(b);
 }
 
 bool AudioPlayback::isRecording()

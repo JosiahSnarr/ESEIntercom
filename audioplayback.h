@@ -26,21 +26,26 @@ public:
     bool isRecording();
     bool isPlaying();
 
-private:
-    QAudioInput*  _input;
-    QAudioOutput* _output;
-    QBuffer       _buffer;
+    void getRecordedAudio(QBuffer&) const;
 
-    bool _recording;
-    bool _playing;
-
-    void createAudioIO(QAudioFormat format);
+public slots:
+    void onPlayerStateChanged(QAudio::State);
+    void onAudioReceived(QByteArray&);
 
 signals:
     void stoppedPlaying();
 
-public slots:
-    void onPlayerStateChanged(QAudio::State);
+private:
+    QAudioInput*  _input;
+    QAudioOutput* _output;
+    QBuffer       _buffer;
+    QBuffer       _broadcast;
+
+    bool _recording;
+    bool _playing;
+    bool _broadcastPending;
+
+    void createAudioIO(QAudioFormat format);
 
 };
 
