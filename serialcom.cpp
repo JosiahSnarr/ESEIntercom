@@ -1,6 +1,7 @@
 #include "serialcom.h"
 #include <QByteArray>
 #include <QDebug>
+#include <QChar>
 
 #include <string>
 
@@ -8,6 +9,7 @@
 #include "bitopts.h"
 
 #define Q_HEXSTR(x) QString("%1").arg(x, 0, 16)
+#define Q_PTRSTR(x) QString("0x%1").arg((qintptr)x, QT_POINTER_SIZE * 2, 16, QChar('0'));
 
 SerialCom::SerialCom(QObject *parent) :
     QObject(parent)
@@ -47,7 +49,7 @@ void SerialCom::onDataReceived()
     // store in the cumulative buffer
     _receiveBuffer.write(_serial->readAll());
 
-    // check if there is either data for a packet header
+    // check if there is data for a packet header
     if(_isProcessingPacket == false && _receiveBuffer.size() >= sizeof(FrameHeader)){
         qDebug() << "Getting packet header";
 
@@ -75,7 +77,7 @@ void SerialCom::onDataReceived()
     // check if a packet is being processed
     if(_isProcessingPacket){
 
-        qDebug() << _receiveBuffer.size();
+        qDebug() << "buffer size: " << _receiveBuffer.size();
 
         // check for the number of bytes specified by the header
         if(_receiveBuffer.size() >= _inHeader.lDataLength){
@@ -87,10 +89,6 @@ void SerialCom::onDataReceived()
             // using RLE compression
             if(isBitSet(_inHeader.bDecodeOpts, COMPRESS_TYPE_RLE)){
                 qDebug() << "RL Decode";
-
-                qDebug() << "buffer size     : " << _receiveBuffer.size();
-                qDebug() << "Data Len        : " << _inHeader.lDataLength;
-                qDebug() << "Uncompressed Len: " << _inHeader.lUncompressedLength;
 
                 // create a buffer for the uncompressed data
                 uint8_t* decodeBuffer = (uint8_t*) malloc(_inHeader.lUncompressedLength);
@@ -117,9 +115,11 @@ void SerialCom::onDataReceived()
 
                 // Uncompressed Text Message
                 if(isBitSet(_inHeader.bDecodeOpts, MSG_TYPE_TEXT)){
+                    qDebug() << "Uncompressed text";
 
                     Message* message = (Message*) malloc(sizeof(Message));
-                    _receiveBuffer.read((char*)&message, sizeof(Message));
+
+                    _receiveBuffer.read((char*)message, sizeof(Message));
 
                     enQueue(&_queue, message);
                     emit onQueueUpdate(_queue.size);
@@ -230,8 +230,8 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
 
     // write out to serial
     qDebug() << "written bytes: " << _serial->write(outData.buffer()) << "\n";
+    _serial->flush();
     outData.close();
-    //_serial->flush();
 }
 
 Message* SerialCom::getNextMessageFromQueue()
