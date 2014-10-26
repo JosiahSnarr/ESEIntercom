@@ -24,7 +24,7 @@ How to Use
 After starting the program you will see this window:
 
 ![MainWindow](res/mainwindow.png)
-<span style="color:white">@image latex res/mainwindow.png</span>
+<span style="color:white;">@image latex res/mainwindow.png</span>
 
 Here you have the option to send text or audio messages.
 
@@ -33,14 +33,14 @@ The Intercom audio and serial port configurations can all be set via seperate di
 Here is the Serial Settings Dialog:
 
 ![Serial Settings](res/serialsettings.png)
-@image latex res/serialsettings.png
+<span style="color:white">@image latex res/serialsettings.png</span>
 
 Here is the Audio Settings Dialog:
 
 ![Audio Settings](res/audiosettings.png)
-@image latex res/audiosettings.png
+<span style="color:white">@image latex res/audiosettings.png</span>
 
 And here is the Advanced Options Dialog:
 
 ![Advanced Settings](res/advancedoptions.png)
-@image latex res/advancedoptions.png
+<span style="color:white">@image latex res/advancedoptions.png</span>
