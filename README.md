@@ -24,7 +24,7 @@ How to Use
 After starting the program you will see this window:
 
 ![MainWindow](res/mainwindow.png)
-@image latex res/mainwindow.png
+<span style="color:white">@image latex res/mainwindow.png</span>
 
 Here you have the option to send text or audio messages.
 
@@ -39,9 +39,6 @@ Here is the Audio Settings Dialog:
 
 ![Audio Settings](res/audiosettings.png)
 @image latex res/audiosettings.png
-
-
-
 
 And here is the Advanced Options Dialog:
 
