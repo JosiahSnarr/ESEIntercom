@@ -8,6 +8,8 @@
 #include <QAudioFormat>
 #include <QAudioEncoderSettings>
 
+#include "audiofilterbuffer.h"
+
 /**
     Audio Recording, Playback and Broadcasts
 */
@@ -85,9 +87,9 @@ private:
     //! playing
     QAudioOutput* _output;
     //! buffer to hold recorded data
-    QBuffer       _buffer;
+    AudioFilterBuffer _buffer;
     //! buffer used to hold broadcasted audio
-    QBuffer       _broadcast;
+    QBuffer _broadcast;
 
     //! is recording
     bool _recording;
