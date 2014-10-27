@@ -1,3 +1,10 @@
+
+/**
+    @file mainwindow.cpp
+    @breif Main user interface
+    @author Natesh Narain
+*/
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 

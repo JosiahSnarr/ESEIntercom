@@ -19,6 +19,9 @@ namespace Ui {
 class AdvancedSettings;
 }
 
+/**
+    Dialog for Advance settings
+*/
 class AdvancedSettings : public QDialog
 {
     Q_OBJECT
@@ -27,9 +30,10 @@ public:
     explicit AdvancedSettings(QWidget *parent = 0);
     ~AdvancedSettings();
 
+    //! Settings
     struct Settings{
-        bool useHeader;
-        uint8_t bDecodeOpts;
+        bool useHeader;      ///< Send data in packets
+        uint8_t bDecodeOpts; ///< Packet decode option
     };
 
     /**
@@ -49,7 +53,7 @@ private:
     //! used to save and load configurations
     QJsonObject _json;
 
-    //!
+    //! the user settings
     Settings _settings;
 
     /**

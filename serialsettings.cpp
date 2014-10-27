@@ -1,3 +1,9 @@
+/**
+    @file serialsettings.cpp
+    @breif Serial Settings
+    @author Natesh Narain
+*/
+
 #include "serialsettings.h"
 #include "ui_serialsettings.h"
 

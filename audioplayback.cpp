@@ -1,3 +1,9 @@
+/**
+    @file audioplayback.cpp
+    @breif Record\Playback user audio. Play broadcast audio
+    @author Natesh Narain
+*/
+
 #include "audioplayback.h"
 #include <QAudioDeviceInfo>
 

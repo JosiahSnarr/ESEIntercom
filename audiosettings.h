@@ -16,6 +16,9 @@ namespace Ui {
 class AudioSettings;
 }
 
+/**
+    Dialog for Audio Settings
+*/
 class AudioSettings : public QDialog
 {
     Q_OBJECT
@@ -32,12 +35,24 @@ public slots:
 
 private:
     Ui::AudioSettings *ui;
+    //! holds settings
     QAudioEncoderSettings settings;
+    //! used for loading and write settings to a file
     QJsonObject json;
 
+    /**
+        Fill the dialog with options
+    */
     void fillParams();
+
+    /**
+        Update the settings with user optios
+    */
     void updateSettings();
 
+    /**
+        Load settings from a file
+    */
     void loadSettings();
 };
 
