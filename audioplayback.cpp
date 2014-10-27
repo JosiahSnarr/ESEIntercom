@@ -49,12 +49,12 @@ void AudioPlayback::stopPlayback()
     qDebug() << "Stop Play\n";
     _output->stop();
     _buffer.close();
-    _playing = false;
 }
 
 void AudioPlayback::onPlayerStateChanged(QAudio::State state)
 {
     if(state == QAudio::StoppedState || state == QAudio::IdleState){
+        _playing = false;
         emit stoppedPlaying();
     }
 }
@@ -64,15 +64,17 @@ void AudioPlayback::onAudioReceived(QByteArray& buffer)
     qDebug() << "Broadcast received";
 
     if(_playing){
+        qDebug() << "Settings broadcast to pending";
         _broadcastPending = true;
         _broadcast.close();
         _broadcast.setBuffer(&buffer);
     }
     else{
-        _broadcast.setBuffer(&buffer);
+        qDebug() << "Starting broadcast";
 
-        if(!_broadcast.isOpen()) _broadcast.open(QIODevice::ReadOnly);
-
+        if(_broadcast.isOpen()) _broadcast.close();
+        _broadcast.setData(buffer);
+        _broadcast.open(QIODevice::ReadOnly);
         _output->start(&_broadcast);
     }
 }
