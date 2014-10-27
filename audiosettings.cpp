@@ -57,6 +57,8 @@ void AudioSettings::fillParams()
         ui->cmbSampleRate->addItem(QString::number(sampleRate), sampleRate);
     }
 
+    ui->cmbBitsRate->addItem("8000", 8000);
+    ui->cmbBitsRate->addItem("16000", 16000);
     ui->cmbBitsRate->addItem("32000", 32000);
     ui->cmbBitsRate->addItem("64000", 64000);
 
