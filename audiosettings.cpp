@@ -1,3 +1,9 @@
+/**
+    @file audiosettings.cpp
+    @breif Audio Settings
+    @author Natesh Narain
+*/
+
 #include "audiosettings.h"
 #include "ui_audiosettings.h"
 

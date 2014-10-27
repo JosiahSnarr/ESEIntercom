@@ -1,4 +1,10 @@
 
+/**
+    @file rlencoding.cpp
+    @breif Run Length Encode and Decode
+    @author Natesh Narain
+*/
+
 #include "rlencoding.h"
 
 int rlencode(uint8_t *inBuffer, int inLen, uint8_t *outBuffer, int outLen, uint8_t esc)

@@ -48,9 +48,9 @@ private:
     AdvancedSettings* advancedSettings;
 
 
-    // serial read write access
+    //! serial read write access
     SerialCom* serial;
-    // audio plack and recording
+    //! audio plack and recording
     AudioPlayback* audio;
 
     /**

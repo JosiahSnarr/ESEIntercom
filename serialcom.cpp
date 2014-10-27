@@ -1,4 +1,18 @@
+
+/**
+    @file serialcom.cpp
+    @breif Serial Communication
+    @author Natesh Narain
+*/
+
+/**
+    @file serialcom.cpp
+    @breif All communication goes through here
+    @author Natesh Narain
+*/
+
 #include "serialcom.h"
+
 #include <QByteArray>
 #include <QDebug>
 #include <QChar>
@@ -8,7 +22,9 @@
 #include "rlencoding.h"
 #include "bitopts.h"
 
+//! Hex String from int
 #define Q_HEXSTR(x) QString("%1").arg(x, 0, 16)
+//! Pointer to Hex String
 #define Q_PTRSTR(x) QString("0x%1").arg((qintptr)x, QT_POINTER_SIZE * 2, 16, QChar('0'));
 
 SerialCom::SerialCom(QObject *parent) :

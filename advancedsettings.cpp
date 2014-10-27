@@ -1,3 +1,9 @@
+/**
+    @file advancedsettings.cpp
+    @breif Advanced settings for the user
+    @author Natesh Narain
+*/
+
 #include "advancedsettings.h"
 #include "ui_advancedsettings.h"
 

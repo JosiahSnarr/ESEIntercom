@@ -1,4 +1,8 @@
-
+/**
+    @file messagequeue.cpp
+    @breif FIFO implementation
+    @author Natesh Narain
+*/
 
 #include "messagequeue.h"
 

@@ -1,4 +1,10 @@
 
+/**
+    @file main.cpp
+    @breif Where the magic starts
+    @author Natesh Narain
+*/
+
 #include <time.h>
 
 #include "mainwindow.h"
