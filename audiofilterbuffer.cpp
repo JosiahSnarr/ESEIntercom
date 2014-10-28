@@ -5,7 +5,7 @@
 
 AudioFilterBuffer::AudioFilterBuffer(QObject *parent) : QBuffer(parent)
 {
-    _upperThreshold = 0xFF;
+    _upperThreshold = 0xFE;
     _lowerThreshold = 0x00;
 
     int i;
@@ -15,7 +15,7 @@ AudioFilterBuffer::AudioFilterBuffer(QObject *parent) : QBuffer(parent)
 qint64 AudioFilterBuffer::writeData(const char *data, qint64 len)
 {
 
-    const int channelBytes = 1;
+    const uint8_t channelBytes = 1;
     const int sampleBytes = 1;
     const int numChannels = 1;
 
@@ -28,11 +28,12 @@ qint64 AudioFilterBuffer::writeData(const char *data, qint64 len)
     for(i =0; i < numSamples; ++i){
         for(j = 0; j < numChannels; ++j){
 
-            if(*filtered > _upperThreshold) *filtered = 0xFF;
+            if(*filtered > _upperThreshold) *filtered = 0xFE;
             if(*filtered < _lowerThreshold) *filtered = 0x00;
 
             _byteCount[*filtered]++;
 
+            *filtered += channelBytes;
         }
     }
 
@@ -49,6 +50,7 @@ uint8_t AudioFilterBuffer::getLeastUsedByte() const
     int i;
 
     for(i = 0; i < 256; ++i){
+        qDebug() << i << " " << _byteCount[i];
         if(_byteCount[i] < smallestIdx){
             smallestIdx = i;
         }
@@ -59,11 +61,13 @@ uint8_t AudioFilterBuffer::getLeastUsedByte() const
 
 void AudioFilterBuffer::setUpperThreshold(int upper)
 {
+    if(upper > 0xFE) upper = 0xFE;
     _upperThreshold = upper;
 }
 
 void AudioFilterBuffer::setLowerThreshold(int lower)
 {
+    if(lower < 0) lower = 0;
     _lowerThreshold = lower;
 }
 
