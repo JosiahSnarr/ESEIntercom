@@ -93,7 +93,7 @@ void SerialCom::onDataReceived()
     // check if a packet is being processed
     if(_isProcessingPacket){
 
-        qDebug() << "buffer size: " << _receiveBuffer.size();
+       // qDebug() << "buffer size: " << _receiveBuffer.size();
 
         // check for the number of bytes specified by the header
         if(_receiveBuffer.size() >= _inHeader.lDataLength){
@@ -113,17 +113,28 @@ void SerialCom::onDataReceived()
                 QByteArray bytes = _receiveBuffer.read(_inHeader.lDataLength);
                 uint8_t* raw = (uint8_t*) bytes.data();
 
-                // uncompress the data
-                rldecode(raw, _inHeader.lDataLength, decodeBuffer, _inHeader.lUncompressedLength, 0x1B);
-
                 //
                 if(isBitSet(_inHeader.bDecodeOpts, MSG_TYPE_TEXT)){
+
+                    // uncompress the data
+                    rldecode(raw, _inHeader.lDataLength, decodeBuffer, _inHeader.lUncompressedLength, 0x1B);
 
                     Message* message = (Message*)decodeBuffer;
                     enQueue(&_queue, message);
                     emit onQueueUpdate(_queue.size);
 
                     qDebug() << message->msg << "\n";
+                }
+                else if(isBitSet(_inHeader.bDecodeOpts, MSG_TYPE_AUDIO)){
+                    qDebug() << "decode audio";
+
+                    // uncompress the data
+                    rldecode(raw, _inHeader.lDataLength, decodeBuffer, _inHeader.lUncompressedLength, 0xFF);
+
+                    QByteArray audioBuffer;
+                    audioBuffer.append((char*)decodeBuffer, _inHeader.lDataLength);
+
+                    emit onAudioReceived(audioBuffer);
                 }
 
             }else{
@@ -219,6 +230,7 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
                 qDebug() << "No Compression";
                 outHeader.lUncompressedLength = sizeof(Message);
                 outHeader.lDataLength = sizeof(Message);
+
                 outData.write((char*)&outHeader, sizeof(FrameHeader));
                 outData.write((char*)&message, sizeof(Message));
             }
@@ -226,8 +238,28 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
         }
         // handle audio message
         else if(isBitSet(decodeOptions, MSG_TYPE_AUDIO)){
+            qDebug() << "Send Audio";
 
             if(isBitSet(decodeOptions, COMPRESS_TYPE_HUFF) || isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
+
+                if(isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
+                    qDebug() << "RLE compression";
+
+                    int len = buffer.length();
+
+                    uint8_t* encodedBuffer = (uint8_t*) malloc(len * sizeof(uint8_t));
+                    int iEncodeLen = rlencode((uint8_t*)buffer.data(), len, encodedBuffer, len, 0xFF);
+
+                    outHeader.lUncompressedLength = len;
+                    outHeader.lDataLength = iEncodeLen;
+
+                    qDebug() << "Uncompressed: " << outHeader.lUncompressedLength;
+                    qDebug() << "Data Length : " << outHeader.lDataLength;
+                    qDebug() << "Compression Ratio: " << ((float)outHeader.lUncompressedLength/(float)outHeader.lDataLength);
+
+                    outData.write((char*)&outHeader, sizeof(FrameHeader));
+                    outData.write((char*)encodedBuffer, iEncodeLen);
+                }
 
             }
             // uncompressed audio

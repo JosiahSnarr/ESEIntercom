@@ -7,6 +7,8 @@
 
 #include "rlencoding.h"
 
+#include <QDebug>
+
 int rlencode(uint8_t *inBuffer, int inLen, uint8_t *outBuffer, int outLen, uint8_t esc)
 {
     int i, outIdx = 0;
@@ -15,7 +17,7 @@ int rlencode(uint8_t *inBuffer, int inLen, uint8_t *outBuffer, int outLen, uint8
     uint8_t count = 0;
 
     for(i = 0; i < inLen; ++i){
-
+        qDebug() << "outIdx: " << outIdx;
         if(outIdx >= outLen) return outIdx;
 
         // count the number of the current character

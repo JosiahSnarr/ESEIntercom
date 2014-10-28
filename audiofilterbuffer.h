@@ -36,7 +36,7 @@ public:
     */
     void setLowerThreshold(int lower);
 
-    uint8_t getLeastUsedByte() const;
+    uint8_t getLeastUsedByte();
 
     /**
     */

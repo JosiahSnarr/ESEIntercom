@@ -5,8 +5,8 @@
 
 AudioFilterBuffer::AudioFilterBuffer(QObject *parent) : QBuffer(parent)
 {
-    _upperThreshold = 0xFE;
-    _lowerThreshold = 0x00;
+    _upperThreshold = 0xF0;
+    _lowerThreshold = 0x0A;
 
     int i;
     for(i = 0; i < 256; ++i) _byteCount[i] = 0;
@@ -22,37 +22,41 @@ qint64 AudioFilterBuffer::writeData(const char *data, qint64 len)
     const int numSamples = len / sampleBytes;
 
     uint8_t* filtered = (uint8_t*)malloc(len * sizeof(uint8_t));
+    uint8_t* filterPtr = filtered;
     memcpy(filtered, data, (size_t)len);
 
     int i, j;
     for(i =0; i < numSamples; ++i){
         for(j = 0; j < numChannels; ++j){
 
-            if(*filtered > _upperThreshold) *filtered = 0xFE;
-            if(*filtered < _lowerThreshold) *filtered = 0x00;
+            if(*filterPtr > _upperThreshold) *filterPtr = Amplitude::MAX;
+            if(*filterPtr < _lowerThreshold) *filterPtr = Amplitude::MIN;
 
-            _byteCount[*filtered]++;
+          //  qDebug() << "byte: " << *filterPtr;
 
-            *filtered += channelBytes;
+            _byteCount[*filterPtr]++;
+
+            filterPtr += channelBytes;
         }
     }
 
     qint64 length = QBuffer::writeData((const char*)filtered, len);
     free(filtered);
     return length;
-
-    return QBuffer::writeData(data, len);
 }
 
-uint8_t AudioFilterBuffer::getLeastUsedByte() const
+uint8_t AudioFilterBuffer::getLeastUsedByte()
 {
     int smallestIdx = INT32_MAX;
-    int i;
+    int i = 0;
+
+    qDebug() << "[254]: " << _byteCount[i];
 
     for(i = 0; i < 256; ++i){
-        qDebug() << i << " " << _byteCount[i];
+      //  qDebug() << i << ": " << _byteCount[i];
         if(_byteCount[i] < smallestIdx){
             smallestIdx = i;
+            _byteCount[i] = 0;
         }
     }
 
@@ -61,13 +65,13 @@ uint8_t AudioFilterBuffer::getLeastUsedByte() const
 
 void AudioFilterBuffer::setUpperThreshold(int upper)
 {
-    if(upper > 0xFE) upper = 0xFE;
+    if(upper > Amplitude::MAX) upper = Amplitude::MAX;
     _upperThreshold = upper;
 }
 
 void AudioFilterBuffer::setLowerThreshold(int lower)
 {
-    if(lower < 0) lower = 0;
+    if(lower < Amplitude::MIN) lower = Amplitude::MIN;
     _lowerThreshold = lower;
 }
 
