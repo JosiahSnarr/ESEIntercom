@@ -55,6 +55,7 @@ void AudioPlayback::onPlayerStateChanged(QAudio::State state)
 {
     if(state == QAudio::StoppedState || state == QAudio::IdleState){
         _playing = false;
+        qDebug() << "Least used byte: " << _buffer.getLeastUsedByte();
         emit stoppedPlaying();
     }
 }

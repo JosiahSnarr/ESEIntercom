@@ -4,6 +4,7 @@
 #define AUDIOFILTERBUFFER_H
 
 #include <QBuffer>
+#include <cstdint>
 
 /**
     Filter incoming audio stream with upper and lower cut offs to make compression easier
@@ -35,6 +36,8 @@ public:
     */
     void setLowerThreshold(int lower);
 
+    uint8_t getLeastUsedByte() const;
+
     /**
     */
     qint64 writeData(const char *data, qint64 len);
@@ -48,6 +51,9 @@ private:
     int _upperThreshold;
     //! The lower cut off
     int _lowerThreshold;
+
+    // holds the count of each byte
+    int _byteCount[256];
 
 };
 
