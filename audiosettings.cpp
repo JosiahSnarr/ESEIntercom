@@ -13,6 +13,8 @@
 
 #include <QDebug>
 
+#include "audiofilterbuffer.h"
+
 AudioSettings::AudioSettings(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AudioSettings)
@@ -37,11 +39,12 @@ void AudioSettings::onOKButtonClicked()
 
 void AudioSettings::updateSettings()
 {
-    settings.setChannelCount(ui->cmbChannels->itemData(ui->cmbChannels->currentIndex()).toInt());
-    settings.setBitRate(ui->cmbBitsRate->itemData(ui->cmbBitsRate->currentIndex()).toInt());
-    settings.setSampleRate(ui->cmbSampleRate->itemData(ui->cmbSampleRate->currentIndex()).toInt());
-   // settings.timeout = ui->etTimeout->text().toLong();
-    settings.setCodec(ui->cmbAudioCodec->currentText());
+    settings.encoderSettings.setChannelCount(ui->cmbChannels->itemData(ui->cmbChannels->currentIndex()).toInt());
+    settings.encoderSettings.setBitRate(ui->cmbBitsRate->itemData(ui->cmbBitsRate->currentIndex()).toInt());
+    settings.encoderSettings.setSampleRate(ui->cmbSampleRate->itemData(ui->cmbSampleRate->currentIndex()).toInt());
+    settings.encoderSettings.setCodec(ui->cmbAudioCodec->currentText());
+    settings.upperThreshold = ui->cmbUpperThreshold->itemData(ui->cmbUpperThreshold->currentIndex()).toInt();
+    settings.lowerThreshold = ui->cmbLowerThreshold->itemData(ui->cmbLowerThreshold->currentIndex()).toInt();
 }
 
 void AudioSettings::fillParams()
@@ -62,6 +65,12 @@ void AudioSettings::fillParams()
     ui->cmbBitsRate->addItem("32000", 32000);
     ui->cmbBitsRate->addItem("64000", 64000);
 
+    int i;
+    for(i = 0; i <= AudioFilterBuffer::Amplitude::MAX; i++){
+        ui->cmbUpperThreshold->addItem(QString::number(i), i);
+        ui->cmbLowerThreshold->addItem(QString::number(i), i);
+    }
+
     // audio codec options
     foreach(const QString codec, info.supportedAudioCodecs()){
         ui->cmbAudioCodec->addItem(codec);
@@ -80,18 +89,22 @@ void AudioSettings::loadSettings()
 
         json = doc.object();
 
-        settings.setChannelCount(json[NCHANNELS].toInt());
-        settings.setBitRate(json[NBITSPERSAMPLE].toInt());
-        settings.setSampleRate(json[NSAMPLESPERSECOND].toInt());
-        //settings.timeout = (long)json[LTIMEOUT].toInt();
-        settings.setCodec(json[AUDIOCODEC].toString());
+        settings.encoderSettings.setChannelCount(json[NCHANNELS].toInt());
+        settings.encoderSettings.setBitRate(json[NBITSPERSAMPLE].toInt());
+        settings.encoderSettings.setSampleRate(json[NSAMPLESPERSECOND].toInt());
+        settings.encoderSettings.setCodec(json[AUDIOCODEC].toString());
+
+        settings.upperThreshold = json[UPPERTHRESHOLD].toInt();
+        settings.lowerThreshold = json[LOWERTHRESHOLD].toInt();
 
         // update the dialoag to match
-       // ui->etTimeout->setText(QString::number(settings.timeout));
-        ui->cmbSampleRate->setCurrentIndex(ui->cmbSampleRate->findData(settings.sampleRate()));
+        ui->cmbSampleRate->setCurrentIndex(ui->cmbSampleRate->findData(settings.encoderSettings.sampleRate()));
 
-        ui->cmbChannels->setCurrentIndex( ui->cmbChannels->findData(settings.channelCount()) );
-        ui->cmbBitsRate->setCurrentIndex( ui->cmbBitsRate->findData(settings.bitRate()) );
+        ui->cmbChannels->setCurrentIndex( ui->cmbChannels->findData(settings.encoderSettings.channelCount()) );
+        ui->cmbBitsRate->setCurrentIndex( ui->cmbBitsRate->findData(settings.encoderSettings.bitRate()) );
+
+        ui->cmbUpperThreshold->setCurrentIndex(ui->cmbUpperThreshold->findData(settings.upperThreshold));
+        ui->cmbLowerThreshold->setCurrentIndex(ui->cmbLowerThreshold->findData(settings.lowerThreshold));
 
         file.close();
 
@@ -102,11 +115,13 @@ void AudioSettings::saveSettings()
 {
     updateSettings();
 
-    json[NCHANNELS] = settings.channelCount();
-    json[NBITSPERSAMPLE] = settings.bitRate();
-    json[NSAMPLESPERSECOND] = settings.sampleRate();
-    //json[LTIMEOUT] = settings.timeout;
-    json[AUDIOCODEC] = settings.codec();
+    json[NCHANNELS] = settings.encoderSettings.channelCount();
+    json[NBITSPERSAMPLE] = settings.encoderSettings.bitRate();
+    json[NSAMPLESPERSECOND] = settings.encoderSettings.sampleRate();
+    json[AUDIOCODEC] = settings.encoderSettings.codec();
+
+    json[UPPERTHRESHOLD] = settings.upperThreshold;
+    json[LOWERTHRESHOLD] = settings.lowerThreshold;
 
     QJsonDocument doc(json);
 
@@ -116,7 +131,7 @@ void AudioSettings::saveSettings()
     file.close();
 }
 
-QAudioEncoderSettings AudioSettings::getSettings() const
+AudioSettings::Settings AudioSettings::getSettings() const
 {
     return settings;
 }
