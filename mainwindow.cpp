@@ -78,7 +78,6 @@ void MainWindow::onListenButtonClicked()
 
 void MainWindow::onPlaybackStopped()
 {
-    audio->stopPlayback();
     ui->bnListen->setText("Listen");
 }
 

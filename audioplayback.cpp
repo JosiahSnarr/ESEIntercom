@@ -47,14 +47,14 @@ void AudioPlayback::play()
 void AudioPlayback::stopPlayback()
 {
     qDebug() << "Stop Play\n";
-    _output->stop();
     _buffer.close();
+    _playing = false;
 }
 
 void AudioPlayback::onPlayerStateChanged(QAudio::State state)
 {
     if(state == QAudio::StoppedState || state == QAudio::IdleState){
-        _playing = false;
+        stopPlayback();
         emit stoppedPlaying();
     }
 }

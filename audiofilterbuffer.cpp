@@ -32,8 +32,6 @@ qint64 AudioFilterBuffer::writeData(const char *data, qint64 len)
             if(*filterPtr > _upperThreshold) *filterPtr = Amplitude::MAX;
             if(*filterPtr < _lowerThreshold) *filterPtr = Amplitude::MIN;
 
-          //  qDebug() << "byte: " << *filterPtr;
-
             _byteCount[*filterPtr]++;
 
             filterPtr += channelBytes;
