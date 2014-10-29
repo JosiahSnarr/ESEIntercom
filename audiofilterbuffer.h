@@ -66,7 +66,7 @@ private:
     //! The lower cut off
     uint8_t _lowerThreshold;
 
-    // holds the count of each byte
+    //! holds the count of each byte
     int _byteCount[256];
 
 };

@@ -47,10 +47,7 @@ uint8_t AudioFilterBuffer::getLeastUsedByte()
     int smallestIdx = INT32_MAX;
     int i = 0;
 
-    qDebug() << "[254]: " << _byteCount[i];
-
     for(i = 0; i < 256; ++i){
-      //  qDebug() << i << ": " << _byteCount[i];
         if(_byteCount[i] < smallestIdx){
             smallestIdx = i;
             _byteCount[i] = 0;
