@@ -17,7 +17,7 @@ int rlencode(uint8_t *inBuffer, int inLen, uint8_t *outBuffer, int outLen, uint8
     uint8_t count = 0;
 
     for(i = 0; i < inLen; ++i){
-        qDebug() << "outIdx: " << outIdx;
+
         if(outIdx >= outLen) return outIdx;
 
         // count the number of the current character
@@ -25,29 +25,42 @@ int rlencode(uint8_t *inBuffer, int inLen, uint8_t *outBuffer, int outLen, uint8
             count++;
         }
         else{
-
-            // greater than zero encoding
-            if(count > 1){
+            qDebug() << i << " : " << "outIdx: " << outIdx << " : " << count;
+            // greater than 2 encoding
+            if(count > 2){
                 if(current != esc){
                     outBuffer[outIdx++] = esc;
                     outBuffer[outIdx++] = count;
                     outBuffer[outIdx++] = current;
                 }
                 else{
+                    // cases where we are encoding the esc character
                     if(count == 2){
                         outBuffer[outIdx++] = esc;
                         outBuffer[outIdx++] = 0x01;
                     }
+                    else{
+                        outBuffer[outIdx++] = esc;
+                        outBuffer[outIdx++] = 0x02;
+                        outBuffer[outIdx++] = count;
+                    }
                 }
             }
-            // 1 length encoding
+            // 2 or less encoding (2 or 1)
             else{
                 if(current == esc){
                     outBuffer[outIdx++] = esc;
-                    outBuffer[outIdx++] = 0;
+                    outBuffer[outIdx++] = count - 1; // [ESC $00] is 1 ESCs, [ESC $01] is 2 ESCs
                 }
                 else{
-                    outBuffer[outIdx++] = current;
+                    if(count == 2){
+                        outBuffer[outIdx++] = current;
+                        outBuffer[outIdx++] = current;
+                    }
+                    // must be 1
+                    else{
+                        outBuffer[outIdx++] = current;
+                    }
                 }
             }
             // change to the different character
