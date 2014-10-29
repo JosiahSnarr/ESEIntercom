@@ -14,7 +14,6 @@ AudioFilterBuffer::AudioFilterBuffer(QObject *parent) : QBuffer(parent)
 
 qint64 AudioFilterBuffer::writeData(const char *data, qint64 len)
 {
-
     const uint8_t channelBytes = 1;
     const int sampleBytes = 1;
     const int numChannels = 1;
@@ -71,6 +70,16 @@ void AudioFilterBuffer::setLowerThreshold(int lower)
 {
     if(lower < Amplitude::MIN) lower = Amplitude::MIN;
     _lowerThreshold = lower;
+}
+
+uint8_t AudioFilterBuffer::getLowerThreshold() const
+{
+    return _lowerThreshold;
+}
+
+uint8_t AudioFilterBuffer::getUpperThreshold() const
+{
+    return _upperThreshold;
 }
 
 AudioFilterBuffer::~AudioFilterBuffer()

@@ -36,11 +36,25 @@ public:
     */
     void setLowerThreshold(int lower);
 
+    /**
+        Get the least used byte
+    */
     uint8_t getLeastUsedByte();
 
     /**
+        Reimplemented QBuffer::writeData(const char *data, qint64 len)
+
+        Used to filter the audio stream as it's being recorded
     */
     qint64 writeData(const char *data, qint64 len);
+
+    /**
+    */
+    uint8_t getUpperThreshold() const;
+
+    /**
+    */
+    uint8_t getLowerThreshold() const;
 
 public slots:
 
@@ -48,9 +62,9 @@ signals:
 
 private:
     //! The upper cut off
-    int _upperThreshold;
+    uint8_t _upperThreshold;
     //! The lower cut off
-    int _lowerThreshold;
+    uint8_t _lowerThreshold;
 
     // holds the count of each byte
     int _byteCount[256];
