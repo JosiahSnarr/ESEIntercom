@@ -7,8 +7,6 @@
 
 #include "rlencoding.h"
 
-#include <QDebug>
-
 int rlencode(uint8_t *inBuffer, int inLen, uint8_t *outBuffer, int outLen, uint8_t esc)
 {
     int i, outIdx = 0;
@@ -25,7 +23,6 @@ int rlencode(uint8_t *inBuffer, int inLen, uint8_t *outBuffer, int outLen, uint8
             count++;
         }
         else{
-            qDebug() << i << " : " << "outIdx: " << outIdx << " : " << count;
             // greater than 2 encoding
             if(count > 2){
                 if(current != esc){
@@ -81,12 +78,24 @@ int rldecode(uint8_t* inBuffer, int iLen, uint8_t* outBuffer, int max, uint8_t e
         if(inBuffer[i] == esc){
 
             uint8_t count = inBuffer[++i];
-            uint8_t byte = inBuffer[++i];
 
-            if(count > 1){
+            if(count > 2){
+                uint8_t byte = inBuffer[++i];
+
                 for(j = 0; j < count; j++){
                     outBuffer[outIdx++] = byte;
                 }
+            }
+            else if(count == 2){
+                uint8_t realCount = inBuffer[++i];
+
+                for(j = 0; j < realCount; ++j){
+                    outBuffer[outIdx++] = esc;
+                }
+            }
+            else if(count == 1){
+                outBuffer[outIdx++] = esc;
+                outBuffer[outIdx++] = esc;
             }
             else if(count == 0){
                 outBuffer[outIdx++] = esc;
