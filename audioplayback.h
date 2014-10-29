@@ -9,6 +9,7 @@
 #include <QAudioEncoderSettings>
 
 #include "audiofilterbuffer.h"
+#include "audiosettings.h"
 
 /**
     Audio Recording, Playback and Broadcasts
@@ -17,7 +18,7 @@ class AudioPlayback : public QObject
 {
     Q_OBJECT
 public:
-    explicit AudioPlayback(QAudioEncoderSettings format, QObject *parent = 0);
+    explicit AudioPlayback(AudioSettings::Settings format, QObject *parent = 0);
     ~AudioPlayback(void);
 
     /**
@@ -54,7 +55,7 @@ public:
         @param setting
             The format to use
     */
-    void setAudioFormat(QAudioEncoderSettings format);
+    void setAudioFormat(AudioSettings::Settings format);
 
     /**
         @return whether currently recording or not

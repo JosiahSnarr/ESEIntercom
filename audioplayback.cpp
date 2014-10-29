@@ -5,11 +5,12 @@
 */
 
 #include "audioplayback.h"
+
 #include <QAudioDeviceInfo>
 
 #include <QDebug>
 
-AudioPlayback::AudioPlayback(QAudioEncoderSettings format, QObject *parent) :
+AudioPlayback::AudioPlayback(AudioSettings::Settings format, QObject *parent) :
     QObject(parent)
 {
     setAudioFormat(format);
@@ -96,15 +97,18 @@ void AudioPlayback::setAudioFormat(QAudioFormat format)
     createAudioIO(format);
 }
 
-void AudioPlayback::setAudioFormat(QAudioEncoderSettings settings)
+void AudioPlayback::setAudioFormat(AudioSettings::Settings settings)
 {
     QAudioFormat format;
-    format.setSampleRate(settings.sampleRate());
+    format.setSampleRate(settings.encoderSettings.sampleRate());
     format.setSampleSize(8);
-    format.setChannelCount(settings.channelCount());
-    format.setCodec(settings.codec());
+    format.setChannelCount(settings.encoderSettings.channelCount());
+    format.setCodec(settings.encoderSettings.codec());
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::UnSignedInt);
+
+    _buffer.setUpperThreshold(settings.upperThreshold);
+    _buffer.setLowerThreshold(settings.lowerThreshold);
 
     setAudioFormat(format);
 }

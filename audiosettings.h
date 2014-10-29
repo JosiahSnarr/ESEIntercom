@@ -1,6 +1,8 @@
 #ifndef AUDIOSETTINGS_H
 #define AUDIOSETTINGS_H
 
+#include <cstdint>
+
 #include <QDialog>
 #include <QJsonObject>
 #include <QString>
@@ -11,6 +13,8 @@
 #define NSAMPLESPERSECOND "SamplesPerSecond"
 #define LTIMEOUT          "Timeout"
 #define AUDIOCODEC        "AudioCodec"
+#define UPPERTHRESHOLD    "UpperThreshold"
+#define LOWERTHRESHOLD    "LowerThreshold"
 
 namespace Ui {
 class AudioSettings;
@@ -27,7 +31,14 @@ public:
     explicit AudioSettings(QWidget *parent = 0);
     ~AudioSettings();
 
-     QAudioEncoderSettings getSettings() const;
+    //!
+    struct Settings{
+        QAudioEncoderSettings encoderSettings;
+        uint8_t upperThreshold;
+        uint8_t lowerThreshold;
+    };
+
+     Settings getSettings() const;
 
 public slots:
     void onOKButtonClicked();
@@ -36,7 +47,7 @@ public slots:
 private:
     Ui::AudioSettings *ui;
     //! holds settings
-    QAudioEncoderSettings settings;
+    Settings settings;
     //! used for loading and write settings to a file
     QJsonObject json;
 
