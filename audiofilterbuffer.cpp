@@ -5,8 +5,8 @@
 
 AudioFilterBuffer::AudioFilterBuffer(QObject *parent) : QBuffer(parent)
 {
-    _upperThreshold = 0xF0;
-    _lowerThreshold = 0x0A;
+    _upperThreshold = Amplitude::MAX;
+    _lowerThreshold = Amplitude::MIN;
 
     int i;
     for(i = 0; i < 256; ++i) _byteCount[i] = 0;
