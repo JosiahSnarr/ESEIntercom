@@ -14,29 +14,68 @@
 extern "C"{
 #endif
 
+//! Information on the sender
 typedef struct senderData{
-	int id;
-	int numMessages;
-	long timestamp;
+    int id;          ///< The id of the sender
+    int numMessages; ///< The number of messages from that sender
+    long timestamp;  ///< The data of the last message from the sender
 }SenderData;
 
-typedef struct userNode{
-	struct userNode* left;
-	struct userNode* right;
-    SenderData data;
+//! Sender node
+typedef struct senderNode{
+    struct senderNode* left;  ///< next node to the left
+    struct senderNode* right; ///< next node to the right
+    SenderData data;          ///< the data of the Sender
 }Sender;
 
+//! Phone log tree
 typedef struct phoneLog{
-    Sender* root;
+    Sender* root; ///< root node
 }PhoneLog;
 
+//! Funtion pointer type to apply to sender data
 typedef void(*SenderFunction)(Sender*);
 
+/**
+    Initialize the phone book
+
+    @param log
+        PhoneLog
+*/
 void initPhoneBook(PhoneLog* log);
+
+/**
+    Search the phone book for a user
+
+    @param log
+        The phone log
+
+    @param id
+        Sender id
+
+    @return sender data at the id
+*/
 SenderData* searchPhoneBook(PhoneLog* log, uint16_t id);
 
+/**
+    Insert a message into  the phone log
+
+    @param log
+        the phone log
+
+    @param message
+        The message to add
+*/
 void insertIntoPhoneBook(PhoneLog* log, Message* message);
 
+/**
+    In order transversal of the tree
+
+    @param log
+        The phone log
+
+    @param the function to apply to all nodes in order
+*/
 void transversePhoneBookInOrder(PhoneLog* log, SenderFunction function);
 
 #ifdef __cplusplus
