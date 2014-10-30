@@ -139,6 +139,10 @@ void MainWindow::onMessageReceived(int numQueued)
 void MainWindow::newSession()
 {
     SerialSettings::Settings settings = serialSettings->getSettings();
+    AdvancedSettings::Settings advancedSetting = advancedSettings->getSettings();
+
+    serial->setUseHeader(advancedSetting.useHeader);
+
     if(serial->open(settings)){
         ui->actionNew_Session->setEnabled(false);
         ui->actionClose_Session->setEnabled(true);

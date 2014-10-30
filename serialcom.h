@@ -102,6 +102,14 @@ public:
     */
     Message* getNextMessageFromQueue();
 
+    /**
+    */
+    void setUseHeader(bool use);
+
+    /**
+    */
+    bool isUsingHeader() const;
+
 private:
     //! serial port access
     QSerialPort* _serial;
@@ -112,6 +120,9 @@ private:
     FrameHeader _inHeader;
     //! flag indicating whether a packet is currently being processed
     bool _isProcessingPacket;
+
+    //! FInd the header before processing data
+    bool _useHeader;
 
     //! queue for the incoming messages
     MessageQueue _queue;

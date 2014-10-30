@@ -27,13 +27,13 @@
 //! Pointer to Hex String
 #define Q_PTRSTR(x) QString("0x%1").arg((qintptr)x, QT_POINTER_SIZE * 2, 16, QChar('0'));
 
-SerialCom::SerialCom(QObject *parent) :
-    QObject(parent)
+SerialCom::SerialCom(QObject *parent) : QObject(parent)
 {
     _serial = new QSerialPort(this);
     connect(_serial, SIGNAL(readyRead()), this, SLOT(onDataReceived()));
 
     _isProcessingPacket = false;
+    _useHeader = true;
 
     initQueue(&_queue);
 }
@@ -65,6 +65,15 @@ void SerialCom::onDataReceived()
     // store in the cumulative buffer
     _receiveBuffer.write(_serial->readAll());
 
+    if(!_useHeader){
+        _receiveBuffer.reset();
+        QByteArray bytes = _receiveBuffer.readAll();
+
+        qDebug() << bytes << "\n";
+
+        return ;
+    }
+
     // check if there is data for a packet header
     if(_isProcessingPacket == false && _receiveBuffer.size() >= sizeof(FrameHeader)){
         qDebug() << "Getting packet header";
@@ -92,8 +101,6 @@ void SerialCom::onDataReceived()
 
     // check if a packet is being processed
     if(_isProcessingPacket){
-
-       // qDebug() << "buffer size: " << _receiveBuffer.size();
 
         // check for the number of bytes specified by the header
         if(_receiveBuffer.size() >= _inHeader.lDataLength){
@@ -333,6 +340,16 @@ void SerialCom::resetBuffer(QBuffer& buffer, QByteArray& array)
 void SerialCom::resetBuffer(QBuffer& buffer)
 {
     resetBuffer(buffer, QByteArray());
+}
+
+void SerialCom::setUseHeader(bool use)
+{
+    _useHeader = use;
+}
+
+bool SerialCom::isUsingHeader() const
+{
+    return _useHeader;
 }
 
 SerialCom::~SerialCom()
