@@ -167,6 +167,19 @@
      </property>
     </widget>
    </widget>
+   <widget class="QPushButton" name="bnPhoneBook">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>170</y>
+      <width>111</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Debug Phone Book</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

@@ -29,6 +29,8 @@
 //! Pointer to Hex String
 #define Q_PTRSTR(x) QString("0x%1").arg((qintptr)x, QT_POINTER_SIZE * 2, 16, QChar('0'));
 
+#define vote(x,y) (x == y)
+
 SerialCom::SerialCom(QObject *parent) : QObject(parent)
 {
     _serial = new QSerialPort(this);
@@ -88,7 +90,7 @@ void SerialCom::onDataReceived()
         _receiveBuffer.read((char*)&_inHeader, sizeof(FrameHeader));
 
         // verify the packet is valid
-        if(_inHeader.lSignature == FRAME_SIGNATURE){
+        if(_inHeader.lSignature == FRAME_SIGNATURE && vote(_inHeader.lSignature, _inHeader.lSignature2)){
             qDebug() << "Valid header received\n";
             qDebug() << "Will wait for " << _inHeader.lDataLength << " bytes";
             // specify that a packet is now being processed
@@ -193,6 +195,7 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
 
     FrameHeader outHeader;
     outHeader.lSignature = FRAME_SIGNATURE;
+    outHeader.lSignature2 = FRAME_SIGNATURE;
     outHeader.bVersion = 1;
 
     if(useHeader){
@@ -344,11 +347,6 @@ void SerialCom::resetBuffer(QBuffer& buffer, QByteArray& array)
     }
 }
 
-bool SerialCom::vote(int num1, int num2, int num3)
-{
-    return (num1 == num2 || num2 == num3 || num1 == num1);
-}
-
 void SerialCom::resetBuffer(QBuffer& buffer)
 {
     resetBuffer(buffer, QByteArray());
@@ -362,6 +360,11 @@ void SerialCom::setUseHeader(bool use)
 bool SerialCom::isUsingHeader() const
 {
     return _useHeader;
+}
+
+void SerialCom::printPhoneBook()
+{
+    transversePhoneBookInOrder(&_log, printPhoneLog);
 }
 
 SerialCom::~SerialCom()

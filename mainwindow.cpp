@@ -42,6 +42,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->bnSendAudio, SIGNAL(clicked()), this, SLOT(onSendAudioButtonClicked()));
     connect(ui->bnNextMessage, SIGNAL(clicked()), this, SLOT(onNextMessageButtonClicked()));
 
+    connect(ui->bnPhoneBook, SIGNAL(clicked()), this, SLOT(onPhoneBookButtonClicked()));
+
     connect(ui->bnSendText, SIGNAL(clicked()), this, SLOT(onSendTextButtonClicked()));
     ui->bnNextMessage->setEnabled(false);
 
@@ -112,6 +114,12 @@ void MainWindow::onSendTextButtonClicked()
     serial->write(data, 99, settings.useHeader, decodeOpts);
 
     ui->etSend->setPlainText("");
+}
+
+
+void MainWindow::onPhoneBookButtonClicked()
+{
+    serial->printPhoneBook();
 }
 
 void MainWindow::onNextMessageButtonClicked()

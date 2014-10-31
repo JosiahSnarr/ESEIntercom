@@ -39,12 +39,12 @@
 //! Packet header for the outgoing data
 typedef struct frameHeader{
     uint32_t lSignature;          ///< Signature to verify the packet
+    uint32_t lSignature2;         ///< Signature to verify the packet
     uint32_t lDataLength;         ///< length of data after the header
     uint32_t lUncompressedLength; ///< Length of the uncompressed data
     uint8_t  bReceiverId;         ///< the id of the receiver
     uint8_t  bVersion;            ///< the header version
     uint8_t  bDecodeOpts;         ///< Flags to specify how to decode message
-    uint8_t  bPattern[5];         ///< extra verification
 }FrameHeader;
 
 /**
@@ -112,6 +112,10 @@ public:
     */
     bool isUsingHeader() const;
 
+    /**
+    */
+    void printPhoneBook();
+
 private:
     //! serial port access
     QSerialPort* _serial;
@@ -130,11 +134,6 @@ private:
     MessageQueue _queue;
     //! added to log time and number of messages per sender
     PhoneLog _log;
-
-    /**
-        @return true if 2 of 3 are the same
-    */
-    bool vote(int num1, int num2, int num3);
 
     /**
         Remove bytes [0, offset] from the buffer and move [offset, remaining] to the start.
