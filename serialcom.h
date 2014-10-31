@@ -14,9 +14,11 @@
 #include <QtSerialPort/QSerialPort>
 #include <QByteArray>
 #include <QBuffer>
+#include <QDateTime>
 
 #include "serialsettings.h"
 #include "messagequeue.h"
+#include "phonebook.h"
 
 #define FRAME_SIGNATURE 0xDEADBEEF
 #define DEBUG_SERIAL_OUT QString("DEADBEEF")
@@ -126,6 +128,8 @@ private:
 
     //! queue for the incoming messages
     MessageQueue _queue;
+    //! added to log time and number of messages per sender
+    PhoneLog _log;
 
     /**
         Remove bytes [0, offset] from the buffer and move [offset, remaining] to the start.

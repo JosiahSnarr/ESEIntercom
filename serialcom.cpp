@@ -14,8 +14,10 @@
 #include "serialcom.h"
 
 #include <QByteArray>
-#include <QDebug>
 #include <QChar>
+#include <QTime>
+
+#include <QDebug>
 
 #include <string>
 
@@ -36,6 +38,7 @@ SerialCom::SerialCom(QObject *parent) : QObject(parent)
     _useHeader = true;
 
     initQueue(&_queue);
+    initPhoneBook(&_log);
 }
 
 bool SerialCom::open(SerialSettings::Settings settings)
@@ -128,6 +131,7 @@ void SerialCom::onDataReceived()
 
                     Message* message = (Message*)decodeBuffer;
                     enQueue(&_queue, message);
+                    insertIntoPhoneBook(&_log, message);
                     emit onQueueUpdate(_queue.size);
 
                     qDebug() << message->msg << "\n";
@@ -208,6 +212,9 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
             message.receiverID = receiverId;
             message.priority = 1;
             message.senderID = 42;
+            message.timestamp = (uint32_t) QDateTime::currentDateTimeUtc().toTime_t();
+
+            qDebug() << "timestamp: " << message.timestamp;
 
             memcpy(message.msg, buffer.data(), BUFFER_MAX);
 
