@@ -132,6 +132,11 @@ private:
     PhoneLog _log;
 
     /**
+        @return true if 2 of 3 are the same
+    */
+    bool vote(int num1, int num2, int num3);
+
+    /**
         Remove bytes [0, offset] from the buffer and move [offset, remaining] to the start.
 
         @param offset

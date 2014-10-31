@@ -344,6 +344,11 @@ void SerialCom::resetBuffer(QBuffer& buffer, QByteArray& array)
     }
 }
 
+bool SerialCom::vote(int num1, int num2, int num3)
+{
+    return (num1 == num2 || num2 == num3 || num1 == num1);
+}
+
 void SerialCom::resetBuffer(QBuffer& buffer)
 {
     resetBuffer(buffer, QByteArray());
