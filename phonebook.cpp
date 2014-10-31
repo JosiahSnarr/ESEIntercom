@@ -4,7 +4,7 @@
 
 static Sender* _newNode(Message* message, Sender* left, Sender* right)
 {	
-    Sender* sender = (Sender*)malloc(sizeof(User));
+    Sender* sender = (Sender*)malloc(sizeof(Sender));
 
     if (sender == NULL) return NULL;
 
@@ -32,7 +32,7 @@ static SenderData* _searchPhoneBook(Sender* sender, uint16_t key)
     return &sender->data;
 }
 
-static User* _insertIntoPhoneBook(Sender* sender, Message* message)
+static Sender* _insertIntoPhoneBook(Sender* sender, Message* message)
 {
     if (sender == NULL) return _newNode(message, NULL, NULL);
 
@@ -45,7 +45,7 @@ static User* _insertIntoPhoneBook(Sender* sender, Message* message)
     else if (message->senderID > sender->data.id)
         sender->right = _insertIntoPhoneBook(sender->right, message);
 
-	return user;
+    return sender;
 }
 
 static void _transversePhoneBookInOrder(Sender* sender, SenderFunction function)
@@ -57,19 +57,19 @@ static void _transversePhoneBookInOrder(Sender* sender, SenderFunction function)
     _transversePhoneBookInOrder(sender->right, function);
 }
 
-void initPhoneBook(PhoneBook* phoneBook)
+void initPhoneBook(PhoneLog* phoneLog)
 {
-	phoneBook->root = NULL;
+    phoneLog->root = NULL;
 }
 
-UserData* searchPhoneBook(PhoneLog* log, uint16_t id)
+SenderData* searchPhoneBook(PhoneLog* log, uint16_t id)
 {
-	return _searchPhoneBook(phoneBook->root, id);
+    return _searchPhoneBook(log->root, id);
 }
 
 void insertIntoPhoneBook(PhoneLog* log, Message* message)
 {
-    phoneBook->root = _insertIntoPhoneBook(log->root, message);
+    log->root = _insertIntoPhoneBook(log->root, message);
 }
 
 void transversePhoneBookInOrder(PhoneLog* log, SenderFunction function)

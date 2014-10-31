@@ -18,7 +18,7 @@ extern "C"{
 typedef struct senderData{
     int id;          ///< The id of the sender
     int numMessages; ///< The number of messages from that sender
-    long timestamp;  ///< The data of the last message from the sender
+    uint32_t timestamp;  ///< The data of the last message from the sender
 }SenderData;
 
 //! Sender node

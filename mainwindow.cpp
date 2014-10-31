@@ -10,6 +10,7 @@
 
 #include <QDebug>
 #include <QByteArray>
+#include <QDateTime>
 
 #include "bitopts.h"
 
@@ -122,8 +123,21 @@ void MainWindow::onNextMessageButtonClicked()
 
 void MainWindow::updateMessageDisplay(Message* message)
 {
+    // put the message in the display
     QString displayText(message->msg);
     ui->etReceived->setPlainText(displayText);
+
+    // set the user id
+    ui->lbSenderId->setText(QString("From: %1").arg(message->senderID));
+
+    // get the timestamp
+    QDateTime date = QDateTime::fromTime_t(message->timestamp).toUTC();
+
+    QString timeStampLabel("Time: ");
+    QString timeStamp = date.toString("h:m:s ap");
+    timeStampLabel.append(timeStamp);
+    ui->lbTimeStamp->setText(timeStampLabel);
+
 }
 
 void MainWindow::onMessageReceived(int numQueued)
