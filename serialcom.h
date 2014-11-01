@@ -39,12 +39,12 @@
 //! Packet header for the outgoing data
 typedef struct frameHeader{
     uint32_t lSignature;          ///< Signature to verify the packet
+    uint32_t lSignature2;         ///< Signature to verify the packet
     uint32_t lDataLength;         ///< length of data after the header
     uint32_t lUncompressedLength; ///< Length of the uncompressed data
     uint8_t  bReceiverId;         ///< the id of the receiver
     uint8_t  bVersion;            ///< the header version
     uint8_t  bDecodeOpts;         ///< Flags to specify how to decode message
-    uint8_t  bPattern[5];         ///< extra verification
 }FrameHeader;
 
 /**
@@ -106,11 +106,19 @@ public:
 
     /**
     */
+    uint8_t checksum(int bytes);
+
+    /**
+    */
     void setUseHeader(bool use);
 
     /**
     */
     bool isUsingHeader() const;
+
+    /**
+    */
+    void printPhoneBook();
 
 private:
     //! serial port access

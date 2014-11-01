@@ -78,6 +78,8 @@ void insertIntoPhoneBook(PhoneLog* log, Message* message);
 */
 void transversePhoneBookInOrder(PhoneLog* log, SenderFunction function);
 
+void printPhoneLog(Sender* data);
+
 #ifdef __cplusplus
 }
 #endif

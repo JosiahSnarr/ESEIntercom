@@ -34,6 +34,7 @@ typedef struct message{
 	uint8_t priority;      ///< Message Priority in the queue
 	uint16_t msgSeq;       ///< Message Sequence
     uint32_t timestamp;    ///< Time stamp of the message when sent
+    uint8_t checksum;
 }Message;
 
 //! Linked List of Messages

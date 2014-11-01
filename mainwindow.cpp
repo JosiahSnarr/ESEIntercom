@@ -114,6 +114,12 @@ void MainWindow::onSendTextButtonClicked()
     ui->etSend->setPlainText("");
 }
 
+
+void MainWindow::onPhoneBookButtonClicked()
+{
+    serial->printPhoneBook();
+}
+
 void MainWindow::onNextMessageButtonClicked()
 {
     Message* message = serial->getNextMessageFromQueue();

@@ -20,6 +20,7 @@
 #include <QDebug>
 
 #include <string>
+#include <cstdlib>
 
 #include "rlencoding.h"
 #include "bitopts.h"
@@ -28,6 +29,8 @@
 #define Q_HEXSTR(x) QString("%1").arg(x, 0, 16)
 //! Pointer to Hex String
 #define Q_PTRSTR(x) QString("0x%1").arg((qintptr)x, QT_POINTER_SIZE * 2, 16, QChar('0'));
+
+#define vote(x,y) (x == y)
 
 SerialCom::SerialCom(QObject *parent) : QObject(parent)
 {
@@ -88,7 +91,7 @@ void SerialCom::onDataReceived()
         _receiveBuffer.read((char*)&_inHeader, sizeof(FrameHeader));
 
         // verify the packet is valid
-        if(_inHeader.lSignature == FRAME_SIGNATURE){
+        if(_inHeader.lSignature == FRAME_SIGNATURE && vote(_inHeader.lSignature, _inHeader.lSignature2)){
             qDebug() << "Valid header received\n";
             qDebug() << "Will wait for " << _inHeader.lDataLength << " bytes";
             // specify that a packet is now being processed
@@ -193,6 +196,7 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
 
     FrameHeader outHeader;
     outHeader.lSignature = FRAME_SIGNATURE;
+    outHeader.lSignature2 = FRAME_SIGNATURE;
     outHeader.bVersion = 1;
 
     if(useHeader){
@@ -211,8 +215,9 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
             Message message;
             message.receiverID = receiverId;
             message.priority = 1;
-            message.senderID = 42;
+            message.senderID = rand() % 50;
             message.timestamp = (uint32_t) QDateTime::currentDateTimeUtc().toTime_t();
+            message.checksum = checksum(sizeof(Message));
 
             qDebug() << "timestamp: " << message.timestamp;
 
@@ -303,6 +308,13 @@ Message* SerialCom::getNextMessageFromQueue()
     return message;
 }
 
+uint8_t SerialCom::checksum(int bytes)
+{
+    int x = bytes / 256;
+    int y = x * 256;
+    return bytes - y;
+}
+
 void SerialCom::removeProcessedData(QBuffer& buffer, qint64 offset)
 {
     // find the number of bytes after the offset
@@ -357,6 +369,11 @@ void SerialCom::setUseHeader(bool use)
 bool SerialCom::isUsingHeader() const
 {
     return _useHeader;
+}
+
+void SerialCom::printPhoneBook()
+{
+    transversePhoneBookInOrder(&_log, printPhoneLog);
 }
 
 SerialCom::~SerialCom()

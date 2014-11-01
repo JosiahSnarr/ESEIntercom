@@ -2,6 +2,8 @@
 #include "phonebook.h"
 #include <stdlib.h>
 
+#include <QDebug>
+
 static Sender* _newNode(Message* message, Sender* left, Sender* right)
 {	
     Sender* sender = (Sender*)malloc(sizeof(Sender));
@@ -76,3 +78,12 @@ void transversePhoneBookInOrder(PhoneLog* log, SenderFunction function)
 {
     _transversePhoneBookInOrder(log->root, function);
 }
+
+void printPhoneLog(Sender* sender)
+{
+    qDebug() << "id: " << sender->data.id << ", messages: " << sender->data.numMessages << ", time: " << sender->data.timestamp;
+}
+
+
+
+
