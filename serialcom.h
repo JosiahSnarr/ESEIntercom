@@ -106,6 +106,10 @@ public:
 
     /**
     */
+    uint8_t checksum(int bytes);
+
+    /**
+    */
     void setUseHeader(bool use);
 
     /**

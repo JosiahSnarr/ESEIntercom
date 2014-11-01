@@ -20,6 +20,7 @@
 #include <QDebug>
 
 #include <string>
+#include <cstdlib>
 
 #include "rlencoding.h"
 #include "bitopts.h"
@@ -214,8 +215,9 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
             Message message;
             message.receiverID = receiverId;
             message.priority = 1;
-            message.senderID = 42;
+            message.senderID = rand() % 50;
             message.timestamp = (uint32_t) QDateTime::currentDateTimeUtc().toTime_t();
+            message.checksum = checksum(sizeof(Message));
 
             qDebug() << "timestamp: " << message.timestamp;
 
@@ -304,6 +306,13 @@ Message* SerialCom::getNextMessageFromQueue()
     Message* message = deQueue(&_queue);
     emit onQueueUpdate(_queue.size);
     return message;
+}
+
+uint8_t SerialCom::checksum(int bytes)
+{
+    int x = bytes / 256;
+    int y = x * 256;
+    return bytes - y;
 }
 
 void SerialCom::removeProcessedData(QBuffer& buffer, qint64 offset)

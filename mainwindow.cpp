@@ -42,8 +42,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->bnSendAudio, SIGNAL(clicked()), this, SLOT(onSendAudioButtonClicked()));
     connect(ui->bnNextMessage, SIGNAL(clicked()), this, SLOT(onNextMessageButtonClicked()));
 
-    connect(ui->bnPhoneBook, SIGNAL(clicked()), this, SLOT(onPhoneBookButtonClicked()));
-
     connect(ui->bnSendText, SIGNAL(clicked()), this, SLOT(onSendTextButtonClicked()));
     ui->bnNextMessage->setEnabled(false);
 
