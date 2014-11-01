@@ -42,6 +42,9 @@
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <widget class="QPushButton" name="bnRecord">
+        <property name="toolTip">
+         <string>Record an Audio Message</string>
+        </property>
         <property name="text">
          <string>Record</string>
         </property>
@@ -49,6 +52,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="bnListen">
+        <property name="toolTip">
+         <string>Listen to audio message</string>
+        </property>
         <property name="text">
          <string>Listen</string>
         </property>
@@ -56,6 +62,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="bnSendAudio">
+        <property name="toolTip">
+         <string>Send Audio Message</string>
+        </property>
         <property name="text">
          <string>Send</string>
         </property>
@@ -94,6 +103,9 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="toolTip">
+         <string>Send Text Message</string>
+        </property>
         <property name="text">
          <string>Enter</string>
         </property>
@@ -123,6 +135,9 @@
        <height>23</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>View the next message</string>
+     </property>
      <property name="text">
       <string>Next Message</string>
      </property>
@@ -135,6 +150,9 @@
        <width>91</width>
        <height>16</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>Number of Message in the Queue</string>
      </property>
      <property name="text">
       <string>Messages: 0</string>
@@ -176,6 +194,9 @@
       <height>151</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
    </widget>
    <widget class="QLineEdit" name="etUserName">
     <property name="geometry">
@@ -205,6 +226,9 @@
       <width>21</width>
       <height>23</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Add User</string>
     </property>
     <property name="text">
      <string>+</string>
