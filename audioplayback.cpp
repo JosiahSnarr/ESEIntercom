@@ -80,6 +80,11 @@ void AudioPlayback::onAudioReceived(QByteArray& buffer)
     }
 }
 
+void AudioPlayback::onAudioStreamReceived(QByteArray &buffer)
+{
+    _streamBuffer.write(buffer);
+}
+
 void AudioPlayback::createAudioIO(QAudioFormat format)
 {
     QAudioDeviceInfo info = QAudioDeviceInfo::defaultInputDevice();

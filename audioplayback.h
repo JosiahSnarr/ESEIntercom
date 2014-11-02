@@ -9,6 +9,7 @@
 #include <QAudioEncoderSettings>
 
 #include "audiofilterbuffer.h"
+#include "streambuffer.h"
 #include "audiosettings.h"
 
 /**
@@ -78,6 +79,7 @@ public:
 public slots:
     void onPlayerStateChanged(QAudio::State);
     void onAudioReceived(QByteArray&);
+    void onAudioStreamReceived(QByteArray& buffer);
 
 signals:
     void stoppedPlaying();
@@ -89,6 +91,8 @@ private:
     QAudioOutput* _output;
     //! buffer to hold recorded data
     AudioFilterBuffer _buffer;
+    //! buffer to hold the audio stream
+    StreamBuffer _streamBuffer;
     //! buffer used to hold broadcasted audio
     QBuffer _broadcast;
 
@@ -98,6 +102,8 @@ private:
     bool _playing;
     //! is there a broadcast waiting to be played
     bool _broadcastPending;
+    //! is streaming audio
+    bool _streaming;
 
     void createAudioIO(QAudioFormat format);
 
