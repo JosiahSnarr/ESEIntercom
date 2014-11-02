@@ -10,14 +10,17 @@
 
 #include <QDebug>
 
-AudioPlayback::AudioPlayback(AudioSettings::Settings format, QObject *parent) :
-    QObject(parent)
+AudioPlayback::AudioPlayback(AudioSettings::Settings format, QObject *parent) : QObject(parent)
 {
+    _timer = new QTimer(this);
+    connect(_timer, SIGNAL(timeout()), this, SLOT(onTick()));
+
     setAudioFormat(format);
 
     _recording = false;
     _playing = false;
     _broadcastPending = false;
+    _isStreamRecording = false;
 }
 
 void AudioPlayback::record()
@@ -52,6 +55,33 @@ void AudioPlayback::stopPlayback()
     _playing = false;
 }
 
+void AudioPlayback::startStreamingRecording()
+{
+    if(_recording){
+        stopRecording();
+    }
+
+    // start recording to the stream buffer
+    _input->start(&_streamBuffer);
+    // send data every 3 seconds
+    _timer->start(5000);
+
+    _isStreamRecording = true;
+}
+
+void AudioPlayback::onTick()
+{
+    QByteArray buffer = _streamBuffer.read(_streamBuffer.size());
+    emit onStreamBufferSendReady(buffer);
+}
+
+void AudioPlayback::stopStreamingRecording()
+{
+    _input->stop();
+    _streamBuffer.close();
+    _streaming = false;
+}
+
 void AudioPlayback::onPlayerStateChanged(QAudio::State state)
 {
     if(state == QAudio::StoppedState || state == QAudio::IdleState){
@@ -83,6 +113,12 @@ void AudioPlayback::onAudioReceived(QByteArray& buffer)
 void AudioPlayback::onAudioStreamReceived(QByteArray &buffer)
 {
     _streamBuffer.write(buffer);
+
+    if(!_isStreamPlaying){
+        stopPlayback();
+        _output->start(&_streamBuffer);
+        _isStreamPlaying = true;
+    }
 }
 
 void AudioPlayback::createAudioIO(QAudioFormat format)
@@ -124,14 +160,19 @@ void AudioPlayback::getRecordedAudio(QBuffer& data) const
     data.setData(b);
 }
 
-bool AudioPlayback::isRecording()
+bool AudioPlayback::isRecording() const
 {
     return _recording;
 }
 
-bool AudioPlayback::isPlaying()
+bool AudioPlayback::isPlaying() const
 {
     return _recording;
+}
+
+bool AudioPlayback::isStreaming() const
+{
+    return _streaming;
 }
 
 AudioPlayback::~AudioPlayback()
