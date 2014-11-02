@@ -82,7 +82,7 @@ public:
     /**
         @return whether currently streaming or not
     */
-    bool isStreaming() const;
+    bool isStreamRecording() const;
 
     /**
         Get the recorded audio
@@ -110,7 +110,9 @@ private:
     //! buffer to hold recorded data
     AudioFilterBuffer _buffer;
     //! buffer to hold the audio stream
-    StreamBuffer _streamBuffer;
+    StreamBuffer _streamBufferRecord;
+    //!
+    StreamBuffer _streamBufferPlay;
     //! buffer used to hold broadcasted audio
     QBuffer _broadcast;
 

@@ -274,7 +274,7 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
 
         }
         // handle audio message
-        else if(isBitSet(decodeOptions, MSG_TYPE_AUDIO) || isBitSet(decodeOpts, MSG_TYPE_AUDIO_STREAM)){
+        else if(isBitSet(decodeOptions, MSG_TYPE_AUDIO) || isBitSet(decodeOptions, MSG_TYPE_AUDIO_STREAM)){
             qDebug() << "Send Audio";
 
             if(isBitSet(decodeOptions, COMPRESS_TYPE_HUFF) || isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
