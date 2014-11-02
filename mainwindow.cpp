@@ -35,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // connect serial com to audio broadcast player
     connect(serial, SIGNAL(onAudioReceived(QByteArray&)), audio, SLOT(onAudioReceived(QByteArray&)));
+    connect(serial, SIGNAL(onAudioStreamReceived(QByteArray&)), audio, SLOT(onAudioStreamReceived(QByteArray&)));
 
     // connect button click events to respective slots
     connect(ui->bnRecord, SIGNAL(clicked()), this, SLOT(onRecordButtonClicked()));
@@ -94,6 +95,14 @@ void MainWindow::onSendAudioButtonClicked()
     setbit(decodeOptions, MSG_TYPE_AUDIO);
 
     serial->write(data, 99, settings.useHeader, decodeOptions);
+}
+
+void MainWindow::onStreamBufferSendReady(QByteArray& buffer)
+{
+    AdvancedSettings::Settings settings = advancedSettings->getSettings();
+    setbit(settings.bDecodeOpts, MSG_TYPE_AUDIO_STREAM);
+
+    serial->write(buffer, 99, settings.useHeader, settings.bDecodeOpts);
 }
 
 void MainWindow::onSendTextButtonClicked()

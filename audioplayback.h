@@ -83,6 +83,7 @@ public slots:
 
 signals:
     void stoppedPlaying();
+    void onStreamBufferSendReady(QByteArray&);
 
 private:
     //! recording

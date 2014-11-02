@@ -36,6 +36,7 @@ public slots:
     void onMessageReceived(int numQueued);
 
     void onPlaybackStopped();
+    void onStreamBufferSendReady(QByteArray&);
 
     void debugSerial();
 
