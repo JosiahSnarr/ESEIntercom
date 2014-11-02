@@ -140,7 +140,7 @@ void SerialCom::onDataReceived()
                     qDebug() << message->msg << "\n";
                 }
                 else if(isBitSet(_inHeader.bDecodeOpts, MSG_TYPE_AUDIO)){
-                    qDebug() << "decode audio";
+                    qDebug() << "decode audio broadcast";
 
                     // uncompress the data
                     rldecode(raw, _inHeader.lDataLength, decodeBuffer, _inHeader.lUncompressedLength, 0xFF);
@@ -149,6 +149,17 @@ void SerialCom::onDataReceived()
                     audioBuffer.append((char*)decodeBuffer, _inHeader.lDataLength);
 
                     emit onAudioReceived(audioBuffer);
+                }
+                else if(isBitSet(_inHeader.bDecodeOpts, MSG_TYPE_AUDIO_STREAM)){
+                    qDebug() << "decode audio stream";
+
+                    // decompress data
+                    rldecode(raw, _inHeader.lDataLength, decodeBuffer, _inHeader.lUncompressedLength, 0xFF);
+
+                    QByteArray audioBuffer;
+                    audioBuffer.append((char*)decodeBuffer, _inHeader.lDataLength);
+
+                    emit onAudioStreamReceived(audioBuffer);
                 }
 
             }else{
@@ -175,6 +186,13 @@ void SerialCom::onDataReceived()
                     // send the audio buffer to the broadcast player
                     QByteArray audioBuffer = _receiveBuffer.read(_inHeader.lDataLength);
                     emit onAudioReceived(audioBuffer);
+
+                }
+                // Uncompressed audio stream
+                else if(isBitSet(_inHeader.bDecodeOpts, MSG_TYPE_AUDIO_STREAM)){
+
+                    QByteArray audioBuffer = _receiveBuffer.read(_inHeader.lDataLength);
+                    emit onAudioStreamReceived(audioBuffer);
 
                 }
             }
