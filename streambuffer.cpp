@@ -38,7 +38,7 @@ qint64 StreamBuffer::readData(char *data, qint64 maxlen)
     QMutexLocker locker(_sync);
 
     qint64 currentPos = pos();
-
+    qDebug() << "readPos: " << _readPos;
     seek(_readPos);
 
     qint64 bytesRead = QBuffer::readData(data, maxlen);
@@ -47,6 +47,11 @@ qint64 StreamBuffer::readData(char *data, qint64 maxlen)
     seek(currentPos);
 
     return bytesRead;
+}
+
+qint64 StreamBuffer::readPosition() const
+{
+    return _readPos;
 }
 
 StreamBuffer::~StreamBuffer()

@@ -51,7 +51,7 @@ void AudioPlayback::play()
 void AudioPlayback::stopPlayback()
 {
     qDebug() << "Stop Play\n";
-    _buffer.close();
+    if(_buffer.isOpen()) _buffer.close();
     _playing = false;
 }
 
@@ -75,7 +75,9 @@ void AudioPlayback::onTick()
 {
     qDebug() << "onTick";
 
-    QByteArray buffer = _streamBufferRecord.read(_streamBufferRecord.size());
+    qint64 diff = _streamBufferRecord.size() - _streamBufferRecord.readPosition();
+
+    QByteArray buffer = _streamBufferRecord.read(diff);
     emit onStreamBufferSendReady(buffer);
 }
 
