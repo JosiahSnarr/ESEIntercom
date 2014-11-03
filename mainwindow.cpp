@@ -245,6 +245,7 @@ void MainWindow::setEnabledUIComponents(bool enabled)
     ui->bnRecord->setEnabled(enabled);
     ui->bnSendAudio->setEnabled(enabled);
     ui->bnListen->setEnabled(enabled);
+    ui->bnStream->setEnabled(enabled);
 }
 
 MainWindow::~MainWindow()
