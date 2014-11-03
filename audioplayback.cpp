@@ -21,6 +21,7 @@ AudioPlayback::AudioPlayback(AudioSettings::Settings format, QObject *parent) : 
     _playing = false;
     _broadcastPending = false;
     _isStreamRecording = false;
+    _isStreamPlaying = false;
 }
 
 void AudioPlayback::record()
@@ -50,9 +51,15 @@ void AudioPlayback::play()
 
 void AudioPlayback::stopPlayback()
 {
-    qDebug() << "Stop Play\n";
     if(_buffer.isOpen()) _buffer.close();
     _playing = false;
+
+    if(_isStreamPlaying){
+        qDebug() << "stream end";
+        _output->stop();
+        _streamBufferPlay.close();
+        _isStreamPlaying = false;
+    }
 }
 
 void AudioPlayback::startStreamingRecording()
@@ -66,7 +73,7 @@ void AudioPlayback::startStreamingRecording()
     // start recording to the stream buffer
     _input->start(&_streamBufferRecord);
     // send data every 3 seconds
-    _timer->start(3000);
+    _timer->start(4000);
 
     _isStreamRecording = true;
 }
@@ -91,6 +98,7 @@ void AudioPlayback::stopStreamingRecording()
 void AudioPlayback::onPlayerStateChanged(QAudio::State state)
 {
     if(state == QAudio::StoppedState || state == QAudio::IdleState){
+        qDebug() << "stop state";
         stopPlayback();
         emit stoppedPlaying();
     }
@@ -98,8 +106,6 @@ void AudioPlayback::onPlayerStateChanged(QAudio::State state)
 
 void AudioPlayback::onAudioReceived(QByteArray& buffer)
 {
-    qDebug() << "Broadcast received";
-
     if(_playing){
         qDebug() << "Settings broadcast to pending";
         _broadcastPending = true;
@@ -118,15 +124,18 @@ void AudioPlayback::onAudioReceived(QByteArray& buffer)
 
 void AudioPlayback::onAudioStreamReceived(QByteArray &buffer)
 {
-    _streamBufferPlay.write(buffer);
-
     if(!_isStreamPlaying){
+        qDebug() << "stream start";
         stopPlayback();
+        _streamBufferPlay.open(QIODevice::ReadWrite);
+        _streamBufferPlay.write(buffer);
+        _output->start(&_streamBufferPlay);
         _isStreamPlaying = true;
     }
-
-    _streamBufferPlay.open(QIODevice::ReadWrite);
-    _output->start(&_streamBufferPlay);
+    else{
+        qDebug() << "write stream buffer";
+        _streamBufferPlay.write(buffer);
+    }
 }
 
 void AudioPlayback::createAudioIO(QAudioFormat format)
