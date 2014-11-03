@@ -73,6 +73,8 @@ void AudioPlayback::startStreamingRecording()
 
 void AudioPlayback::onTick()
 {
+    qDebug() << "onTick";
+
     QByteArray buffer = _streamBufferRecord.read(_streamBufferRecord.size());
     emit onStreamBufferSendReady(buffer);
 }

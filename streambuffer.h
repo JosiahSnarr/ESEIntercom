@@ -21,7 +21,7 @@ public slots:
 private:
     qint64 _readPos;
     //! Thread synchronization
-    QMutex _sync;
+    QMutex* _sync;
 
 };
 

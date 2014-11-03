@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // audio recording and playback
     audio = new AudioPlayback(audioSettings->getSettings(), this);
     connect(audio, SIGNAL(stoppedPlaying()), this, SLOT(onPlaybackStopped()));
+    connect(audio, SIGNAL(onStreamBufferSendReady(QByteArray&)), this, SLOT(onStreamBufferSendReady(QByteArray&)));
 
     // init serial com
     serial = new SerialCom(this);
@@ -42,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->bnListen, SIGNAL(clicked()), this, SLOT(onListenButtonClicked()));
     connect(ui->bnSendAudio, SIGNAL(clicked()), this, SLOT(onSendAudioButtonClicked()));
     connect(ui->bnNextMessage, SIGNAL(clicked()), this, SLOT(onNextMessageButtonClicked()));
+    connect(ui->bnStream, SIGNAL(clicked()), this, SLOT(onStreamButtonClicked()));
 
     connect(ui->bnSendText, SIGNAL(clicked()), this, SLOT(onSendTextButtonClicked()));
     ui->bnNextMessage->setEnabled(false);
@@ -97,8 +99,15 @@ void MainWindow::onSendAudioButtonClicked()
     serial->write(data, 99, settings.useHeader, decodeOptions);
 }
 
+void MainWindow::onStreamButtonClicked()
+{
+    audio->startStreamingRecording();
+}
+
 void MainWindow::onStreamBufferSendReady(QByteArray& buffer)
 {
+    qDebug() << "Sending audio stream";
+
     AdvancedSettings::Settings settings = advancedSettings->getSettings();
     setbit(settings.bDecodeOpts, MSG_TYPE_AUDIO_STREAM);
 

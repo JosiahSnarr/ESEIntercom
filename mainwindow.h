@@ -27,6 +27,7 @@ public slots:
     void onListenButtonClicked();
     void onSendAudioButtonClicked();
     void onSendTextButtonClicked();
+    void onStreamButtonClicked();
     void onNextMessageButtonClicked();
     void onPhoneBookButtonClicked();
 
