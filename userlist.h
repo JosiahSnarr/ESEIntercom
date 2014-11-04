@@ -5,6 +5,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+#define USER_SAVE "users.json"
+
 class UserList : public QObject
 {
     Q_OBJECT
@@ -17,6 +19,8 @@ public:
     };
 
     bool addUser(QString name, int id);
+    void save();
+    void load();
 
 signals:
 
