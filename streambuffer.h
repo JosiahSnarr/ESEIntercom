@@ -14,6 +14,9 @@ public:
     qint64 writeData(const char *data, qint64 len);
     qint64 readData(char *data, qint64 maxlen);
 
+    void removeChunk(qint64 offset);
+    void resetBuffer(QByteArray&);
+
     qint64 readPosition() const;
 
 signals:

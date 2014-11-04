@@ -49,6 +49,33 @@ qint64 StreamBuffer::readData(char *data, qint64 maxlen)
     return bytesRead;
 }
 
+void StreamBuffer::removeChunk(qint64 offset)
+{
+    qint64 remainingBytes = size() - offset;
+
+    if(remainingBytes > 0){
+        reset();
+        seek(offset);
+
+        QByteArray array = read(remainingBytes);
+
+        resetBuffer(array);
+        seek(remainingBytes);
+    }
+    else{
+        resetBuffer(QByteArray());
+    }
+}
+
+void StreamBuffer::resetBuffer(QByteArray &buffer)
+{
+    if(!isOpen()){
+        reset();
+        setData(buffer);
+        _readPos = 0;
+    }
+}
+
 qint64 StreamBuffer::readPosition() const
 {
     return _readPos;

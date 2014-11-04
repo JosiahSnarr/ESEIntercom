@@ -73,7 +73,7 @@ void AudioPlayback::startStreamingRecording()
     // start recording to the stream buffer
     _input->start(&_streamBufferRecord);
     // send data every 3 seconds
-    _timer->start(4000);
+    _timer->start(2000);
 
     _isStreamRecording = true;
 }
@@ -82,7 +82,8 @@ void AudioPlayback::onTick()
 {
     qDebug() << "onTick";
 
-    qint64 diff = _streamBufferRecord.size() - _streamBufferRecord.readPosition();
+    qint64 readPos = _streamBufferRecord.readPosition();
+    qint64 diff = _streamBufferRecord.size() - readPos;
 
     QByteArray buffer = _streamBufferRecord.read(diff);
     emit onStreamBufferSendReady(buffer);
