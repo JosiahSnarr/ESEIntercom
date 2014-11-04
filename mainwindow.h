@@ -27,6 +27,7 @@ public slots:
     void onListenButtonClicked();
     void onSendAudioButtonClicked();
     void onSendTextButtonClicked();
+    void onStreamButtonClicked();
     void onNextMessageButtonClicked();
     void onPhoneBookButtonClicked();
 
@@ -36,6 +37,7 @@ public slots:
     void onMessageReceived(int numQueued);
 
     void onPlaybackStopped();
+    void onStreamBufferSendReady(QByteArray&);
 
     void debugSerial();
 

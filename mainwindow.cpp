@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // audio recording and playback
     audio = new AudioPlayback(audioSettings->getSettings(), this);
     connect(audio, SIGNAL(stoppedPlaying()), this, SLOT(onPlaybackStopped()));
+    connect(audio, SIGNAL(onStreamBufferSendReady(QByteArray&)), this, SLOT(onStreamBufferSendReady(QByteArray&)));
 
     // init serial com
     serial = new SerialCom(this);
@@ -35,12 +36,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // connect serial com to audio broadcast player
     connect(serial, SIGNAL(onAudioReceived(QByteArray&)), audio, SLOT(onAudioReceived(QByteArray&)));
+    connect(serial, SIGNAL(onAudioStreamReceived(QByteArray&)), audio, SLOT(onAudioStreamReceived(QByteArray&)));
 
     // connect button click events to respective slots
     connect(ui->bnRecord, SIGNAL(clicked()), this, SLOT(onRecordButtonClicked()));
     connect(ui->bnListen, SIGNAL(clicked()), this, SLOT(onListenButtonClicked()));
     connect(ui->bnSendAudio, SIGNAL(clicked()), this, SLOT(onSendAudioButtonClicked()));
     connect(ui->bnNextMessage, SIGNAL(clicked()), this, SLOT(onNextMessageButtonClicked()));
+    connect(ui->bnStream, SIGNAL(clicked()), this, SLOT(onStreamButtonClicked()));
 
     connect(ui->bnSendText, SIGNAL(clicked()), this, SLOT(onSendTextButtonClicked()));
     ui->bnNextMessage->setEnabled(false);
@@ -94,6 +97,28 @@ void MainWindow::onSendAudioButtonClicked()
     setbit(decodeOptions, MSG_TYPE_AUDIO);
 
     serial->write(data, 99, settings.useHeader, decodeOptions);
+}
+
+void MainWindow::onStreamButtonClicked()
+{
+    if(!audio->isStreamRecording()){
+        audio->startStreamingRecording();
+        ui->bnStream->setText("Stop Streaming");
+    }
+    else{
+        audio->stopStreamingRecording();
+        ui->bnStream->setText("Stream");
+    }
+}
+
+void MainWindow::onStreamBufferSendReady(QByteArray& buffer)
+{
+    qDebug() << "Sending audio stream";
+
+    AdvancedSettings::Settings settings = advancedSettings->getSettings();
+    setbit(settings.bDecodeOpts, MSG_TYPE_AUDIO_STREAM);
+
+    serial->write(buffer, 99, settings.useHeader, settings.bDecodeOpts);
 }
 
 void MainWindow::onSendTextButtonClicked()
@@ -227,6 +252,7 @@ void MainWindow::setEnabledUIComponents(bool enabled)
     ui->bnRecord->setEnabled(enabled);
     ui->bnSendAudio->setEnabled(enabled);
     ui->bnListen->setEnabled(enabled);
+    ui->bnStream->setEnabled(enabled);
 }
 
 MainWindow::~MainWindow()

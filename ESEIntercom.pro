@@ -26,7 +26,8 @@ HEADERS += audioplayback.h \
            rlencoding.h \
     advancedsettings.h \
     audiofilterbuffer.h \
-    phonebook.h
+    phonebook.h \
+    streambuffer.h
 FORMS += audiosettings.ui mainwindow.ui serialsettings.ui \
     advancedsettings.ui
 SOURCES += audioplayback.cpp \
@@ -39,5 +40,6 @@ SOURCES += audioplayback.cpp \
            rlencoding.cpp \
     advancedsettings.cpp \
     audiofilterbuffer.cpp \
-    phonebook.cpp
+    phonebook.cpp \
+    streambuffer.cpp
 RESOURCES += intercom.qrc

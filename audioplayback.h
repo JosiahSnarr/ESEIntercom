@@ -7,8 +7,10 @@
 #include <QAudioOutput>
 #include <QAudioFormat>
 #include <QAudioEncoderSettings>
+#include <QTimer>
 
 #include "audiofilterbuffer.h"
+#include "streambuffer.h"
 #include "audiosettings.h"
 
 /**
@@ -42,6 +44,16 @@ public:
     void stopPlayback();
 
     /**
+        Start an audio stream
+    */
+    void startStreamingRecording();
+
+    /**
+        Stop streaming
+    */
+    void stopStreamingRecording();
+
+    /**
         Set the audio format
 
         @param format
@@ -60,12 +72,17 @@ public:
     /**
         @return whether currently recording or not
     */
-    bool isRecording();
+    bool isRecording() const;
 
     /**
         @return whether currently recording or not
     */
-    bool isPlaying();
+    bool isPlaying() const;
+
+    /**
+        @return whether currently streaming or not
+    */
+    bool isStreamRecording() const;
 
     /**
         Get the recorded audio
@@ -77,10 +94,25 @@ public:
 
 public slots:
     void onPlayerStateChanged(QAudio::State);
+
+    /**
+        Handle audio broadcast received event
+    */
     void onAudioReceived(QByteArray&);
+
+    /**
+        Handle stream data received event
+    */
+    void onAudioStreamReceived(QByteArray& buffer);
+
+    /**
+        Handle the timer event for the stream recorder
+    */
+    void onTick();
 
 signals:
     void stoppedPlaying();
+    void onStreamBufferSendReady(QByteArray&);
 
 private:
     //! recording
@@ -89,8 +121,15 @@ private:
     QAudioOutput* _output;
     //! buffer to hold recorded data
     AudioFilterBuffer _buffer;
+    //! buffer to hold the audio stream
+    StreamBuffer _streamBufferRecord;
+    //!
+    StreamBuffer _streamBufferPlay;
     //! buffer used to hold broadcasted audio
     QBuffer _broadcast;
+
+    //! Timer for streaming
+    QTimer* _timer;
 
     //! is recording
     bool _recording;
@@ -98,6 +137,10 @@ private:
     bool _playing;
     //! is there a broadcast waiting to be played
     bool _broadcastPending;
+    //! is streaming recording stream audio
+    bool _isStreamRecording;
+    //! is playing stream audio
+    bool _isStreamPlaying;
 
     void createAudioIO(QAudioFormat format);
 

@@ -10,14 +10,18 @@
 
 #include <QDebug>
 
-AudioPlayback::AudioPlayback(AudioSettings::Settings format, QObject *parent) :
-    QObject(parent)
+AudioPlayback::AudioPlayback(AudioSettings::Settings format, QObject *parent) : QObject(parent)
 {
+    _timer = new QTimer(this);
+    connect(_timer, SIGNAL(timeout()), this, SLOT(onTick()));
+
     setAudioFormat(format);
 
     _recording = false;
     _playing = false;
     _broadcastPending = false;
+    _isStreamRecording = false;
+    _isStreamPlaying = false;
 }
 
 void AudioPlayback::record()
@@ -47,14 +51,55 @@ void AudioPlayback::play()
 
 void AudioPlayback::stopPlayback()
 {
-    qDebug() << "Stop Play\n";
-    _buffer.close();
+    if(_buffer.isOpen()) _buffer.close();
     _playing = false;
+
+    if(_isStreamPlaying){
+        qDebug() << "stream end";
+        _output->stop();
+        _streamBufferPlay.close();
+        _isStreamPlaying = false;
+    }
+}
+
+void AudioPlayback::startStreamingRecording()
+{
+    if(_recording){
+        stopRecording();
+    }
+
+    // open the buffer for readwrite
+    _streamBufferRecord.open(QIODevice::ReadWrite);
+    // start recording to the stream buffer
+    _input->start(&_streamBufferRecord);
+    // send data every 3 seconds
+    _timer->start(4000);
+
+    _isStreamRecording = true;
+}
+
+void AudioPlayback::onTick()
+{
+    qDebug() << "onTick";
+
+    qint64 diff = _streamBufferRecord.size() - _streamBufferRecord.readPosition();
+
+    QByteArray buffer = _streamBufferRecord.read(diff);
+    emit onStreamBufferSendReady(buffer);
+}
+
+void AudioPlayback::stopStreamingRecording()
+{
+    _input->stop();
+    _timer->stop();
+    _streamBufferRecord.close();
+    _isStreamRecording = false;
 }
 
 void AudioPlayback::onPlayerStateChanged(QAudio::State state)
 {
     if(state == QAudio::StoppedState || state == QAudio::IdleState){
+        qDebug() << "stop state";
         stopPlayback();
         emit stoppedPlaying();
     }
@@ -62,8 +107,6 @@ void AudioPlayback::onPlayerStateChanged(QAudio::State state)
 
 void AudioPlayback::onAudioReceived(QByteArray& buffer)
 {
-    qDebug() << "Broadcast received";
-
     if(_playing){
         qDebug() << "Settings broadcast to pending";
         _broadcastPending = true;
@@ -77,6 +120,22 @@ void AudioPlayback::onAudioReceived(QByteArray& buffer)
         _broadcast.setData(buffer);
         _broadcast.open(QIODevice::ReadOnly);
         _output->start(&_broadcast);
+    }
+}
+
+void AudioPlayback::onAudioStreamReceived(QByteArray &buffer)
+{
+    if(!_isStreamPlaying){
+        qDebug() << "stream start";
+        stopPlayback();
+        _streamBufferPlay.open(QIODevice::ReadWrite);
+        _streamBufferPlay.write(buffer);
+        _output->start(&_streamBufferPlay);
+        _isStreamPlaying = true;
+    }
+    else{
+        qDebug() << "write stream buffer";
+        _streamBufferPlay.write(buffer);
     }
 }
 
@@ -119,14 +178,19 @@ void AudioPlayback::getRecordedAudio(QBuffer& data) const
     data.setData(b);
 }
 
-bool AudioPlayback::isRecording()
+bool AudioPlayback::isRecording() const
 {
     return _recording;
 }
 
-bool AudioPlayback::isPlaying()
+bool AudioPlayback::isPlaying() const
 {
     return _recording;
+}
+
+bool AudioPlayback::isStreamRecording() const
+{
+    return _isStreamRecording;
 }
 
 AudioPlayback::~AudioPlayback()

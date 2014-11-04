@@ -61,6 +61,13 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QPushButton" name="bnStream">
+        <property name="text">
+         <string>Stream</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </widget>

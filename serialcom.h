@@ -67,7 +67,16 @@ signals:
             The number of messages in the queue
     */
     void onQueueUpdate(int numQueued);
+
+    /**
+        Emmitted when an audio broadcast is received
+    */
     void onAudioReceived(QByteArray&);
+
+    /**
+        Emmitted when part of an audio stream is received
+    */
+    void onAudioStreamReceived(QByteArray&);
 
 public slots:
     /**
