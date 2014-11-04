@@ -49,7 +49,7 @@ void UserList::load()
 
         QJsonObject obj = doc.object();
 
-        _userList = obj["userlist"];
+        _userList = obj["userlist"].toArray();
     }
 }
 
