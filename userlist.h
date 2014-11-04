@@ -22,6 +22,8 @@ public:
     void save();
     void load();
 
+    QStringList toList();
+
 signals:
 
 public slots:

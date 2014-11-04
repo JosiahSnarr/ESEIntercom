@@ -10,6 +10,8 @@
 #include "serialcom.h"
 #include "audioplayback.h"
 
+#include "userlist.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -50,11 +52,13 @@ private:
     //! advance options
     AdvancedSettings* advancedSettings;
 
-
     //! serial read write access
     SerialCom* serial;
     //! audio plack and recording
     AudioPlayback* audio;
+
+    //! user list
+    UserList userList;
 
     /**
         Initialize the Menu Actions

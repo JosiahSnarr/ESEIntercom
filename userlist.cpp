@@ -2,9 +2,11 @@
 
 #include <QFile>
 #include <QJsonDocument>
+#include <QStringList>
 
 UserList::UserList(QObject *parent) : QObject(parent)
 {
+    load();
 }
 
 bool UserList::addUser(QString name, int id)
@@ -53,6 +55,20 @@ void UserList::load()
     }
 }
 
+QStringList UserList::toList()
+{
+    QStringList list;
 
+    int i;
+    for(i = 0; i < _userList.size(); ++i){
+        QJsonObject obj = _userList.takeAt(i).toObject();
+        QString content;
+
+        content.append(obj["name"].toString() + " : " + obj["id"].toString());
+        list << content;
+    }
+
+    return list;
+}
 
 
