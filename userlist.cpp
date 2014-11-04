@@ -4,6 +4,8 @@
 #include <QJsonDocument>
 #include <QStringList>
 
+#include <QDebug>
+
 UserList::UserList(QObject *parent) : QObject(parent)
 {
     load();
@@ -64,7 +66,8 @@ QStringList UserList::toList()
         QJsonObject obj = _userList.takeAt(i).toObject();
         QString content;
 
-        content.append(obj["name"].toString() + " : " + obj["id"].toString());
+        content.append(obj["name"].toString() + " : " + QString("%1").arg(obj["id"].toInt()));
+        qDebug() << content;
         list << content;
     }
 

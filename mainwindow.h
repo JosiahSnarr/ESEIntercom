@@ -31,7 +31,7 @@ public slots:
     void onSendTextButtonClicked();
     void onStreamButtonClicked();
     void onNextMessageButtonClicked();
-    void onPhoneBookButtonClicked();
+    void onAddUserButtonClicked();
 
     void newSession();
     void closeSession();
@@ -77,6 +77,9 @@ private:
      *      the message information
     */
     void updateMessageDisplay(Message* message);
+
+protected:
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // MAINWINDOW_H

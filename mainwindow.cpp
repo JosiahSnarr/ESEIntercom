@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QByteArray>
 #include <QDateTime>
+#include <QMessageBox>
 
 #include "bitopts.h"
 
@@ -47,6 +48,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->bnSendText, SIGNAL(clicked()), this, SLOT(onSendTextButtonClicked()));
     ui->bnNextMessage->setEnabled(false);
+
+    connect(ui->bnAddUser, SIGNAL(clicked()), this, SLOT(onAddUserButtonClicked()));
+
+    // add user list info
+    ui->lwUsers->addItems(userList.toList());
 
     initMenuActions();
 
@@ -139,17 +145,29 @@ void MainWindow::onSendTextButtonClicked()
     ui->etSend->setPlainText("");
 }
 
-
-void MainWindow::onPhoneBookButtonClicked()
-{
-    serial->printPhoneBook();
-}
-
 void MainWindow::onNextMessageButtonClicked()
 {
     Message* message = serial->getNextMessageFromQueue();
     updateMessageDisplay(message);
     free(message);
+}
+
+void MainWindow::onAddUserButtonClicked()
+{
+    QString name = ui->etUserName->text();
+    QString id = ui->etUserId->text();
+
+    if(name.length() == 0 || id.length() == 0){
+        QMessageBox msgbox;
+        msgbox.setText("Empty fields are bad!!! RAAAAAAAAWWWWRRRR!!!");
+        msgbox.exec();
+    }
+    else{
+
+        userList.addUser(name, id.toInt());
+        ui->lwUsers->addItem(name + " : " + id);
+
+    }
 }
 
 void MainWindow::updateMessageDisplay(Message* message)
@@ -253,6 +271,12 @@ void MainWindow::setEnabledUIComponents(bool enabled)
     ui->bnSendAudio->setEnabled(enabled);
     ui->bnListen->setEnabled(enabled);
     ui->bnStream->setEnabled(enabled);
+}
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+    userList.save();
+    event->accept();
 }
 
 MainWindow::~MainWindow()
