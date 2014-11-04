@@ -94,8 +94,20 @@ public:
 
 public slots:
     void onPlayerStateChanged(QAudio::State);
+
+    /**
+        Handle audio broadcast received event
+    */
     void onAudioReceived(QByteArray&);
+
+    /**
+        Handle stream data received event
+    */
     void onAudioStreamReceived(QByteArray& buffer);
+
+    /**
+        Handle the timer event for the stream recorder
+    */
     void onTick();
 
 signals:

@@ -91,6 +91,7 @@ void AudioPlayback::onTick()
 void AudioPlayback::stopStreamingRecording()
 {
     _input->stop();
+    _timer->stop();
     _streamBufferRecord.close();
     _isStreamRecording = false;
 }

@@ -101,7 +101,14 @@ void MainWindow::onSendAudioButtonClicked()
 
 void MainWindow::onStreamButtonClicked()
 {
-    audio->startStreamingRecording();
+    if(!audio->isStreamRecording()){
+        audio->startStreamingRecording();
+        ui->bnStream->setText("Stop Streaming");
+    }
+    else{
+        audio->stopStreamingRecording();
+        ui->bnStream->setText("Stream");
+    }
 }
 
 void MainWindow::onStreamBufferSendReady(QByteArray& buffer)
