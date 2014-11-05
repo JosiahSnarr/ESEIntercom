@@ -31,7 +31,7 @@ bool UserList::addUser(QString name, int id)
 void UserList::save()
 {
     QJsonObject userList;
-    userList["userlist"] = _userList;
+    userList.insert("userlist", _userList);
 
     QJsonDocument doc(userList);
 
