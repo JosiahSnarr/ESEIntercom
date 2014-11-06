@@ -394,6 +394,11 @@ PhoneLog* SerialCom::getPhoneLog()
     return &_log;
 }
 
+void SerialCom::setStationId(int id)
+{
+    _stationId = id;
+}
+
 SerialCom::~SerialCom()
 {
     delete _serial;

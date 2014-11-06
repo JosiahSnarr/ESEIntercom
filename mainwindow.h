@@ -65,6 +65,9 @@ private:
     int senderId;
     int receiverId;
 
+    //! this stations id
+    int _id;
+
     /**
         Initialize the Menu Actions
     */

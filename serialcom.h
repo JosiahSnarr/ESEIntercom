@@ -129,6 +129,14 @@ public:
     */
     PhoneLog* getPhoneLog();
 
+    /**
+        Set the id of this station
+
+        @param id
+            id to change to
+    */
+    void setStationId(int id);
+
 private:
     //! serial port access
     QSerialPort* _serial;
@@ -147,6 +155,9 @@ private:
     MessageQueue _queue;
     //! added to log time and number of messages per sender
     PhoneLog _log;
+
+    //! ID of this station
+    int _stationId;
 
     /**
         Remove bytes [0, offset] from the buffer and move [offset, remaining] to the start.
