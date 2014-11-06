@@ -127,7 +127,7 @@ public:
 
     /**
     */
-    void printPhoneBook();
+    PhoneLog* getPhoneLog();
 
 private:
     //! serial port access

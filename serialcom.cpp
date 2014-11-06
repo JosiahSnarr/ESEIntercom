@@ -233,7 +233,7 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
             Message message;
             message.receiverID = receiverId;
             message.priority = 1;
-            message.senderID = rand() % 50;
+            message.senderID = rand() % 5;
             message.timestamp = (uint32_t) QDateTime::currentDateTimeUtc().toTime_t();
             message.checksum = checksum(sizeof(Message));
 
@@ -389,9 +389,9 @@ bool SerialCom::isUsingHeader() const
     return _useHeader;
 }
 
-void SerialCom::printPhoneBook()
+PhoneLog* SerialCom::getPhoneLog()
 {
-    transversePhoneBookInOrder(&_log, printPhoneLog);
+    return &_log;
 }
 
 SerialCom::~SerialCom()

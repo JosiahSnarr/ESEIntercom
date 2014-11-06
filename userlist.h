@@ -22,6 +22,8 @@ public:
     void save();
     void load();
 
+    int getUserId(int idx);
+
     QString getString(int idx);
     QStringList toList();
     QString getLast();

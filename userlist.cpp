@@ -99,6 +99,14 @@ QStringList UserList::toList()
     return list;
 }
 
+int UserList::getUserId(int idx)
+{
+    if(idx > 0 && idx < _userList.size()){
+        return _userList[idx].id;
+    }
+    return -1;
+}
+
 QString UserList::getLast()
 {
     return getString(_userList.size()-1);

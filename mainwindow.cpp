@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->bnAddUser, SIGNAL(clicked()), this, SLOT(onAddUserButtonClicked()));
 
     // add user list info
+    connect(ui->lwUsers, SIGNAL(itemSelectionChanged()), this, SLOT(onUserListItemClicked()));
     ui->lwUsers->addItems(userList.toList());
 
     initMenuActions();
@@ -172,6 +173,26 @@ void MainWindow::onAddUserButtonClicked()
             showAlert("Id already exists");
         }
 
+    }
+}
+
+void MainWindow::onUserListItemClicked()
+{
+    int idx = ui->lwUsers->currentRow();
+    senderId = userList.getUserId(idx);
+
+    SenderData* data = searchPhoneBook(serial->getPhoneLog(), senderId);
+
+    if(data != NULL){
+        QDateTime time = QDateTime::fromTime_t(data->timestamp).toUTC();
+        QString timeStampLabel("Time: ");
+        timeStampLabel.append(time.toString("h:m:s ap"));
+        ui->lbLastTimeForUser->setText(timeStampLabel);
+
+        ui->lbNumMessagesForUser->setText(QString("Messages: %1").arg(data->id));
+    }
+    else{
+        showAlert("No Data for this User!!!!!");
     }
 }
 

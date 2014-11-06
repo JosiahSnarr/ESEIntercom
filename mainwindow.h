@@ -32,6 +32,7 @@ public slots:
     void onStreamButtonClicked();
     void onNextMessageButtonClicked();
     void onAddUserButtonClicked();
+    void onUserListItemClicked();
 
     void newSession();
     void closeSession();
@@ -59,6 +60,9 @@ private:
 
     //! user list
     UserList userList;
+
+    //!
+    int senderId;
 
     /**
         Initialize the Menu Actions
