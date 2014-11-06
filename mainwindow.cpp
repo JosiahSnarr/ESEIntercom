@@ -158,14 +158,19 @@ void MainWindow::onAddUserButtonClicked()
     QString id = ui->etUserId->text();
 
     if(name.length() == 0 || id.length() == 0){
-        QMessageBox msgbox;
-        msgbox.setText("Empty fields are bad!!! RAAAAAAAAWWWWRRRR!!!");
-        msgbox.exec();
+        showAlert("Empty fields are bad!!! RAAAAAAAAWWWWRRRR!!!");
     }
     else{
 
-        userList.addUser(name, id.toInt());
-        ui->lwUsers->addItem(userList.getLast());
+        if(userList.addUser(name, id.toInt())){
+            ui->lwUsers->addItem(userList.getLast());
+
+            ui->etUserName->setText("");
+            ui->etUserId->setText("");
+        }
+        else{
+            showAlert("Id already exists");
+        }
 
     }
 }
@@ -271,6 +276,13 @@ void MainWindow::setEnabledUIComponents(bool enabled)
     ui->bnSendAudio->setEnabled(enabled);
     ui->bnListen->setEnabled(enabled);
     ui->bnStream->setEnabled(enabled);
+}
+
+void MainWindow::showAlert(QString msg)
+{
+    QMessageBox box;
+    box.setText(msg);
+    box.exec();
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)

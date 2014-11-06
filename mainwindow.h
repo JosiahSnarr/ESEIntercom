@@ -78,6 +78,8 @@ private:
     */
     void updateMessageDisplay(Message* message);
 
+    void showAlert(QString msg);
+
 protected:
     void closeEvent(QCloseEvent *event);
 };
