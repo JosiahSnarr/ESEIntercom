@@ -165,7 +165,7 @@ void MainWindow::onAddUserButtonClicked()
     else{
 
         userList.addUser(name, id.toInt());
-        ui->lwUsers->addItem(name + " : " + id);
+        ui->lwUsers->addItem(userList.getLast());
 
     }
 }

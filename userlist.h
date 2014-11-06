@@ -2,8 +2,7 @@
 #define USERLIST_H
 
 #include <QObject>
-#include <QJsonObject>
-#include <QJsonArray>
+#include <vector>
 
 #define USER_SAVE "users.json"
 
@@ -17,19 +16,21 @@ public:
         QString name;
         int id;
     };
+    typedef std::vector<User>::iterator UserIterator;
 
     bool addUser(QString name, int id);
     void save();
     void load();
 
+    QString getString(int idx);
     QStringList toList();
+    QString getLast();
 
-signals:
-
-public slots:
+    int size() const;
 
 private:
-    QJsonArray _userList;
+    //! list of users
+    std::vector<User> _userList;
 
 };
 

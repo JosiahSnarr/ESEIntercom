@@ -1,8 +1,8 @@
 #include "userlist.h"
 
 #include <QFile>
-#include <QJsonDocument>
 #include <QStringList>
+#include <QTextStream>
 
 #include <QDebug>
 
@@ -13,31 +13,33 @@ UserList::UserList(QObject *parent) : QObject(parent)
 
 bool UserList::addUser(QString name, int id)
 {
-    int i;
-    for(i = 0; i < _userList.size(); ++i){
-        QJsonObject obj = _userList.takeAt(i).toObject();
-        if(obj["id"] == id) return false;
+    std::vector<User>::iterator iter;
+
+    // check if the id exists already
+    for(iter = _userList.begin(); iter != _userList.end(); ++iter){
+        if((*iter).id == id) return false;
     }
 
-    QJsonObject user;
-    user["name"] = name;
-    user["id"] = id;
+    User user;
+    user.id = id;
+    user.name = name;
 
-    _userList.append(user);
+    _userList.push_back(user);
 
     return true;
 }
 
 void UserList::save()
 {
-    QJsonObject userList;
-    userList.insert("userlist", _userList);
-
-    QJsonDocument doc(userList);
-
     QFile file(USER_SAVE);
+    QTextStream stream(&file);
+
     file.open(QIODevice::WriteOnly);
-    file.write(doc.toJson());
+
+    foreach(QString line, toList()){
+        stream << line << "\n";
+    }
+
     file.close();
 }
 
@@ -46,32 +48,64 @@ void UserList::load()
     QFile file(USER_SAVE);
     if(file.exists()){
 
-        file.open(QIODevice::ReadOnly | QIODevice::Text);
+        file.open(QIODevice::ReadOnly);
 
         QString content = file.readAll();
-        QJsonDocument doc = QJsonDocument::fromJson(content.toUtf8());
 
-        QJsonObject obj = doc.object();
+        foreach(QString line, content.split("\n")){
+            QStringList tokens = line.split(":");
 
-        _userList = obj["userlist"].toArray();
+            qDebug() << line;
+
+            if(tokens.length() > 1){
+                User user;
+                user.id = tokens[0].toInt();
+                user.name = tokens[1];
+
+                addUser(user.name, user.id);
+            }
+
+        }
+
     }
+}
+
+QString UserList::getString(int idx)
+{
+    QString user;
+    user.append(QString("%1").arg(_userList[idx].id));
+    user.append(":");
+    user.append(_userList[idx].name);
+
+    return user;
 }
 
 QStringList UserList::toList()
 {
+    UserIterator iter;
     QStringList list;
 
-    int i;
-    for(i = 0; i < _userList.size(); ++i){
-        QJsonObject obj = _userList.takeAt(i).toObject();
-        QString content;
+    for(iter = _userList.begin(); iter != _userList.end(); ++iter){
 
-        content.append(obj["name"].toString() + " : " + QString("%1").arg(obj["id"].toInt()));
-        qDebug() << content;
-        list << content;
+        QString user;
+        user.append(QString("%1").arg((*iter).id));
+        user.append(":");
+        user.append((*iter).name);
+
+        list << user;
+
     }
 
     return list;
 }
 
+QString UserList::getLast()
+{
+    return getString(_userList.size()-1);
+}
+
+int UserList::size() const
+{
+    return _userList.size();
+}
 
