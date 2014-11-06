@@ -210,12 +210,13 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
 {
     qDebug() << "Serial Write";
     QBuffer outData;
-    outData.open(QIODevice::WriteOnly);
+    outData.open(QIODevice::ReadWrite);
 
     FrameHeader outHeader;
     outHeader.lSignature = FRAME_SIGNATURE;
     outHeader.lSignature2 = FRAME_SIGNATURE;
     outHeader.bVersion = 1;
+    outHeader.bEncryptionKey = (uint8_t)'Q';
 
     if(useHeader){
         qDebug() << "Using Framed Data";
@@ -315,7 +316,6 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
 
     // write out to serial
     qDebug() << "written bytes: " << _serial->write(outData.buffer()) << "\n";
-    _serial->flush();
     outData.close();
 }
 
@@ -324,6 +324,19 @@ Message* SerialCom::getNextMessageFromQueue()
     Message* message = deQueue(&_queue);
     emit onQueueUpdate(_queue.size);
     return message;
+}
+
+void SerialCom::encryptXOR(QBuffer& outBuffer, QBuffer &buffer, uint8_t key)
+{
+    int size = buffer.size();
+    int i;
+
+    for(i = 0; i < size; i++){
+        uint8_t byte;
+        buffer.read((char*)&byte, 1);
+        byte ^= key;
+        outBuffer.write((const char*)&byte, 1);
+    }
 }
 
 uint8_t SerialCom::checksum(int bytes)

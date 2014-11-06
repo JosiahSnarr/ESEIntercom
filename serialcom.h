@@ -44,6 +44,7 @@ typedef struct frameHeader{
     uint32_t lUncompressedLength; ///< Length of the uncompressed data
     uint8_t  bReceiverId;         ///< the id of the receiver
     uint8_t  bVersion;            ///< the header version
+    uint8_t  bEncryptionKey;      ///< the xor encryption key
     uint8_t  bDecodeOpts;         ///< Flags to specify how to decode message
 }FrameHeader;
 
@@ -158,6 +159,10 @@ private:
 
     //! ID of this station
     int _stationId;
+
+    /**
+    */
+    void encryptXOR(QBuffer& outBuffer, QBuffer& buffer, uint8_t key);
 
     /**
         Remove bytes [0, offset] from the buffer and move [offset, remaining] to the start.
