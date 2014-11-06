@@ -63,6 +63,7 @@ private:
 
     //!
     int senderId;
+    int receiverId;
 
     /**
         Initialize the Menu Actions

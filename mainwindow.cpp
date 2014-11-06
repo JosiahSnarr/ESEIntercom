@@ -125,7 +125,7 @@ void MainWindow::onStreamBufferSendReady(QByteArray& buffer)
     AdvancedSettings::Settings settings = advancedSettings->getSettings();
     setbit(settings.bDecodeOpts, MSG_TYPE_AUDIO_STREAM);
 
-    serial->write(buffer, 99, settings.useHeader, settings.bDecodeOpts);
+    serial->write(buffer, receiverId, settings.useHeader, settings.bDecodeOpts);
 }
 
 void MainWindow::onSendTextButtonClicked()
@@ -141,7 +141,7 @@ void MainWindow::onSendTextButtonClicked()
     uint8_t decodeOpts = settings.bDecodeOpts;
     setbit(decodeOpts, MSG_TYPE_TEXT);
 
-    serial->write(data, 99, settings.useHeader, decodeOpts);
+    serial->write(data, receiverId, settings.useHeader, decodeOpts);
 
     ui->etSend->setPlainText("");
 }
@@ -179,11 +179,12 @@ void MainWindow::onAddUserButtonClicked()
 void MainWindow::onUserListItemClicked()
 {
     int idx = ui->lwUsers->currentRow();
-    senderId = userList.getUserId(idx);
+    senderId = receiverId = userList.getUserId(idx);
 
     SenderData* data = searchPhoneBook(serial->getPhoneLog(), senderId);
 
     if(data != NULL){
+
         QDateTime time = QDateTime::fromTime_t(data->timestamp).toUTC();
         QString timeStampLabel("Time: ");
         timeStampLabel.append(time.toString("h:m:s ap"));
