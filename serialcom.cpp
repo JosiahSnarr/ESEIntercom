@@ -256,12 +256,16 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
                     outHeader.lDataLength = iEncodeLen;
 
                     outData.write((char*)&outHeader, sizeof(FrameHeader));
-                    outData.write((char*)encodedBuffer, iEncodeLen);
+
+                    if(isBitSet(decodeOptions, ENCRYPT_TYPE_XOR))
+                        encryptXOR(outData, (uint8_t*)encodedBuffer, iEncodeLen, outHeader.bEncryptionKey);
+                    else
+                        outData.write((char*)encodedBuffer, iEncodeLen);
+
+                    free(encodedBuffer);
 
                 }
-                if(isBitSet(decodeOptions, COMPRESS_TYPE_HUFF)){
 
-                }
             }
             // no compression of a message
             else{
@@ -270,7 +274,11 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
                 outHeader.lDataLength = sizeof(Message);
 
                 outData.write((char*)&outHeader, sizeof(FrameHeader));
-                outData.write((char*)&message, sizeof(Message));
+
+                if(isBitSet(decodeOptions, ENCRYPT_TYPE_XOR))
+                    encryptXOR(outData, (uint8_t*)&message, sizeof(Message), outHeader.bEncryptionKey);
+                else
+                    outData.write((char*)&message, sizeof(Message));
             }
 
         }
@@ -296,7 +304,13 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
                     qDebug() << "Compression Ratio: " << ((float)outHeader.lUncompressedLength/(float)outHeader.lDataLength);
 
                     outData.write((char*)&outHeader, sizeof(FrameHeader));
-                    outData.write((char*)encodedBuffer, iEncodeLen);
+
+                    if(isBitSet(decodeOptions, ENCRYPT_TYPE_XOR))
+                        encryptXOR(outData, encodedBuffer, iEncodeLen, outHeader.bEncryptionKey);
+                    else
+                        outData.write((char*)encodedBuffer, iEncodeLen);
+
+                    free(encodedBuffer);
                 }
 
             }
@@ -336,6 +350,16 @@ void SerialCom::encryptXOR(QBuffer& outBuffer, QBuffer &buffer, uint8_t key)
         buffer.read((char*)&byte, 1);
         byte ^= key;
         outBuffer.write((const char*)&byte, 1);
+    }
+}
+
+void SerialCom::encryptXOR(QBuffer &outBuffer, uint8_t *data, int len, uint8_t key)
+{
+    int i;
+
+    for(i = 0; i < len; ++i){
+        uint8_t x = data[i] ^ key;
+        outBuffer.write((const char*)&x, 1);
     }
 }
 

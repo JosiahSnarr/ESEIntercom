@@ -164,6 +164,8 @@ private:
     */
     void encryptXOR(QBuffer& outBuffer, QBuffer& buffer, uint8_t key);
 
+    void encryptXOR(QBuffer& outBuffer, uint8_t* data, int len, uint8_t key);
+
     /**
         Remove bytes [0, offset] from the buffer and move [offset, remaining] to the start.
 
