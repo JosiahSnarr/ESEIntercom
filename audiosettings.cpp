@@ -41,7 +41,7 @@ void AudioSettings::updateSettings()
 {
     settings.encoderSettings.setChannelCount(ui->cmbChannels->itemData(ui->cmbChannels->currentIndex()).toInt());
     settings.encoderSettings.setBitRate(ui->cmbBitsRate->itemData(ui->cmbBitsRate->currentIndex()).toInt());
-    settings.encoderSettings.setSampleRate(ui->cmbSampleRate->itemData(ui->cmbSampleRate->currentIndex()).toInt());
+    settings.encoderSettings.setSampleRate(ui->etSampleRate->text().toInt());
     settings.encoderSettings.setCodec(ui->cmbAudioCodec->currentText());
     settings.upperThreshold = ui->cmbUpperThreshold->itemData(ui->cmbUpperThreshold->currentIndex()).toInt();
     settings.lowerThreshold = ui->cmbLowerThreshold->itemData(ui->cmbLowerThreshold->currentIndex()).toInt();
@@ -56,9 +56,9 @@ void AudioSettings::fillParams()
     ui->cmbChannels->addItem("2", 2);
 
     // sampling options
-    foreach(const int sampleRate, info.supportedAudioSampleRates()){
-        ui->cmbSampleRate->addItem(QString::number(sampleRate), sampleRate);
-    }
+ //   foreach(const int sampleRate, info.supportedAudioSampleRates()){
+ //       ui->cmbSampleRate->addItem(QString::number(sampleRate), sampleRate);
+  //  }
 
     ui->cmbBitsRate->addItem("8000", 8000);
     ui->cmbBitsRate->addItem("16000", 16000);
@@ -98,7 +98,7 @@ void AudioSettings::loadSettings()
         settings.lowerThreshold = json[LOWERTHRESHOLD].toInt();
 
         // update the dialoag to match
-        ui->cmbSampleRate->setCurrentIndex(ui->cmbSampleRate->findData(settings.encoderSettings.sampleRate()));
+        ui->etSampleRate->setText(QString("%1").arg(settings.encoderSettings.sampleRate()));
 
         ui->cmbChannels->setCurrentIndex( ui->cmbChannels->findData(settings.encoderSettings.channelCount()) );
         ui->cmbBitsRate->setCurrentIndex( ui->cmbBitsRate->findData(settings.encoderSettings.bitRate()) );
