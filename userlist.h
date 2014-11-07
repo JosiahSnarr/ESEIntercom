@@ -6,12 +6,16 @@
 
 #define USER_SAVE "users.json"
 
+/**
+    Manage database of users
+*/
 class UserList : public QObject
 {
     Q_OBJECT
 public:
     explicit UserList(QObject *parent = 0);
 
+    //! simple user definition
     struct User{
         QString name;
         int id;

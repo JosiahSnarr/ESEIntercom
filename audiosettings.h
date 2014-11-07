@@ -31,11 +31,11 @@ public:
     explicit AudioSettings(QWidget *parent = 0);
     ~AudioSettings();
 
-    //!
+    //! Audio Format settings (bit\sample rate, thresholds, etc)
     struct Settings{
-        QAudioEncoderSettings encoderSettings;
-        uint8_t upperThreshold;
-        uint8_t lowerThreshold;
+        QAudioEncoderSettings encoderSettings; ///< audio format
+        uint8_t upperThreshold;                ///< upper filter cut off
+        uint8_t lowerThreshold;                ///< lower filter cut off
     };
 
      Settings getSettings() const;

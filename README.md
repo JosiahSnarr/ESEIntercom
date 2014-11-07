@@ -15,7 +15,7 @@ communicate over house hold wiring. The Intercom will be able to send text messa
 Prerequisites
 -------------
 
-ESEIntercom uses QT as its user interface ( qt5 ).
+ESEIntercom uses QT as its user interface ( QT 5.3 ).
 Required Qt libraries must be placed in the executable directory or findable on the system path.
 
 How to Use
@@ -23,24 +23,6 @@ How to Use
 
 After starting the program you will see this window:
 
-![MainWindow](res/mainwindow.png)
-<span style="color:white;">@image latex res/mainwindow.png</span>
-
 Here you have the option to send text or audio messages.
 
-The Intercom audio and serial port configurations can all be set via seperate dialogs
-
-Here is the Serial Settings Dialog:
-
-![Serial Settings](res/serialsettings.png)
-<span style="color:white">@image latex res/serialsettings.png</span>
-
-Here is the Audio Settings Dialog:
-
-![Audio Settings](res/audiosettings.png)
-<span style="color:white">@image latex res/audiosettings.png</span>
-
-And here is the Advanced Options Dialog:
-
-![Advanced Settings](res/advancedoptions.png)
-<span style="color:white">@image latex res/advancedoptions.png</span>
+The Intercom audio and serial port configurations can all be set via seperate dialogs.

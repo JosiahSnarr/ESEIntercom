@@ -75,7 +75,7 @@ public:
     bool isRecording() const;
 
     /**
-        @return whether currently recording or not
+        @return whether currently playing or not
     */
     bool isPlaying() const;
 

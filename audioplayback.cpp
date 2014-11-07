@@ -186,7 +186,7 @@ bool AudioPlayback::isRecording() const
 
 bool AudioPlayback::isPlaying() const
 {
-    return _recording;
+    return _playing;
 }
 
 bool AudioPlayback::isStreamRecording() const

@@ -4,6 +4,9 @@
 #include <QBuffer>
 #include <QMutex>
 
+/**
+    Thread synched buffer for simultaneous read\write access
+*/
 class StreamBuffer : public QBuffer
 {
     Q_OBJECT
