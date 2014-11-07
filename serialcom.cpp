@@ -95,7 +95,7 @@ void SerialCom::onDataReceived()
         if(_inHeader.lSignature == FRAME_SIGNATURE && vote(_inHeader.lSignature, _inHeader.lSignature2)){
             // check if the correct station
             qDebug() << "receiver id: " << _inHeader.bReceiverId;
-            if(_inHeader.bReceiverId == _stationId){
+            if(_inHeader.bReceiverId == _stationId || (isBitSet(_inHeader.bDecodeOpts, MSG_TYPE_AUDIO) || isBitSet(_inHeader.bDecodeOpts, MSG_TYPE_AUDIO_STREAM))){
                 qDebug() << "Valid header received\n";
                 qDebug() << "Will wait for " << _inHeader.lDataLength << " bytes";
                 // specify that a packet is now being processed
