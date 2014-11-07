@@ -92,11 +92,18 @@ void SerialCom::onDataReceived()
 
         // verify the packet is valid
         if(_inHeader.lSignature == FRAME_SIGNATURE && vote(_inHeader.lSignature, _inHeader.lSignature2)){
-            qDebug() << "Valid header received\n";
-            qDebug() << "Will wait for " << _inHeader.lDataLength << " bytes";
-            // specify that a packet is now being processed
-            _isProcessingPacket = true;
-            removeProcessedData(_receiveBuffer, sizeof(FrameHeader));
+            // check if the correct station
+            if(_inHeader.bReceiverId == _stationId){
+                qDebug() << "Valid header received\n";
+                qDebug() << "Will wait for " << _inHeader.lDataLength << " bytes";
+                // specify that a packet is now being processed
+                _isProcessingPacket = true;
+                removeProcessedData(_receiveBuffer, sizeof(FrameHeader));
+            }
+            else{
+                qDebug() << "Data not for this station";
+                resetBuffer(_receiveBuffer);
+            }
         }
         else{
             resetBuffer(_receiveBuffer);

@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     //
-    _id = 5;
+    _id = 0;
 
     // settings dialogs
     audioSettings = new AudioSettings(this);
@@ -37,6 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // init serial com
     serial = new SerialCom(this);
     connect(serial, SIGNAL(onQueueUpdate(int)), this, SLOT(onMessageReceived(int)));
+
+    serial->setStationId(_id);
 
     // connect serial com to audio broadcast player
     connect(serial, SIGNAL(onAudioReceived(QByteArray&)), audio, SLOT(onAudioReceived(QByteArray&)));
