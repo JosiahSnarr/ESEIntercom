@@ -206,12 +206,12 @@ void SerialCom::onDataReceived()
                     _receiveBuffer.read((char*)message, sizeof(Message));
 
                     // validate checksum
-                    if(message->checksum == checksum((uint8_t*)message, sizeof(Message), _checksumDivisor)){
+                   // if(message->checksum == checksum((uint8_t*)message, sizeof(Message), _checksumDivisor)){
                         enQueue(&_queue, message);
                         emit onQueueUpdate(_queue.size);
 
                         qDebug() << message->msg << "\n";
-                    }
+                   // }
 
                 }
                 // Uncompressed Audio Message
@@ -268,17 +268,19 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
 
             // copy buffer into the message structure
             Message message;
+            memset(message.msg, '\0', BUFFER_MAX);
             message.receiverID = receiverId;
             message.priority = 1;
             message.senderID = rand() % 5;
             message.timestamp = (uint32_t) QDateTime::currentDateTimeUtc().toTime_t();
-            message.checksum = checksum((uint8_t*)&message, sizeof(Message), _checksumDivisor);
-
-            qDebug() << "send: checksum: " << message.checksum;
-
-            qDebug() << "timestamp: " << message.timestamp;
 
             memcpy(message.msg, buffer.data(), BUFFER_MAX);
+
+            message.checksum = checksum((uint8_t*)&message, sizeof(Message), _checksumDivisor);
+
+            qDebug() << "sizeof(Message) : " << sizeof(Message);
+
+            qDebug() << "send: checksum: " << message.checksum;
 
             // check if doing compression
             if(isBitSet(decodeOptions, COMPRESS_TYPE_HUFF) || isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
