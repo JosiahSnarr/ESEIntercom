@@ -142,6 +142,12 @@ private:
     //! is playing stream audio
     bool _isStreamPlaying;
 
+    /**
+        Create the audio input and output devices with a format
+
+        @param format
+            the given format to use
+    */
     void createAudioIO(QAudioFormat format);
 
 };

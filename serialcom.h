@@ -115,18 +115,31 @@ public:
     Message* getNextMessageFromQueue();
 
     /**
+        Calculate a checksum of the data
+
+        @param bytes
+            pointer to data
+
+        @param len
+            length of data
+
+        @param divisor
+            the checksum divisor
     */
     uint8_t checksum(uint8_t *bytes, int len, uint8_t divisor);
 
     /**
+        Set to frame the data
     */
     void setUseHeader(bool use);
 
     /**
+        @return true if using a header
     */
     bool isUsingHeader() const;
 
     /**
+        Get a pointer to the phone log
     */
     PhoneLog* getPhoneLog();
 
@@ -164,9 +177,34 @@ private:
     uint8_t _checksumDivisor;
 
     /**
+        XOR encrypt
+
+        @param outBuffer
+            buffer to store encrypted data
+
+        @param buffer
+            buffer of data to encrypt
+
+        @param key
+            XOR key
     */
     void encryptXOR(QBuffer& outBuffer, QBuffer& buffer, uint8_t key);
 
+    /**
+        XOR encrypt
+
+        @param outBuffer
+            buffer to store encrypted data
+
+        @param data
+            pointer to data
+
+        @param len
+            length of data
+
+        @param key
+            XOR key
+    */
     void encryptXOR(QBuffer& outBuffer, uint8_t* data, int len, uint8_t key);
 
     /**

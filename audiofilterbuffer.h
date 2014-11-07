@@ -49,10 +49,12 @@ public:
     qint64 writeData(const char *data, qint64 len);
 
     /**
+        @return the upper filter threshold
     */
     uint8_t getUpperThreshold() const;
 
     /**
+        @return the lower filter threshold
     */
     uint8_t getLowerThreshold() const;
 

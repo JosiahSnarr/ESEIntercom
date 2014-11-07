@@ -11,7 +11,14 @@ public:
     explicit StreamBuffer(QObject *parent = 0);
     ~StreamBuffer(void);
 
+    /**
+        Reimplementation of QBuffer::writeData()
+    */
     qint64 writeData(const char *data, qint64 len);
+
+    /**
+        Reimplementation of QBuffer::readData()
+    */
     qint64 readData(char *data, qint64 maxlen);
 
     void removeChunk(qint64 offset);
@@ -24,6 +31,7 @@ signals:
 public slots:
 
 private:
+    //! Position to read from
     qint64 _readPos;
     //! Thread synchronization
     QMutex* _sync;
