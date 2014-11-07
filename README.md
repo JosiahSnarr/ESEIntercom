@@ -3,6 +3,7 @@ ESE Intercom
 ============
 Intercom and Paging System  
 
+Project By: Natesh, Josiah, Shiv
 
 Objective
 ---------
@@ -21,8 +22,23 @@ Required Qt libraries must be placed in the executable directory or findable on 
 How to Use
 ----------
 
-After starting the program you will see this window:
+Serial and Audio settings can be configured via settings menu. Configure the COM port settings and open a new session(Messages -> New Session).
 
-Here you have the option to send text or audio messages.
+To send text
+* select a user from the user list.
+*Enter text into the bottom window and press send to send text messages.
 
-The Intercom audio and serial port configurations can all be set via seperate dialogs.
+To send audio
+* Press "Record"
+* Stop when desired
+* Optionally listen to the audio message before sending by pressing "Listen"
+* Press "Send to Send"
+
+Note: Audio streaming is partially implemented but not fully there. Audio will reach the other side and play however there are some "blank" spot.
+
+
+
+Note
+----
+MainWindow class contains mainly ui code
+

@@ -61,12 +61,14 @@ void AudioFilterBuffer::setUpperThreshold(int upper)
 {
     if(upper > Amplitude::MAX) upper = Amplitude::MAX;
     _upperThreshold = upper;
+    qDebug() << "upper: " << _upperThreshold;
 }
 
 void AudioFilterBuffer::setLowerThreshold(int lower)
 {
     if(lower < Amplitude::MIN) lower = Amplitude::MIN;
     _lowerThreshold = lower;
+    qDebug() << "lower: " << _lowerThreshold;
 }
 
 uint8_t AudioFilterBuffer::getLowerThreshold() const

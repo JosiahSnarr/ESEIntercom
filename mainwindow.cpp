@@ -235,10 +235,13 @@ void MainWindow::newSession()
 {
     SerialSettings::Settings settings = serialSettings->getSettings();
     AdvancedSettings::Settings advancedSetting = advancedSettings->getSettings();
+    AudioSettings::Settings audioSetting = audioSettings->getSettings();
 
     serial->setUseHeader(advancedSetting.useHeader);
 
     if(serial->open(settings)){
+        audio->setAudioFormat(audioSetting);
+
         ui->actionNew_Session->setEnabled(false);
         ui->actionClose_Session->setEnabled(true);
         setEnabledUIComponents(true);
