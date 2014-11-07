@@ -109,7 +109,7 @@ void SerialCom::onDataReceived()
         }
         else{
             resetBuffer(_receiveBuffer);
-            qDebug() << "Data discarded";
+            qDebug() << "Data discarded, invalid signature";
         }
         qDebug() << "\n";
     }
@@ -277,8 +277,6 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
             memcpy(message.msg, buffer.data(), BUFFER_MAX);
 
             message.checksum = checksum((uint8_t*)&message, sizeof(Message), _checksumDivisor);
-
-            qDebug() << "sizeof(Message) : " << sizeof(Message);
 
             qDebug() << "send: checksum: " << message.checksum;
 
