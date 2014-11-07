@@ -44,6 +44,7 @@ typedef struct frameHeader{
     uint32_t lUncompressedLength; ///< Length of the uncompressed data
     uint8_t  bReceiverId;         ///< the id of the receiver
     uint8_t  bVersion;            ///< the header version
+    uint8_t  bEncryptionKey;      ///< the xor encryption key
     uint8_t  bDecodeOpts;         ///< Flags to specify how to decode message
 }FrameHeader;
 
@@ -129,6 +130,14 @@ public:
     */
     PhoneLog* getPhoneLog();
 
+    /**
+        Set the id of this station
+
+        @param id
+            id to change to
+    */
+    void setStationId(int id);
+
 private:
     //! serial port access
     QSerialPort* _serial;
@@ -147,6 +156,15 @@ private:
     MessageQueue _queue;
     //! added to log time and number of messages per sender
     PhoneLog _log;
+
+    //! ID of this station
+    int _stationId;
+
+    /**
+    */
+    void encryptXOR(QBuffer& outBuffer, QBuffer& buffer, uint8_t key);
+
+    void encryptXOR(QBuffer& outBuffer, uint8_t* data, int len, uint8_t key);
 
     /**
         Remove bytes [0, offset] from the buffer and move [offset, remaining] to the start.

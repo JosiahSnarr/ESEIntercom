@@ -115,6 +115,24 @@ void SerialCom::onDataReceived()
             // move to the front of the buffer for reading
             _receiveBuffer.reset();
 
+            // decrypt the buffer
+            if(isBitSet(_inHeader.bDecodeOpts, ENCRYPT_TYPE_XOR)){
+                qDebug() << "decrypting";
+                // put data into a temporary buffer
+                QBuffer tmp;
+                QByteArray data = _receiveBuffer.read(_inHeader.lDataLength);
+                tmp.setData(data);
+
+                // reset the receive buffer and open tmp buffer
+                _receiveBuffer.reset();
+                tmp.open(QIODevice::ReadWrite);
+
+                // decrypt the buffer putting content into recieve buffer
+                encryptXOR(_receiveBuffer, tmp, _inHeader.bEncryptionKey);
+                tmp.close();
+                _receiveBuffer.reset();
+            }
+
             // using RLE compression
             if(isBitSet(_inHeader.bDecodeOpts, COMPRESS_TYPE_RLE)){
                 qDebug() << "RL Decode";
@@ -161,6 +179,8 @@ void SerialCom::onDataReceived()
 
                     emit onAudioStreamReceived(audioBuffer);
                 }
+
+               // free(decodeBuffer);
 
             }else{
                 qDebug() << "No compression";
@@ -210,12 +230,13 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
 {
     qDebug() << "Serial Write";
     QBuffer outData;
-    outData.open(QIODevice::WriteOnly);
+    outData.open(QIODevice::ReadWrite);
 
     FrameHeader outHeader;
     outHeader.lSignature = FRAME_SIGNATURE;
     outHeader.lSignature2 = FRAME_SIGNATURE;
     outHeader.bVersion = 1;
+    outHeader.bEncryptionKey = (uint8_t)'Q';
 
     if(useHeader){
         qDebug() << "Using Framed Data";
@@ -255,12 +276,16 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
                     outHeader.lDataLength = iEncodeLen;
 
                     outData.write((char*)&outHeader, sizeof(FrameHeader));
-                    outData.write((char*)encodedBuffer, iEncodeLen);
+
+                    if(isBitSet(decodeOptions, ENCRYPT_TYPE_XOR))
+                        encryptXOR(outData, (uint8_t*)encodedBuffer, iEncodeLen, outHeader.bEncryptionKey);
+                    else
+                        outData.write((char*)encodedBuffer, iEncodeLen);
+
+                  //  free(encodedBuffer);
 
                 }
-                if(isBitSet(decodeOptions, COMPRESS_TYPE_HUFF)){
 
-                }
             }
             // no compression of a message
             else{
@@ -269,7 +294,11 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
                 outHeader.lDataLength = sizeof(Message);
 
                 outData.write((char*)&outHeader, sizeof(FrameHeader));
-                outData.write((char*)&message, sizeof(Message));
+
+                if(isBitSet(decodeOptions, ENCRYPT_TYPE_XOR))
+                    encryptXOR(outData, (uint8_t*)&message, sizeof(Message), outHeader.bEncryptionKey);
+                else
+                    outData.write((char*)&message, sizeof(Message));
             }
 
         }
@@ -295,7 +324,13 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
                     qDebug() << "Compression Ratio: " << ((float)outHeader.lUncompressedLength/(float)outHeader.lDataLength);
 
                     outData.write((char*)&outHeader, sizeof(FrameHeader));
-                    outData.write((char*)encodedBuffer, iEncodeLen);
+
+                    if(isBitSet(decodeOptions, ENCRYPT_TYPE_XOR))
+                        encryptXOR(outData, encodedBuffer, iEncodeLen, outHeader.bEncryptionKey);
+                    else
+                        outData.write((char*)encodedBuffer, iEncodeLen);
+
+                   // free(encodedBuffer);
                 }
 
             }
@@ -315,7 +350,6 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
 
     // write out to serial
     qDebug() << "written bytes: " << _serial->write(outData.buffer()) << "\n";
-    _serial->flush();
     outData.close();
 }
 
@@ -324,6 +358,29 @@ Message* SerialCom::getNextMessageFromQueue()
     Message* message = deQueue(&_queue);
     emit onQueueUpdate(_queue.size);
     return message;
+}
+
+void SerialCom::encryptXOR(QBuffer& outBuffer, QBuffer &buffer, uint8_t key)
+{
+    int size = buffer.size();
+    int i;
+
+    for(i = 0; i < size; i++){
+        uint8_t byte;
+        buffer.read((char*)&byte, 1);
+        byte ^= key;
+        outBuffer.write((const char*)&byte, 1);
+    }
+}
+
+void SerialCom::encryptXOR(QBuffer &outBuffer, uint8_t *data, int len, uint8_t key)
+{
+    int i;
+
+    for(i = 0; i < len; ++i){
+        uint8_t x = data[i] ^ key;
+        outBuffer.write((const char*)&x, 1);
+    }
 }
 
 uint8_t SerialCom::checksum(int bytes)
@@ -392,6 +449,11 @@ bool SerialCom::isUsingHeader() const
 PhoneLog* SerialCom::getPhoneLog()
 {
     return &_log;
+}
+
+void SerialCom::setStationId(int id)
+{
+    _stationId = id;
 }
 
 SerialCom::~SerialCom()

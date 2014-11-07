@@ -21,6 +21,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //
+    _id = 5;
+
     // settings dialogs
     audioSettings = new AudioSettings(this);
     serialSettings = new SerialSettings(this);
@@ -103,7 +106,7 @@ void MainWindow::onSendAudioButtonClicked()
     uint8_t decodeOptions = settings.bDecodeOpts;
     setbit(decodeOptions, MSG_TYPE_AUDIO);
 
-    serial->write(data, 99, settings.useHeader, decodeOptions);
+    serial->write(data, receiverId, settings.useHeader, decodeOptions);
 }
 
 void MainWindow::onStreamButtonClicked()
@@ -179,9 +182,9 @@ void MainWindow::onAddUserButtonClicked()
 void MainWindow::onUserListItemClicked()
 {
     int idx = ui->lwUsers->currentRow();
-    senderId = receiverId = userList.getUserId(idx);
+    receiverId = userList.getUserId(idx);
 
-    SenderData* data = searchPhoneBook(serial->getPhoneLog(), senderId);
+    SenderData* data = searchPhoneBook(serial->getPhoneLog(), receiverId);
 
     if(data != NULL){
 
@@ -190,10 +193,10 @@ void MainWindow::onUserListItemClicked()
         timeStampLabel.append(time.toString("h:m:s ap"));
         ui->lbLastTimeForUser->setText(timeStampLabel);
 
-        ui->lbNumMessagesForUser->setText(QString("Messages: %1").arg(data->id));
+        ui->lbNumMessagesForUser->setText(QString("Messages: %1").arg(data->numMessages));
     }
     else{
-        showAlert("No Data for this User!!!!!");
+        ui->lbNumMessagesForUser->setText(QString("Messages: 0"));
     }
 }
 

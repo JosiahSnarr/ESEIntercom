@@ -99,9 +99,9 @@ QStringList UserList::toList()
     return list;
 }
 
-int UserList::getUserId(int idx)
+int UserList::getUserId(unsigned int idx)
 {
-    if(idx > 0 && idx < _userList.size()){
+    if(idx < _userList.size()){
         return _userList[idx].id;
     }
     return -1;

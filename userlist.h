@@ -22,7 +22,7 @@ public:
     void save();
     void load();
 
-    int getUserId(int idx);
+    int getUserId(unsigned int idx);
 
     QString getString(int idx);
     QStringList toList();
