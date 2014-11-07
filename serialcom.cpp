@@ -115,6 +115,24 @@ void SerialCom::onDataReceived()
             // move to the front of the buffer for reading
             _receiveBuffer.reset();
 
+            // decrypt the buffer
+            if(isBitSet(_inHeader.bDecodeOpts, ENCRYPT_TYPE_XOR)){
+                qDebug() << "decrypting";
+                // put data into a temporary buffer
+                QBuffer tmp;
+                QByteArray data = _receiveBuffer.read(_inHeader.lDataLength);
+                tmp.setData(data);
+
+                // reset the receive buffer and open tmp buffer
+                _receiveBuffer.reset();
+                tmp.open(QIODevice::ReadWrite);
+
+                // decrypt the buffer putting content into recieve buffer
+                encryptXOR(_receiveBuffer, tmp, _inHeader.bEncryptionKey);
+                tmp.close();
+                _receiveBuffer.reset();
+            }
+
             // using RLE compression
             if(isBitSet(_inHeader.bDecodeOpts, COMPRESS_TYPE_RLE)){
                 qDebug() << "RL Decode";
@@ -161,6 +179,8 @@ void SerialCom::onDataReceived()
 
                     emit onAudioStreamReceived(audioBuffer);
                 }
+
+               // free(decodeBuffer);
 
             }else{
                 qDebug() << "No compression";
@@ -262,7 +282,7 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
                     else
                         outData.write((char*)encodedBuffer, iEncodeLen);
 
-                    free(encodedBuffer);
+                  //  free(encodedBuffer);
 
                 }
 
@@ -310,7 +330,7 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
                     else
                         outData.write((char*)encodedBuffer, iEncodeLen);
 
-                    free(encodedBuffer);
+                   // free(encodedBuffer);
                 }
 
             }
