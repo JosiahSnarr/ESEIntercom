@@ -39,6 +39,7 @@ SerialCom::SerialCom(QObject *parent) : QObject(parent)
 
     _isProcessingPacket = false;
     _useHeader = true;
+    _checksumDivisor = 16;
 
     initQueue(&_queue);
     initPhoneBook(&_log);
@@ -93,6 +94,7 @@ void SerialCom::onDataReceived()
         // verify the packet is valid
         if(_inHeader.lSignature == FRAME_SIGNATURE && vote(_inHeader.lSignature, _inHeader.lSignature2)){
             // check if the correct station
+            qDebug() << "receiver id: " << _inHeader.bReceiverId;
             if(_inHeader.bReceiverId == _stationId){
                 qDebug() << "Valid header received\n";
                 qDebug() << "Will wait for " << _inHeader.lDataLength << " bytes";
@@ -158,11 +160,14 @@ void SerialCom::onDataReceived()
                     rldecode(raw, _inHeader.lDataLength, decodeBuffer, _inHeader.lUncompressedLength, 0x1B);
 
                     Message* message = (Message*)decodeBuffer;
-                    enQueue(&_queue, message);
-                    insertIntoPhoneBook(&_log, message);
-                    emit onQueueUpdate(_queue.size);
 
-                    qDebug() << message->msg << "\n";
+                    // validate checksum
+                    if(message->checksum = checksum((uint8_t*)message, sizeof(Message), _checksumDivisor)){
+                        enQueue(&_queue, message);
+                        insertIntoPhoneBook(&_log, message);
+                        emit onQueueUpdate(_queue.size);
+                        qDebug() << message->msg << "\n";
+                    }
                 }
                 else if(isBitSet(_inHeader.bDecodeOpts, MSG_TYPE_AUDIO)){
                     qDebug() << "decode audio broadcast";
@@ -200,10 +205,13 @@ void SerialCom::onDataReceived()
 
                     _receiveBuffer.read((char*)message, sizeof(Message));
 
-                    enQueue(&_queue, message);
-                    emit onQueueUpdate(_queue.size);
+                    // validate checksum
+                    if(message->checksum == checksum((uint8_t*)message, sizeof(Message), _checksumDivisor)){
+                        enQueue(&_queue, message);
+                        emit onQueueUpdate(_queue.size);
 
-                    qDebug() << message->msg << "\n";
+                        qDebug() << message->msg << "\n";
+                    }
 
                 }
                 // Uncompressed Audio Message
@@ -249,6 +257,7 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
         qDebug() << "Using Framed Data";
         // fill initial header data
         outHeader.bReceiverId = receiverId;
+        qDebug() << "send: receiver: " << receiverId;
 
         outHeader.bDecodeOpts = 0;
         set(outHeader.bDecodeOpts, decodeOptions);
@@ -263,7 +272,9 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
             message.priority = 1;
             message.senderID = rand() % 5;
             message.timestamp = (uint32_t) QDateTime::currentDateTimeUtc().toTime_t();
-            message.checksum = checksum(sizeof(Message));
+            message.checksum = checksum((uint8_t*)&message, sizeof(Message), _checksumDivisor);
+
+            qDebug() << "send: checksum: " << message.checksum;
 
             qDebug() << "timestamp: " << message.timestamp;
 
@@ -390,11 +401,16 @@ void SerialCom::encryptXOR(QBuffer &outBuffer, uint8_t *data, int len, uint8_t k
     }
 }
 
-uint8_t SerialCom::checksum(int bytes)
+uint8_t SerialCom::checksum(uint8_t* bytes, int len, uint8_t divisor)
 {
-    int x = bytes / 256;
-    int y = x * 256;
-    return bytes - y;
+    uint8_t sum = 0;
+    int i;
+
+    for(i = 0; i < len; i++){
+        sum += bytes[i];
+    }
+
+    return sum % divisor;
 }
 
 void SerialCom::removeProcessedData(QBuffer& buffer, qint64 offset)

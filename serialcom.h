@@ -116,7 +116,7 @@ public:
 
     /**
     */
-    uint8_t checksum(int bytes);
+    uint8_t checksum(uint8_t *bytes, int len, uint8_t divisor);
 
     /**
     */
@@ -159,6 +159,9 @@ private:
 
     //! ID of this station
     int _stationId;
+
+    //! Divisor used for checksum
+    uint8_t _checksumDivisor;
 
     /**
     */

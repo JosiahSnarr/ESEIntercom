@@ -276,7 +276,7 @@ void MainWindow::debugSerial()
     uint8_t decodeOpts = settings.bDecodeOpts;
     setbit(decodeOpts, MSG_TYPE_TEXT);
 
-    serial->write(data, 99, settings.useHeader, decodeOpts);
+    serial->write(data, receiverId, settings.useHeader, decodeOpts);
 }
 
 void MainWindow::initMenuActions()
