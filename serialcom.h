@@ -28,8 +28,8 @@
 #define MSG_TYPE_TEXT         0x00 ///< Message is a text message
 #define MSG_TYPE_AUDIO        0x01 ///< Message is audio
 #define MSG_TYPE_AUDIO_STREAM 0x02 ///< Message is streaming audio
+#define MSG_TYPE_BITMAP       0x03 ///< message is Bitmap
 
-#define ENCRYPT_TYPE_NONE     0x03 ///< No encryption
 #define ENCRYPT_TYPE_XOR      0x04 ///< XOR encryption
 
 #define COMPRESS_TYPE_NONE    0x05 ///< No compression

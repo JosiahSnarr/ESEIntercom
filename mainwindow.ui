@@ -301,6 +301,7 @@
     <addaction name="actionAbout"/>
     <addaction name="separator"/>
     <addaction name="actionDebugSerial"/>
+    <addaction name="actionSend_Image"/>
    </widget>
    <widget class="QMenu" name="menuAdvanced">
     <property name="title">
@@ -381,6 +382,11 @@
   <action name="actionAdvancedOptions">
    <property name="text">
     <string>Options</string>
+   </property>
+  </action>
+  <action name="actionSend_Image">
+   <property name="text">
+    <string>Send Image</string>
    </property>
   </action>
  </widget>

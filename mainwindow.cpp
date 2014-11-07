@@ -12,6 +12,7 @@
 #include <QByteArray>
 #include <QDateTime>
 #include <QMessageBox>
+#include <QFile>
 
 #include "bitopts.h"
 
@@ -282,6 +283,25 @@ void MainWindow::debugSerial()
     serial->write(data, receiverId, settings.useHeader, decodeOpts);
 }
 
+void MainWindow::onSendImage()
+{
+    QFile file("pic.png");
+    if(file.exists()){
+        file.open(QIODevice::ReadOnly);
+
+        QByteArray content = file.readAll();
+
+        AdvancedSettings::Settings settings = advancedSettings->getSettings();
+        uint8_t decodeOpts = settings.bDecodeOpts;
+        setbit(decodeOpts, MSG_TYPE_BITMAP);
+
+        serial->write(content, 0, settings.useHeader, decodeOpts);
+    }
+    else{
+        qDebug() << "Fuck";
+    }
+}
+
 void MainWindow::initMenuActions()
 {
     // connect session actions
@@ -297,6 +317,9 @@ void MainWindow::initMenuActions()
 
     // connect the debug serial o/p
     connect(ui->actionDebugSerial, SIGNAL(triggered()), this, SLOT(debugSerial()));
+
+    //
+    connect(ui->actionSend_Image, SIGNAL(triggered()), this, SLOT(onSendImage()));
 }
 
 void MainWindow::setEnabledUIComponents(bool enabled)

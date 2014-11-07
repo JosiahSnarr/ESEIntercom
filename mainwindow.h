@@ -40,6 +40,8 @@ public slots:
     void newSession();
     void closeSession();
 
+    void onSendImage();
+
     void onMessageReceived(int numQueued);
 
     void onPlaybackStopped();

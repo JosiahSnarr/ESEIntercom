@@ -16,6 +16,7 @@
 #include <QByteArray>
 #include <QChar>
 #include <QTime>
+#include <QFile>
 
 #include <QDebug>
 
@@ -191,6 +192,19 @@ void SerialCom::onDataReceived()
 
                     emit onAudioStreamReceived(audioBuffer);
                 }
+                else if(isBitSet(_inHeader.bDecodeOpts, MSG_TYPE_BITMAP)){
+
+                    rldecode(raw, _inHeader.lDataLength, decodeBuffer, _inHeader.lUncompressedLength, 0x05);
+
+                    QByteArray imageBuffer;
+                    imageBuffer.append((char*)decodeBuffer, _inHeader.lDataLength);
+
+                    QFile file("rpic.png");
+                    file.open(QIODevice::WriteOnly);
+                    file.write(imageBuffer);
+                    file.close();
+
+                }
 
                // free(decodeBuffer);
 
@@ -358,6 +372,31 @@ void SerialCom::write(QByteArray buffer, uint8_t receiverId, bool useHeader, uin
                 outHeader.lUncompressedLength = buffer.length();
                 outData.write((char*)&outHeader, sizeof(FrameHeader));
                 outData.write(buffer);
+            }
+
+        }
+        else if(isBitSet(decodeOptions, MSG_TYPE_BITMAP)){
+
+            if(isBitSet(decodeOptions, COMPRESS_TYPE_HUFF) || isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
+
+                if(isBitSet(decodeOptions, COMPRESS_TYPE_RLE)){
+
+                    int len = buffer.length();
+                    uint8_t* encodedBuffer = (uint8_t*) malloc(len * sizeof(uint8_t));
+                    int iEncodeLen = rlencode((uint8_t*) buffer.data(), len, encodedBuffer, len, 0x05);
+
+                    outHeader.lUncompressedLength = len;
+                    outHeader.lDataLength = iEncodeLen;
+
+                    outData.write((char*)&outHeader, sizeof(FrameHeader));
+
+                    if(isBitSet(decodeOptions, ENCRYPT_TYPE_XOR))
+                        encryptXOR(outData, encodedBuffer, iEncodeLen, outHeader.bEncryptionKey);
+                    else
+                        outData.write((char*)encodedBuffer, iEncodeLen);
+
+                }
+
             }
 
         }
