@@ -285,7 +285,9 @@ void MainWindow::debugSerial()
 
 void MainWindow::onSendImage()
 {
-    QFile file("pic.png");
+    //QFile file("santa.jpg");
+    QFile file(ui->etImageName->text());
+    //QFile file("di-HHOT.png");
     if(file.exists()){
         file.open(QIODevice::ReadOnly);
 
