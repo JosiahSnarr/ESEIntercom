@@ -7,40 +7,148 @@
 #include <QAudioOutput>
 #include <QAudioFormat>
 #include <QAudioEncoderSettings>
+#include <QTimer>
 
+#include "audiofilterbuffer.h"
+#include "streambuffer.h"
+#include "audiosettings.h"
+
+/**
+    Audio Recording, Playback and Broadcasts
+*/
 class AudioPlayback : public QObject
 {
     Q_OBJECT
 public:
-    explicit AudioPlayback(QAudioEncoderSettings format, QObject *parent = 0);
+    explicit AudioPlayback(AudioSettings::Settings format, QObject *parent = 0);
     ~AudioPlayback(void);
 
+    /**
+        Start recording audio
+    */
     void record();
+
+    /**
+        Stop recording audio
+    */
     void stopRecording();
+
+    /**
+        Playback recorded audio
+    */
     void play();
+
+    /**
+        Stop playing audio
+    */
     void stopPlayback();
 
+    /**
+        Start an audio stream
+    */
+    void startStreamingRecording();
+
+    /**
+        Stop streaming
+    */
+    void stopStreamingRecording();
+
+    /**
+        Set the audio format
+
+        @param format
+            The format to use
+    */
     void setAudioFormat(QAudioFormat format);
-    void setAudioFormat(QAudioEncoderSettings settings);
 
-    bool isRecording();
-    bool isPlaying();
+    /**
+        Set the audio format
 
-private:
-    QAudioInput*  _input;
-    QAudioOutput* _output;
-    QBuffer       _buffer;
+        @param setting
+            The format to use
+    */
+    void setAudioFormat(AudioSettings::Settings format);
 
-    bool _recording;
-    bool _playing;
+    /**
+        @return whether currently recording or not
+    */
+    bool isRecording() const;
 
-    void createAudioIO(QAudioFormat format);
+    /**
+        @return whether currently playing or not
+    */
+    bool isPlaying() const;
 
-signals:
-    void stoppedPlaying();
+    /**
+        @return whether currently streaming or not
+    */
+    bool isStreamRecording() const;
+
+    /**
+        Get the recorded audio
+
+        @param buffer
+            buffer to copy the audio into
+    */
+    void getRecordedAudio(QBuffer& buffer) const;
 
 public slots:
     void onPlayerStateChanged(QAudio::State);
+
+    /**
+        Handle audio broadcast received event
+    */
+    void onAudioReceived(QByteArray&);
+
+    /**
+        Handle stream data received event
+    */
+    void onAudioStreamReceived(QByteArray& buffer);
+
+    /**
+        Handle the timer event for the stream recorder
+    */
+    void onTick();
+
+signals:
+    void stoppedPlaying();
+    void onStreamBufferSendReady(QByteArray&);
+
+private:
+    //! recording
+    QAudioInput*  _input;
+    //! playing
+    QAudioOutput* _output;
+    //! buffer to hold recorded data
+    AudioFilterBuffer _buffer;
+    //! buffer to hold the audio stream
+    StreamBuffer _streamBufferRecord;
+    //!
+    StreamBuffer _streamBufferPlay;
+    //! buffer used to hold broadcasted audio
+    QBuffer _broadcast;
+
+    //! Timer for streaming
+    QTimer* _timer;
+
+    //! is recording
+    bool _recording;
+    //! is playing
+    bool _playing;
+    //! is there a broadcast waiting to be played
+    bool _broadcastPending;
+    //! is streaming recording stream audio
+    bool _isStreamRecording;
+    //! is playing stream audio
+    bool _isStreamPlaying;
+
+    /**
+        Create the audio input and output devices with a format
+
+        @param format
+            the given format to use
+    */
+    void createAudioIO(QAudioFormat format);
 
 };
 

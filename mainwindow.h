@@ -5,14 +5,20 @@
 
 #include "audiosettings.h"
 #include "serialsettings.h"
+#include "advancedsettings.h"
 
 #include "serialcom.h"
 #include "audioplayback.h"
+
+#include "userlist.h"
 
 namespace Ui {
 class MainWindow;
 }
 
+/**
+    Main UI
+*/
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -26,7 +32,10 @@ public slots:
     void onListenButtonClicked();
     void onSendAudioButtonClicked();
     void onSendTextButtonClicked();
+    void onStreamButtonClicked();
     void onNextMessageButtonClicked();
+    void onAddUserButtonClicked();
+    void onUserListItemClicked();
 
     void newSession();
     void closeSession();
@@ -34,6 +43,7 @@ public slots:
     void onMessageReceived(int numQueued);
 
     void onPlaybackStopped();
+    void onStreamBufferSendReady(QByteArray&);
 
     void debugSerial();
 
@@ -43,11 +53,23 @@ private:
     AudioSettings* audioSettings;
     //! serial settings dialog
     SerialSettings* serialSettings;
+    //! advance options
+    AdvancedSettings* advancedSettings;
 
-    // serial read write access
+    //! serial read write access
     SerialCom* serial;
-    // audio plack and recording
+    //! audio plack and recording
     AudioPlayback* audio;
+
+    //! user list
+    UserList userList;
+
+    //!
+    int senderId;
+    int receiverId;
+
+    //! this stations id
+    int _id;
 
     /**
         Initialize the Menu Actions
@@ -66,6 +88,11 @@ private:
      *      the message information
     */
     void updateMessageDisplay(Message* message);
+
+    void showAlert(QString msg);
+
+protected:
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // MAINWINDOW_H

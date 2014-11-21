@@ -1,3 +1,9 @@
+/**
+    @file serialsettings.cpp
+    @breif Serial Settings
+    @author Natesh Narain
+*/
+
 #include "serialsettings.h"
 #include "ui_serialsettings.h"
 
@@ -99,6 +105,9 @@ void SerialSettings::fillParams()
     ui->cmbBaudRate->addItem("2400", QSerialPort::Baud2400);
     ui->cmbBaudRate->addItem("4800", QSerialPort::Baud4800);
     ui->cmbBaudRate->addItem("9600", QSerialPort::Baud9600);
+    ui->cmbBaudRate->addItem("19200", QSerialPort::Baud19200);
+    ui->cmbBaudRate->addItem("38400", QSerialPort::Baud38400);
+    ui->cmbBaudRate->addItem("57600", QSerialPort::Baud57600);
     ui->cmbBaudRate->addItem("115200", QSerialPort::Baud115200);
 
     // fill parity option

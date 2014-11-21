@@ -22,13 +22,27 @@ HEADERS += audioplayback.h \
            messagequeue.h \
            serialcom.h \
            serialsettings.h \
-           bitopts.h
-FORMS += audiosettings.ui mainwindow.ui serialsettings.ui
+           bitopts.h \
+           rlencoding.h \
+    advancedsettings.h \
+    audiofilterbuffer.h \
+    phonebook.h \
+    streambuffer.h \
+    userlist.h
+FORMS += audiosettings.ui mainwindow.ui serialsettings.ui \
+    advancedsettings.ui
 SOURCES += audioplayback.cpp \
            audiosettings.cpp \
            main.cpp \
            mainwindow.cpp \
            messagequeue.cpp \
            serialcom.cpp \
-           serialsettings.cpp
+           serialsettings.cpp \
+           rlencoding.cpp \
+    advancedsettings.cpp \
+    audiofilterbuffer.cpp \
+    phonebook.cpp \
+    streambuffer.cpp \
+    userlist.cpp
+
 RESOURCES += intercom.qrc

@@ -1,15 +1,27 @@
+/**
+    @file audioplayback.cpp
+    @breif Record\Playback user audio. Play broadcast audio
+    @author Natesh Narain
+*/
+
 #include "audioplayback.h"
+
 #include <QAudioDeviceInfo>
 
 #include <QDebug>
 
-AudioPlayback::AudioPlayback(QAudioEncoderSettings format, QObject *parent) :
-    QObject(parent)
+AudioPlayback::AudioPlayback(AudioSettings::Settings format, QObject *parent) : QObject(parent)
 {
+    _timer = new QTimer(this);
+    connect(_timer, SIGNAL(timeout()), this, SLOT(onTick()));
+
     setAudioFormat(format);
 
     _recording = false;
     _playing = false;
+    _broadcastPending = false;
+    _isStreamRecording = false;
+    _isStreamPlaying = false;
 }
 
 void AudioPlayback::record()
@@ -39,16 +51,92 @@ void AudioPlayback::play()
 
 void AudioPlayback::stopPlayback()
 {
-    qDebug() << "Stop Play\n";
-    _output->stop();
-    _buffer.close();
+    if(_buffer.isOpen()) _buffer.close();
     _playing = false;
+
+    if(_isStreamPlaying){
+        qDebug() << "stream end";
+        _output->stop();
+        _streamBufferPlay.close();
+        _isStreamPlaying = false;
+    }
+}
+
+void AudioPlayback::startStreamingRecording()
+{
+    if(_recording){
+        stopRecording();
+    }
+
+    // open the buffer for readwrite
+    _streamBufferRecord.open(QIODevice::ReadWrite);
+    // start recording to the stream buffer
+    _input->start(&_streamBufferRecord);
+    // send data every 3 seconds
+    _timer->start(2000);
+
+    _isStreamRecording = true;
+}
+
+void AudioPlayback::onTick()
+{
+    qDebug() << "onTick";
+
+    qint64 readPos = _streamBufferRecord.readPosition();
+    qint64 diff = _streamBufferRecord.size() - readPos;
+
+    QByteArray buffer = _streamBufferRecord.read(diff);
+    emit onStreamBufferSendReady(buffer);
+}
+
+void AudioPlayback::stopStreamingRecording()
+{
+    _input->stop();
+    _timer->stop();
+    _streamBufferRecord.close();
+    _isStreamRecording = false;
 }
 
 void AudioPlayback::onPlayerStateChanged(QAudio::State state)
 {
     if(state == QAudio::StoppedState || state == QAudio::IdleState){
+        qDebug() << "stop state";
+        stopPlayback();
         emit stoppedPlaying();
+    }
+}
+
+void AudioPlayback::onAudioReceived(QByteArray& buffer)
+{
+    if(_playing){
+        qDebug() << "Settings broadcast to pending";
+        _broadcastPending = true;
+        _broadcast.close();
+        _broadcast.setBuffer(&buffer);
+    }
+    else{
+        qDebug() << "Starting broadcast";
+
+        if(_broadcast.isOpen()) _broadcast.close();
+        _broadcast.setData(buffer);
+        _broadcast.open(QIODevice::ReadOnly);
+        _output->start(&_broadcast);
+    }
+}
+
+void AudioPlayback::onAudioStreamReceived(QByteArray &buffer)
+{
+    if(!_isStreamPlaying){
+        qDebug() << "stream start";
+        stopPlayback();
+        _streamBufferPlay.open(QIODevice::ReadWrite);
+        _streamBufferPlay.write(buffer);
+        _output->start(&_streamBufferPlay);
+        _isStreamPlaying = true;
+    }
+    else{
+        qDebug() << "write stream buffer";
+        _streamBufferPlay.write(buffer);
     }
 }
 
@@ -69,27 +157,41 @@ void AudioPlayback::setAudioFormat(QAudioFormat format)
     createAudioIO(format);
 }
 
-void AudioPlayback::setAudioFormat(QAudioEncoderSettings settings)
+void AudioPlayback::setAudioFormat(AudioSettings::Settings settings)
 {
     QAudioFormat format;
-    format.setSampleRate(settings.sampleRate());
+    format.setSampleRate(settings.encoderSettings.sampleRate());
     format.setSampleSize(8);
-    format.setChannelCount(settings.channelCount());
-    format.setCodec(settings.codec());
+    format.setChannelCount(settings.encoderSettings.channelCount());
+    format.setCodec(settings.encoderSettings.codec());
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::UnSignedInt);
+
+    _buffer.setUpperThreshold(settings.upperThreshold);
+    _buffer.setLowerThreshold(settings.lowerThreshold);
 
     setAudioFormat(format);
 }
 
-bool AudioPlayback::isRecording()
+void AudioPlayback::getRecordedAudio(QBuffer& data) const
+{
+    QByteArray b = _buffer.data();
+    data.setData(b);
+}
+
+bool AudioPlayback::isRecording() const
 {
     return _recording;
 }
 
-bool AudioPlayback::isPlaying()
+bool AudioPlayback::isPlaying() const
 {
-    return _recording;
+    return _playing;
+}
+
+bool AudioPlayback::isStreamRecording() const
+{
+    return _isStreamRecording;
 }
 
 AudioPlayback::~AudioPlayback()

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>261</width>
-    <height>378</height>
+    <height>471</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -91,7 +91,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="cmbSampleRate"/>
+      <widget class="QLineEdit" name="etSampleRate"/>
      </item>
     </layout>
    </widget>
@@ -122,7 +122,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>230</y>
+     <y>330</y>
      <width>221</width>
      <height>71</height>
     </rect>
@@ -157,7 +157,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>310</y>
+     <y>410</y>
      <width>239</width>
      <height>51</height>
     </rect>
@@ -185,6 +185,63 @@
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>220</y>
+     <width>221</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Filtering</string>
+   </property>
+   <widget class="QWidget" name="horizontalLayoutWidget_7">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>191</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
+     <item>
+      <widget class="QLabel" name="lbUpperThreshold">
+       <property name="text">
+        <string>Upper Threshold</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="cmbUpperThreshold"/>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_8">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>191</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_8">
+     <item>
+      <widget class="QLabel" name="lbLowerThreshold">
+       <property name="text">
+        <string>Lower Threshold</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="cmbLowerThreshold"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
  </widget>
  <resources>
