@@ -17,6 +17,8 @@
 #define BIT6 0x40
 #define BIT7 0x80
 
+// something interesting
+
 #define NIB  4  ///< Bits in a nibble
 #define BYTE 8  ///< Bits in a byte
 #define WORD 16 ///< Bits in a word
